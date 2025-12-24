@@ -219,6 +219,91 @@ const HeroSection = () => {
         className="relative z-10 w-full max-w-4xl mx-auto mt-12 px-6"
         style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
       >
+        {/* Floating particles around browser */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background: `linear-gradient(135deg, ${['#8b5cf6', '#06b6d4', '#ec4899', '#f59e0b'][i % 4]}, ${['#6366f1', '#0ea5e9', '#f43f5e', '#eab308'][i % 4]})`,
+              left: `${10 + (i * 12)}%`,
+              top: i % 2 === 0 ? '-20px' : 'auto',
+              bottom: i % 2 === 1 ? '-20px' : 'auto',
+            }}
+            animate={{
+              y: i % 2 === 0 ? [0, -15, 0] : [0, 15, 0],
+              x: [0, (i % 3 - 1) * 10, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.6, 1, 0.6],
+            }}
+            transition={{
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Floating icons around browser */}
+        <motion.div
+          className="absolute -left-8 top-1/4 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg"
+          animate={{ 
+            y: [0, -20, 0], 
+            rotate: [0, 10, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <DollarSign className="w-5 h-5 text-white" />
+        </motion.div>
+
+        <motion.div
+          className="absolute -right-8 top-1/3 w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg"
+          animate={{ 
+            y: [0, 15, 0], 
+            rotate: [0, -10, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        >
+          <TrendingUp className="w-5 h-5 text-white" />
+        </motion.div>
+
+        <motion.div
+          className="absolute -left-6 bottom-1/4 w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg"
+          animate={{ 
+            y: [0, 12, 0], 
+            x: [0, -5, 0],
+            rotate: [0, -8, 0],
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          <Users className="w-4 h-4 text-white" />
+        </motion.div>
+
+        <motion.div
+          className="absolute -right-6 bottom-1/3 w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg"
+          animate={{ 
+            y: [0, -12, 0], 
+            x: [0, 5, 0],
+            rotate: [0, 8, 0],
+          }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        >
+          <Zap className="w-4 h-4 text-white" />
+        </motion.div>
+
+        {/* Orbiting ring effect */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl border border-primary/20 pointer-events-none"
+          animate={{ 
+            scale: [1, 1.05, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+
         <div className="relative bg-card rounded-2xl shadow-2xl border border-border/50 overflow-hidden">
           {/* Browser chrome */}
           <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/50">

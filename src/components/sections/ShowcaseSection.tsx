@@ -8,25 +8,27 @@ const ShowcaseSection = () => {
 
   return (
     <>
-      {/* Perspective Grid Section */}
-      <section className="relative h-[500px] perspective-grid bg-background overflow-hidden">
+      {/* Perspective Grid Section - Reduced height */}
+      <section className="relative h-[200px] perspective-grid bg-background overflow-hidden">
         {/* Decorative lines going up */}
-        <div className="absolute left-1/4 bottom-0 w-px h-80 bg-gradient-to-t from-primary/30 to-transparent" />
-        <div className="absolute left-1/2 bottom-0 w-px h-96 bg-gradient-to-t from-primary/40 to-transparent" />
-        <div className="absolute right-1/4 bottom-0 w-px h-72 bg-gradient-to-t from-primary/30 to-transparent" />
+        <div className="absolute left-1/4 bottom-0 w-px h-40 bg-gradient-to-t from-primary/30 to-transparent" />
+        <div className="absolute left-1/2 bottom-0 w-px h-48 bg-gradient-to-t from-primary/40 to-transparent" />
+        <div className="absolute right-1/4 bottom-0 w-px h-36 bg-gradient-to-t from-primary/30 to-transparent" />
         
         {/* Corner decorations */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="absolute top-20 left-20 w-4 h-4 border-l-2 border-t-2 border-primary/40"
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          viewport={{ once: true }}
+          className="absolute top-8 left-20 w-4 h-4 border-l-2 border-t-2 border-primary/40"
         />
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="absolute top-20 right-20 w-4 h-4 border-r-2 border-t-2 border-primary/40"
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          viewport={{ once: true }}
+          className="absolute top-8 right-20 w-4 h-4 border-r-2 border-t-2 border-primary/40"
         />
       </section>
 

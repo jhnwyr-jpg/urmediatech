@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Play, Star } from "lucide-react";
+import { Sparkles, ArrowRight, Play, Star, TrendingUp, Users, DollarSign, BarChart3, ArrowUpRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FloatingElements from "@/components/ui/FloatingElements";
 import { MagneticButton, AnimatedText } from "@/components/ui/AnimatedComponents";
-
 const HeroSection = () => {
   return (
     <section
@@ -247,7 +246,7 @@ const HeroSection = () => {
             </div>
           </div>
           
-          {/* Dashboard content with shimmer effect */}
+          {/* Dashboard content with real-looking UI */}
           <div className="p-6 space-y-4 relative">
             <motion.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
@@ -255,57 +254,132 @@ const HeroSection = () => {
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             />
             
+            {/* Header row */}
             <div className="flex items-center justify-between">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <motion.div 
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="h-4 w-32 bg-muted rounded" 
-                />
-                <div className="h-3 w-24 bg-muted/50 rounded" />
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 }}
+                  className="text-sm font-semibold text-foreground"
+                >
+                  Dashboard Overview
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.3 }}
+                  className="text-xs text-muted-foreground"
+                >
+                  Welcome back, Admin
+                </motion.div>
               </div>
               <div className="flex gap-2">
                 <motion.div 
-                  whileHover={{ scale: 1.1 }}
-                  className="h-8 w-20 bg-primary/20 rounded-md cursor-pointer" 
-                />
+                  whileHover={{ scale: 1.05 }}
+                  className="h-8 px-3 bg-muted/50 rounded-lg flex items-center gap-2 cursor-pointer text-xs text-muted-foreground"
+                >
+                  <span>Last 7 days</span>
+                </motion.div>
                 <motion.div 
-                  whileHover={{ scale: 1.1 }}
-                  className="h-8 w-20 gradient-bg rounded-md cursor-pointer" 
-                />
+                  whileHover={{ scale: 1.05 }}
+                  className="h-8 px-4 gradient-bg rounded-lg flex items-center cursor-pointer text-xs text-white font-medium"
+                >
+                  Export
+                </motion.div>
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              {[1, 2, 3].map((i) => (
+            {/* Stats cards */}
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {[
+                { icon: DollarSign, label: "Revenue", value: "$24,500", change: "+12.5%", color: "text-green-500" },
+                { icon: Users, label: "Visitors", value: "12,840", change: "+8.2%", color: "text-blue-500" },
+                { icon: TrendingUp, label: "Conversion", value: "3.24%", change: "+2.1%", color: "text-purple-500" },
+              ].map((stat, i) => (
                 <motion.div 
                   key={i} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.4 + i * 0.1 }}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className="bg-muted/30 rounded-xl p-4 space-y-3 cursor-pointer"
+                  className="bg-background/50 backdrop-blur-sm rounded-xl p-4 border border-border/30 cursor-pointer group"
                 >
-                  <div className="h-3 w-16 bg-muted rounded" />
-                  <div className="h-6 w-20 bg-primary/20 rounded" />
-                  <div className="h-2 w-full bg-muted/50 rounded" />
+                  <div className="flex items-center justify-between mb-2">
+                    <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                    <motion.div 
+                      className="flex items-center gap-0.5 text-xs text-green-500"
+                      animate={{ y: [0, -2, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                    >
+                      <ArrowUpRight className="w-3 h-3" />
+                      {stat.change}
+                    </motion.div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  <div className="text-lg font-bold text-foreground group-hover:gradient-text transition-all">
+                    {stat.value}
+                  </div>
                 </motion.div>
               ))}
             </div>
 
+            {/* Bottom row - Chart and Activity */}
             <div className="flex gap-4 mt-4">
+              {/* Mini chart area */}
               <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.7 }}
                 whileHover={{ scale: 1.02 }}
-                className="flex-1 bg-muted/30 rounded-xl p-4 h-32 cursor-pointer" 
-              />
-              <div className="w-48 bg-muted/30 rounded-xl p-4 space-y-2">
-                {[1, 2, 3, 4].map((i) => (
+                className="flex-1 bg-background/30 backdrop-blur-sm rounded-xl p-4 border border-border/30 cursor-pointer"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-medium text-foreground">Analytics</span>
+                  </div>
+                  <Zap className="w-3 h-3 text-yellow-500" />
+                </div>
+                {/* Animated bar chart */}
+                <div className="flex items-end gap-1.5 h-16">
+                  {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ height: 0 }}
+                      animate={{ height: `${height}%` }}
+                      transition={{ delay: 1.8 + i * 0.1, duration: 0.5, type: "spring" }}
+                      className="flex-1 gradient-bg rounded-t-sm opacity-80"
+                    />
+                  ))}
+                </div>
+              </motion.div>
+              
+              {/* Activity list */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.8 }}
+                className="w-48 bg-background/30 backdrop-blur-sm rounded-xl p-4 border border-border/30"
+              >
+                <div className="text-xs font-medium text-foreground mb-3">Recent Activity</div>
+                {["New signup", "Payment received", "Order completed", "Review posted"].map((item, i) => (
                   <motion.div 
-                    key={i} 
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ delay: 1 + i * 0.2, duration: 0.5 }}
-                    className="h-3 bg-muted/50 rounded" 
-                  />
+                    key={i}
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.9 + i * 0.1 }}
+                    className="flex items-center gap-2 py-1.5"
+                  >
+                    <motion.div 
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
+                    />
+                    <span className="text-xs text-muted-foreground truncate">{item}</span>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

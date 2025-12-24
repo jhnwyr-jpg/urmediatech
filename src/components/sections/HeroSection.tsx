@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Play } from "lucide-react";
+import { Sparkles, ArrowRight, Play, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FloatingElements from "@/components/ui/FloatingElements";
 
@@ -29,25 +29,60 @@ const HeroSection = () => {
             </span>
           </motion.div>
 
-          {/* Headline with highlighted word */}
+          {/* Headline with gradient word */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 text-slate-900"
           >
             Premium Website Design
             <br />
-            Made{" "}
-            <span className="relative inline-block">
-              <span className="highlight-word">Simple</span>
+            <span className="relative inline-flex items-center">
+              made{" "}
+              <span className="relative mx-2">
+                {/* Decorative swirl behind */}
+                <motion.svg
+                  initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="absolute -right-8 top-1/2 -translate-y-1/2 w-20 h-20 text-primary/30"
+                  viewBox="0 0 100 100"
+                  fill="currentColor"
+                >
+                  <path d="M50 0C60 20 80 30 100 50C80 70 60 80 50 100C40 80 20 70 0 50C20 30 40 20 50 0Z" />
+                </motion.svg>
+                
+                {/* Gradient text */}
+                <span className="relative z-10 bg-gradient-to-r from-cyan-500 via-violet-500 to-purple-600 bg-clip-text text-transparent">
+                  simple
+                </span>
+              </span>
+              
+              {/* Sparkle decorations */}
               <motion.span
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8, type: "spring" }}
-                className="absolute -top-2 -right-4 text-xl"
+                transition={{ delay: 0.9, type: "spring" }}
+                className="absolute -right-12 -top-4 text-primary"
               >
-                ✨
+                <Star className="w-4 h-4 fill-current" />
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.0, type: "spring" }}
+                className="absolute -right-8 top-0 text-slate-400"
+              >
+                <Star className="w-3 h-3 fill-current" />
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.1, type: "spring" }}
+                className="absolute -right-6 -top-6 text-primary/60"
+              >
+                <Star className="w-5 h-5 fill-current" />
               </motion.span>
             </span>
           </motion.h1>

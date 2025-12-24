@@ -46,8 +46,8 @@ const ShowcaseSection = () => {
                   <Eye className="w-7 h-7 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-xl">Real-Time Collaboration</h3>
-                  <p className="text-muted-foreground text-sm">Work together seamlessly</p>
+                  <h3 className="font-bold text-xl">Pixel-Perfect Designs</h3>
+                  <p className="text-muted-foreground text-sm">Every detail matters</p>
                 </div>
               </div>
               
@@ -81,8 +81,8 @@ const ShowcaseSection = () => {
                 <span className="gradient-text">optimize it</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Get real-time insights into your website performance. Track user behavior, 
-                monitor conversions, and make data-driven decisions to improve your results.
+                We create stunning websites that not only look beautiful but also convert. 
+                Our data-driven approach ensures your digital presence delivers real results.
               </p>
             </motion.div>
           </div>
@@ -100,7 +100,7 @@ const ShowcaseSection = () => {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Actually measure event success
+                Measure your success with real data
               </h2>
               <p className="text-primary-foreground/80 text-lg leading-relaxed mb-6">
                 No more guessing if your website is performing well. Get detailed 
@@ -164,11 +164,11 @@ const ShowcaseSection = () => {
           >
             <MousePointer className="w-12 h-12 mx-auto mb-6 text-primary-foreground/80" />
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Drive attendance for your entire KPI team
+              Boost your online presence with UR Media
             </h2>
             <p className="text-primary-foreground/70 text-lg">
               Streamline your workflow and boost productivity with our comprehensive 
-              suite of design and development tools.
+              suite of design and development services.
             </p>
           </motion.div>
         </div>

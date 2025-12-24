@@ -23,9 +23,9 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-soft mb-8"
           >
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-sm font-medium text-muted-foreground">
-              Premium Design Studio
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-secondary-foreground">
+              Premium Design Agency
             </span>
           </motion.div>
 
@@ -36,11 +36,11 @@ const HeroSection = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
           >
-            Website Design
+            Premium Website Design
             <br />
-            made{" "}
+            Made{" "}
             <span className="relative inline-block">
-              <span className="highlight-word">simple</span>
+              <span className="highlight-word">Simple</span>
               <motion.span
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -75,29 +75,32 @@ const HeroSection = () => {
               View Demo
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Button>
+            <Button variant="outline" size="lg">
+              Contact Us
+            </Button>
           </motion.div>
 
-          {/* Trusted by logos placeholder */}
+          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
-            className="mt-16"
+            className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
-            <p className="text-sm text-muted-foreground mb-6">Trusted by innovative brands</p>
-            <div className="flex items-center justify-center gap-8 flex-wrap opacity-50">
-              {["Startup", "Company", "Brand", "Agency", "Studio"].map((name, i) => (
-                <motion.div
-                  key={name}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.5 }}
-                  transition={{ delay: 0.8 + i * 0.1 }}
-                  className="text-muted-foreground font-semibold text-lg"
-                >
-                  {name}
-                </motion.div>
-              ))}
-            </div>
+            {[
+              { number: "150+", label: "Projects" },
+              { number: "98%", label: "Satisfaction" },
+              { number: "5★", label: "Rating" },
+            ].map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-2xl md:text-3xl font-bold gradient-text">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
           </motion.div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const testimonials = [
   {
@@ -40,7 +39,7 @@ const TestimonialsSection = () => {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <p className="text-primary-foreground/60 text-sm uppercase tracking-wider mb-4">
-            Trusted by businesses who sleep better at night
+            Trusted by businesses worldwide
           </p>
           <div className="flex items-center justify-center gap-1 mb-2">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -84,7 +83,7 @@ const TestimonialsSection = () => {
           className="text-center"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Let's + of happy users.
+            Join 120+ happy clients
           </h2>
           <p className="text-primary-foreground/70 mb-8 max-w-lg mx-auto">
             plus <span className="text-primary-foreground font-semibold">you.</span>

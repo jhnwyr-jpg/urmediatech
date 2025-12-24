@@ -77,7 +77,7 @@ const FeaturesSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center max-w-2xl mx-auto"
+          className="text-center max-w-2xl mx-auto mt-16 p-8 rounded-2xl bg-card border border-border/50 shadow-card"
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <h3 className="text-2xl md:text-3xl font-bold">

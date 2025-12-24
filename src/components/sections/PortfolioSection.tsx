@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ExternalLink, Globe, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card3D, ScrollReveal } from "@/components/ui/AnimatedComponents";
 
 const projects = [
   {
@@ -10,6 +11,7 @@ const projects = [
     category: "Web Application",
     description: "Modern SaaS platform with intuitive dashboard and analytics features.",
     demoUrl: "https://saas2413.netlify.app/",
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
     id: 2,
@@ -17,6 +19,7 @@ const projects = [
     category: "Business Website",
     description: "Elegant restaurant website with menu showcase and online presence.",
     demoUrl: "https://masalapage.netlify.app/",
+    gradient: "from-orange-500 to-red-500",
   },
   {
     id: 3,
@@ -24,6 +27,7 @@ const projects = [
     category: "Portfolio Website",
     description: "Stunning portfolio showcasing creative work with modern design.",
     demoUrl: "https://khgejurgur.netlify.app/",
+    gradient: "from-purple-500 to-pink-500",
   },
   {
     id: 4,
@@ -31,62 +35,107 @@ const projects = [
     category: "E-commerce",
     description: "Stylish e-commerce landing page for fashion and apparel brand.",
     demoUrl: "https://tshirtpagela.netlify.app/",
+    gradient: "from-green-500 to-teal-500",
   },
 ];
 
 const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative bg-card rounded-2xl p-8 border border-border/50 card-hover"
-    >
-      {/* Category badge */}
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 mb-6">
-        <Sparkles className="w-3.5 h-3.5 text-primary" />
-        <span className="text-xs font-medium text-secondary-foreground">
-          {project.category}
-        </span>
-      </div>
+    <ScrollReveal delay={index * 0.15} direction={index % 2 === 0 ? "left" : "right"}>
+      <Card3D className="h-full">
+        <motion.div
+          whileHover={{ y: -10 }}
+          className="group relative bg-card rounded-2xl p-8 border border-border/50 h-full overflow-hidden"
+        >
+          {/* Animated gradient background */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ opacity: 0.1, scale: 1.2 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute inset-0 bg-gradient-to-br ${project.gradient} blur-xl`}
+          />
 
-      {/* Title */}
-      <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:gradient-text transition-all duration-300">
-        {project.title}
-      </h3>
+          {/* Category badge */}
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 mb-6 relative z-10"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+            </motion.div>
+            <span className="text-xs font-medium text-secondary-foreground">
+              {project.category}
+            </span>
+          </motion.div>
 
-      {/* Description */}
-      <p className="text-muted-foreground leading-relaxed mb-6">
-        {project.description}
-      </p>
+          {/* Title with hover effect */}
+          <motion.h3 
+            className="text-2xl font-bold text-foreground mb-3 relative z-10"
+            whileHover={{ x: 5 }}
+          >
+            <span className="group-hover:gradient-text transition-all duration-300">
+              {project.title}
+            </span>
+          </motion.h3>
 
-      {/* Demo button */}
-      <a
-        href={project.demoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block"
-      >
-        <Button variant="gradient" size="default" className="group/btn gap-2">
-          <Globe className="w-4 h-4" />
-          View Live Demo
-          <ExternalLink className="w-4 h-4 opacity-70 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-        </Button>
-      </a>
+          {/* Description */}
+          <p className="text-muted-foreground leading-relaxed mb-6 relative z-10">
+            {project.description}
+          </p>
 
-      {/* Subtle hint text */}
-      <p className="text-xs text-muted-foreground/70 mt-3 flex items-center gap-1">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-        Opens in a new tab
-      </p>
+          {/* Demo button */}
+          <a
+            href={project.demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block relative z-10"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="gradient" size="default" className="group/btn gap-2 relative overflow-hidden">
+                <motion.span
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.5 }}
+                />
+                <Globe className="w-4 h-4" />
+                View Live Demo
+                <motion.div
+                  animate={{ x: [0, 3, 0], y: [0, -3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ExternalLink className="w-4 h-4 opacity-70" />
+                </motion.div>
+              </Button>
+            </motion.div>
+          </a>
 
-      {/* Decorative gradient corner */}
-      <div className="absolute top-0 right-0 w-24 h-24 gradient-bg opacity-5 rounded-bl-full rounded-tr-2xl group-hover:opacity-10 transition-opacity duration-300" />
-    </motion.div>
+          {/* Subtle hint text */}
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xs text-muted-foreground/70 mt-3 flex items-center gap-1 relative z-10"
+          >
+            <motion.span 
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1.5 h-1.5 rounded-full bg-green-500" 
+            />
+            Opens in a new tab
+          </motion.p>
+
+          {/* Decorative gradient corner */}
+          <motion.div 
+            initial={{ opacity: 0.05 }}
+            whileHover={{ opacity: 0.15, scale: 1.2 }}
+            className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${project.gradient} rounded-bl-full rounded-tr-2xl`}
+          />
+        </motion.div>
+      </Card3D>
+    </ScrollReveal>
   );
 };
 
@@ -95,7 +144,19 @@ const PortfolioSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="projects" className="py-24 bg-muted/30 relative">
+    <section id="projects" className="py-24 bg-muted/30 relative overflow-hidden">
+      {/* Animated background elements */}
+      <motion.div
+        animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+        transition={{ duration: 10, repeat: Infinity }}
+        className="absolute top-20 left-10 w-20 h-20 gradient-bg opacity-10 rounded-full blur-2xl"
+      />
+      <motion.div
+        animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
+        transition={{ duration: 8, repeat: Infinity }}
+        className="absolute bottom-20 right-10 w-32 h-32 gradient-bg opacity-10 rounded-full blur-2xl"
+      />
+
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -105,15 +166,37 @@ const PortfolioSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="text-sm font-medium text-primary uppercase tracking-wider">
+          <motion.span 
+            initial={{ opacity: 0, y: -20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm font-medium text-primary uppercase tracking-wider"
+          >
             Our Work
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6">
-            Recent <span className="gradient-text">Projects</span>
-          </h2>
-          <p className="text-muted-foreground text-lg">
+          </motion.span>
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ delay: 0.3, type: "spring" }}
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6"
+          >
+            Recent{" "}
+            <motion.span 
+              className="gradient-text inline-block"
+              whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+              transition={{ duration: 0.3 }}
+            >
+              Projects
+            </motion.span>
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ delay: 0.5 }}
+            className="text-muted-foreground text-lg"
+          >
             Explore our latest work. Click on any project to see the live demo in action.
-          </p>
+          </motion.p>
         </motion.div>
 
         {/* Portfolio Grid */}

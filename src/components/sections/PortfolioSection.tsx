@@ -1,51 +1,42 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { useRef } from "react";
+import { ExternalLink, Globe, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const projects = [
   {
     id: 1,
-    title: "E-commerce Platform",
-    category: "Web Development",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
+    title: "SaaS Dashboard",
+    category: "Web Application",
+    description: "Modern SaaS platform with intuitive dashboard and analytics features.",
+    demoUrl: "https://saas2413.netlify.app/",
   },
   {
     id: 2,
-    title: "SaaS Dashboard",
-    category: "UI/UX Design",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
+    title: "Masala Restaurant",
+    category: "Business Website",
+    description: "Elegant restaurant website with menu showcase and online presence.",
+    demoUrl: "https://masalapage.netlify.app/",
   },
   {
     id: 3,
-    title: "Mobile App Landing",
-    category: "Landing Page",
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop",
+    title: "Creative Portfolio",
+    category: "Portfolio Website",
+    description: "Stunning portfolio showcasing creative work with modern design.",
+    demoUrl: "https://khgejurgur.netlify.app/",
   },
   {
     id: 4,
-    title: "Brand Identity",
-    category: "Branding",
-    image: "https://images.unsplash.com/photo-1634942537034-2531766767d1?w=600&h=400&fit=crop",
-  },
-  {
-    id: 5,
-    title: "Corporate Website",
-    category: "Web Development",
-    image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&h=400&fit=crop",
-  },
-  {
-    id: 6,
-    title: "Product Launch",
-    category: "Landing Page",
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
+    title: "T-Shirt Store",
+    category: "E-commerce",
+    description: "Stylish e-commerce landing page for fashion and apparel brand.",
+    demoUrl: "https://tshirtpagela.netlify.app/",
   },
 ];
 
 const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
@@ -53,59 +44,48 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative rounded-2xl overflow-hidden cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group relative bg-card rounded-2xl p-8 border border-border/50 card-hover"
     >
-      {/* Image */}
-      <div className="aspect-[4/3] overflow-hidden">
-        <motion.img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover"
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.4 }}
-        />
-      </div>
-
-      {/* Overlay */}
-      <motion.div
-        className="absolute inset-0 gradient-bg flex flex-col items-center justify-center p-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 0.95 : 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="text-center"
-        >
-          <span className="text-primary-foreground/80 text-sm font-medium">
-            {project.category}
-          </span>
-          <h3 className="text-primary-foreground text-xl font-semibold mt-2 mb-4">
-            {project.title}
-          </h3>
-          <Button variant="secondary" size="sm" className="gap-2">
-            View Project <ExternalLink className="w-4 h-4" />
-          </Button>
-        </motion.div>
-      </motion.div>
-
-      {/* Bottom info bar - visible when not hovered */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/80 to-transparent p-4"
-        animate={{ opacity: isHovered ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <span className="text-primary-foreground/80 text-xs font-medium">
+      {/* Category badge */}
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 mb-6">
+        <Sparkles className="w-3.5 h-3.5 text-primary" />
+        <span className="text-xs font-medium text-secondary-foreground">
           {project.category}
         </span>
-        <h3 className="text-primary-foreground text-lg font-semibold">
-          {project.title}
-        </h3>
-      </motion.div>
+      </div>
+
+      {/* Title */}
+      <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:gradient-text transition-all duration-300">
+        {project.title}
+      </h3>
+
+      {/* Description */}
+      <p className="text-muted-foreground leading-relaxed mb-6">
+        {project.description}
+      </p>
+
+      {/* Demo button */}
+      <a
+        href={project.demoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block"
+      >
+        <Button variant="gradient" size="default" className="group/btn gap-2">
+          <Globe className="w-4 h-4" />
+          View Live Demo
+          <ExternalLink className="w-4 h-4 opacity-70 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+        </Button>
+      </a>
+
+      {/* Subtle hint text */}
+      <p className="text-xs text-muted-foreground/70 mt-3 flex items-center gap-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+        Opens in a new tab
+      </p>
+
+      {/* Decorative gradient corner */}
+      <div className="absolute top-0 right-0 w-24 h-24 gradient-bg opacity-5 rounded-bl-full rounded-tr-2xl group-hover:opacity-10 transition-opacity duration-300" />
     </motion.div>
   );
 };
@@ -132,12 +112,12 @@ const PortfolioSection = () => {
             Recent <span className="gradient-text">Projects</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Explore our latest work and see how we've helped businesses transform their digital presence.
+            Explore our latest work. Click on any project to see the live demo in action.
           </p>
         </motion.div>
 
         {/* Portfolio Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {projects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}

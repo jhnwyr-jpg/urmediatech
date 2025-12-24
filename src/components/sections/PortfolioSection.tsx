@@ -95,7 +95,7 @@ const PortfolioSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="portfolio" className="py-24 bg-muted/30 relative">
+    <section id="projects" className="py-24 bg-muted/30 relative">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -106,7 +106,7 @@ const PortfolioSection = () => {
           className="text-center max-w-2xl mx-auto mb-16"
         >
           <span className="text-sm font-medium text-primary uppercase tracking-wider">
-            Our Portfolio
+            Our Work
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6">
             Recent <span className="gradient-text">Projects</span>

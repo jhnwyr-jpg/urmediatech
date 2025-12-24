@@ -89,9 +89,11 @@ const FeaturesSection = () => {
             Our team of designers and developers work together to create 
             exceptional digital experiences that drive results.
           </p>
-          <Button variant="gradient" size="lg">
-            Try Now →
-          </Button>
+          <a href="#projects">
+            <Button variant="gradient" size="lg">
+              Try Now →
+            </Button>
+          </a>
         </motion.div>
       </div>
     </section>

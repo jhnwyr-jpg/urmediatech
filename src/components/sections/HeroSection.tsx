@@ -105,14 +105,18 @@ const HeroSection = () => {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button variant="gradient" size="lg" className="group px-8">
-              <Play className="w-4 h-4 mr-2" />
-              View Demo
-              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button variant="outline" size="lg">
-              Contact Us
-            </Button>
+            <a href="#projects">
+              <Button variant="gradient" size="lg" className="group px-8">
+                <Play className="w-4 h-4 mr-2" />
+                View Demo
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </a>
+            <a href="#contact">
+              <Button variant="outline" size="lg">
+                Contact Us
+              </Button>
+            </a>
           </motion.div>
 
           {/* Stats */}

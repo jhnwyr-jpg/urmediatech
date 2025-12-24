@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, ArrowUp } from "lucide-react";
+import logo from "@/assets/logo.ico";
 
 const footerLinks = {
   company: [
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
-    { name: "Portfolio", href: "#portfolio" },
+    { name: "Projects", href: "#projects" },
     { name: "Contact", href: "#contact" },
   ],
   services: [
@@ -37,14 +38,12 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">U</span>
-              </div>
+            <a href="#home" className="flex items-center gap-2 mb-4">
+              <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
               <span className="font-bold text-xl">
                 UR <span className="gradient-text">Media</span>
               </span>
-            </div>
+            </a>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
               Creating beautiful, high-performance websites that help businesses 
               grow and succeed in the digital world.

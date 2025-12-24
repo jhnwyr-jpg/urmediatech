@@ -14,13 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string | null
+          customer_email: string
+          customer_name: string
+          id: string
+          items: Json | null
+          notes: string | null
+          status: string
+          total_amount: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_email: string
+          customer_name: string
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          featured_image: string | null
+          id: string
+          status: string
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          is_admin: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      site_stats: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          new_signups: number | null
+          orders_count: number | null
+          page_views: number | null
+          revenue: number | null
+          unique_visitors: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          new_signups?: number | null
+          orders_count?: number | null
+          page_views?: number | null
+          revenue?: number | null
+          unique_visitors?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          new_signups?: number | null
+          orders_count?: number | null
+          page_views?: number | null
+          revenue?: number | null
+          unique_visitors?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

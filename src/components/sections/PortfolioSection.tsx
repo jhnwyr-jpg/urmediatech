@@ -23,11 +23,11 @@ const projects = [
   },
   {
     id: 3,
-    title: "Creative Portfolio",
-    category: "Portfolio Website",
-    description: "Stunning portfolio showcasing creative work with modern design.",
+    title: "Khejur Gur",
+    category: "Landing Page",
+    description: "Khejur Gur landing page with elegant design and smooth user experience.",
     demoUrl: "https://khgejurgur.netlify.app/",
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-amber-500 to-orange-500",
   },
   {
     id: 4,

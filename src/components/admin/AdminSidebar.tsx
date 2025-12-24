@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -12,8 +12,9 @@ import {
   Menu,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+
+const AUTH_KEY = 'admin_authenticated';
 
 interface AdminSidebarProps {
   collapsed: boolean;
@@ -31,7 +32,12 @@ const menuItems = [
 
 const AdminSidebar = ({ collapsed, setCollapsed }: AdminSidebarProps) => {
   const location = useLocation();
-  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem(AUTH_KEY);
+    navigate('/auth');
+  };
 
   return (
     <motion.aside
@@ -102,22 +108,20 @@ const AdminSidebar = ({ collapsed, setCollapsed }: AdminSidebarProps) => {
           collapsed && 'justify-center'
         )}>
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center shrink-0">
-            <span className="text-primary-foreground font-medium text-sm">
-              {user?.email?.[0]?.toUpperCase() || 'U'}
-            </span>
+            <span className="text-primary-foreground font-medium text-sm">P</span>
           </div>
           <motion.div
             initial={false}
             animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
             className="flex-1 min-w-0 overflow-hidden"
           >
-            <p className="text-sm font-medium text-foreground truncate">{user?.email}</p>
+            <p className="text-sm font-medium text-foreground truncate">pookie</p>
             <p className="text-xs text-muted-foreground">Administrator</p>
           </motion.div>
         </div>
         <Button
           variant="ghost"
-          onClick={signOut}
+          onClick={handleLogout}
           className={cn(
             'w-full mt-2 text-muted-foreground hover:text-destructive',
             collapsed ? 'justify-center' : 'justify-start'

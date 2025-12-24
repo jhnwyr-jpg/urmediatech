@@ -50,6 +50,11 @@
     --float-purple: 280 70% 70%;
     --float-blue: 220 80% 70%;
 
+    /* Gradient section backgrounds */
+    --gradient-section-light: 270 60% 85%;
+    --gradient-section-mid: 260 50% 70%;
+    --gradient-section-dark: 240 40% 35%;
+
     /* Sidebar defaults */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -127,12 +132,59 @@
     background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
   }
 
+  /* Highlighted word with gradient background */
+  .highlight-word {
+    @apply relative inline-block px-3 py-1 rounded-lg;
+    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    color: white;
+  }
+
   /* Subtle grid background */
   .grid-bg {
     background-image: 
       linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
     background-size: 60px 60px;
+  }
+
+  /* Perspective grid effect */
+  .perspective-grid {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .perspective-grid::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 400px;
+    background: 
+      linear-gradient(90deg, hsl(var(--primary) / 0.15) 1px, transparent 1px),
+      linear-gradient(0deg, hsl(var(--primary) / 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg);
+    transform-origin: bottom center;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+  }
+
+  /* Gradient section backgrounds */
+  .gradient-section-light {
+    background: linear-gradient(180deg, hsl(270 60% 92%) 0%, hsl(280 50% 88%) 100%);
+  }
+
+  .gradient-section-purple {
+    background: linear-gradient(180deg, hsl(260 50% 75%) 0%, hsl(255 60% 60%) 100%);
+  }
+
+  .gradient-section-dark {
+    background: linear-gradient(180deg, hsl(255 50% 50%) 0%, hsl(240 40% 30%) 100%);
+  }
+
+  .gradient-section-navy {
+    background: linear-gradient(180deg, hsl(240 40% 30%) 0%, hsl(230 35% 20%) 100%);
   }
 
   /* Floating dot animations */
@@ -158,6 +210,25 @@
   /* Glow effect */
   .glow {
     box-shadow: 0 0 60px 20px hsl(var(--primary) / 0.15);
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-md border border-border/50;
+  }
+
+  /* Sparkle container */
+  .sparkle-container {
+    @apply relative;
+  }
+
+  .sparkle-container::after {
+    content: '✨';
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    font-size: 16px;
+    animation: sparkle 2s ease-in-out infinite;
   }
 }
 
@@ -201,8 +272,32 @@
     }
   }
 
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.2) rotate(10deg);
+    }
+  }
+
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-30px) rotate(5deg);
+    }
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
   }
 
   .animate-pulse-soft {

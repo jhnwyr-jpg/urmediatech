@@ -36,6 +36,16 @@ import {
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { z } from 'zod';
+
+// Validation schema for order creation
+const orderSchema = z.object({
+  customer_name: z.string().trim().min(1, 'Customer name is required').max(100, 'Name must be less than 100 characters'),
+  customer_email: z.string().trim().email('Invalid email address').max(255, 'Email must be less than 255 characters'),
+  total_amount: z.number().min(0, 'Amount cannot be negative').max(1000000, 'Amount exceeds maximum allowed'),
+  status: z.enum(['pending', 'processing', 'completed', 'cancelled']),
+  notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional().or(z.literal('')),
+});
 
 interface Order {
   id: string;
@@ -88,13 +98,32 @@ const OrdersPage = () => {
   }, []);
 
   const handleCreateOrder = async () => {
+    // Validate input before submission
+    const parsedAmount = parseFloat(newOrder.total_amount);
+    const validationResult = orderSchema.safeParse({
+      customer_name: newOrder.customer_name,
+      customer_email: newOrder.customer_email,
+      total_amount: isNaN(parsedAmount) ? -1 : parsedAmount, // Force validation error for NaN
+      status: newOrder.status,
+      notes: newOrder.notes,
+    });
+
+    if (!validationResult.success) {
+      toast({
+        title: 'Validation error',
+        description: validationResult.error.errors[0].message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from('orders').insert({
-        customer_name: newOrder.customer_name,
-        customer_email: newOrder.customer_email,
-        total_amount: parseFloat(newOrder.total_amount) || 0,
-        status: newOrder.status,
-        notes: newOrder.notes,
+        customer_name: validationResult.data.customer_name,
+        customer_email: validationResult.data.customer_email,
+        total_amount: validationResult.data.total_amount,
+        status: validationResult.data.status,
+        notes: validationResult.data.notes || null,
       });
 
       if (error) throw error;

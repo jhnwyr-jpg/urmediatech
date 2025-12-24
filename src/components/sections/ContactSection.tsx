@@ -143,7 +143,7 @@ const ContactSection = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="John Doe"
+                  placeholder="Enter your name"
                   className={errors.name ? "border-destructive" : ""}
                 />
                 {errors.name && (
@@ -163,7 +163,7 @@ const ContactSection = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="john@example.com"
+                  placeholder="Enter your email"
                   className={errors.email ? "border-destructive" : ""}
                 />
                 {errors.email && (

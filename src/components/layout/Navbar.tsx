@@ -47,9 +47,11 @@ const Navbar = () => {
 
           {/* CTA Button - Desktop */}
           <div className="hidden md:block">
-            <Button variant="gradient" size="sm">
-              Get Started
-            </Button>
+            <a href="#contact">
+              <Button variant="gradient" size="sm">
+                Get Started
+              </Button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -83,9 +85,11 @@ const Navbar = () => {
                     {link.name}
                   </a>
                 ))}
-                <Button variant="gradient" size="sm" className="w-full mt-4">
-                  Get Started
-                </Button>
+                <a href="#contact" onClick={() => setIsOpen(false)}>
+                  <Button variant="gradient" size="sm" className="w-full mt-4">
+                    Get Started
+                  </Button>
+                </a>
               </div>
             </motion.div>
           )}

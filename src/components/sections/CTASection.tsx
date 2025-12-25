@@ -2,10 +2,12 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CTASection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
 
   return (
     <section ref={ref} className="py-24 bg-primary relative overflow-hidden">
@@ -32,11 +34,10 @@ const CTASection = () => {
           </motion.div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-6">
-            আপনার ডিজিটাল উপস্থিতি রূপান্তর করতে প্রস্তুত?
+            {t("cta.title")}
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8">
-            শত শত ব্যবসা তাদের ওয়েব ডিজাইনের জন্য ইউআর মিডিয়াকে বিশ্বাস করে। 
-            চলুন একসাথে অসাধারণ কিছু তৈরি করি।
+            {t("cta.subtitle")}
           </p>
 
           <motion.div
@@ -50,7 +51,7 @@ const CTASection = () => {
                 size="lg"
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 px-8 group"
               >
-                শুরু করুন
+                {t("cta.button")}
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>

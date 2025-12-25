@@ -2,13 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LanguageToggle from "@/components/ui/LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.ico";
-
-const navLinks = [
-  { name: "সেবাসমূহ", href: "#services" },
-  { name: "প্রজেক্ট", href: "#projects" },
-  { name: "আমাদের সম্পর্কে", href: "#about" },
-];
 
 const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
@@ -20,6 +16,13 @@ const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { name: t("nav.services"), href: "#services" },
+    { name: t("nav.projects"), href: "#projects" },
+    { name: t("nav.about"), href: "#about" },
+  ];
 
   return (
     <motion.header
@@ -80,9 +83,9 @@ const Navbar = () => {
             onClick={(e) => smoothScroll(e, "#home")}
             className="flex items-center gap-2 px-4 relative z-10"
           >
-            <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-8 h-8" />
+            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
-              ইউআর <span className="text-primary">মিডিয়া</span>
+              UR <span className="text-primary">Media</span>
             </span>
           </a>
 
@@ -90,7 +93,7 @@ const Navbar = () => {
           <div className="flex items-center gap-1 relative z-10">
             {navLinks.map((link) => (
               <a
-                key={link.name}
+                key={link.href}
                 href={link.href}
                 onClick={(e) => smoothScroll(e, link.href)}
                 className="px-4 py-2 text-muted-foreground hover:text-foreground transition-all duration-300 text-sm font-medium rounded-full hover:bg-white/10"
@@ -102,9 +105,10 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-2 relative z-10">
+            <LanguageToggle />
             <a href="#contact" onClick={(e) => smoothScroll(e, "#contact")}>
               <Button variant="gradient" size="sm" className="rounded-full px-5 shadow-lg shadow-primary/25">
-                যোগাযোগ করুন
+                {t("nav.contact")}
               </Button>
             </a>
             <a 
@@ -112,7 +116,7 @@ const Navbar = () => {
               onClick={(e) => smoothScroll(e, "#contact")}
               className="flex items-center gap-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
             >
-              সাইন ইন
+              {t("nav.signin")}
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -153,21 +157,24 @@ const Navbar = () => {
             onClick={(e) => smoothScroll(e, "#home")}
             className="flex items-center gap-2 relative z-10"
           >
-            <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-8 h-8" />
+            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
-              ইউআর <span className="text-primary">মিডিয়া</span>
+              UR <span className="text-primary">Media</span>
             </span>
           </a>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 text-foreground relative z-[60] touch-manipulation rounded-full hover:bg-white/10 transition-colors"
-            aria-label="Toggle menu"
-            type="button"
-          >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="flex items-center gap-2 relative z-10">
+            <LanguageToggle />
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-foreground relative z-[60] touch-manipulation rounded-full hover:bg-white/10 transition-colors"
+              aria-label="Toggle menu"
+              type="button"
+            >
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </motion.div>
 
         {/* Mobile Navigation Dropdown - Liquid Glass */}
@@ -192,7 +199,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-center gap-6 pb-4">
                   {navLinks.map((link) => (
                     <a
-                      key={link.name}
+                      key={link.href}
                       href={link.href}
                       onClick={(e) => {
                         smoothScroll(e, link.href);
@@ -215,7 +222,7 @@ const Navbar = () => {
                     }}
                   >
                     <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25 py-3">
-                      যোগাযোগ করুন
+                      {t("nav.contact")}
                     </Button>
                   </a>
                   <a 
@@ -226,7 +233,7 @@ const Navbar = () => {
                     }}
                     className="flex items-center justify-center gap-1 w-full py-3 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
                   >
-                    সাইন ইন
+                    {t("nav.signin")}
                     <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>

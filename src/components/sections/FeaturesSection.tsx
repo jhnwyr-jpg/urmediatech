@@ -3,37 +3,39 @@ import { useRef } from "react";
 import { Palette, Code, Zap, Layers, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card3D, ScrollReveal, MagneticButton } from "@/components/ui/AnimatedComponents";
-
-const services = [
-  {
-    icon: Palette,
-    title: "UI/UX ডিজাইন",
-    description: "সুন্দর, স্বজ্ঞাত ইন্টারফেস যা ব্যবহারকারীদের মুগ্ধ করে এবং এনগেজমেন্ট বাড়ায়।",
-    color: "from-pink-500 to-rose-500",
-  },
-  {
-    icon: Code,
-    title: "ওয়েব ডেভেলপমেন্ট",
-    description: "সর্বাধুনিক প্রযুক্তি দিয়ে তৈরি পরিষ্কার, পারফরম্যান্স কোড।",
-    color: "from-cyan-500 to-blue-500",
-  },
-  {
-    icon: Zap,
-    title: "ল্যান্ডিং পেজ",
-    description: "সর্বোচ্চ প্রভাবের জন্য অপ্টিমাইজড হাই-কনভার্টিং ল্যান্ডিং পেজ।",
-    color: "from-yellow-500 to-orange-500",
-  },
-  {
-    icon: Layers,
-    title: "ব্র্যান্ড আইডেন্টিটি",
-    description: "সমন্বিত ভিজ্যুয়াল আইডেন্টিটি যা আপনার ব্র্যান্ডকে স্মরণীয় করে।",
-    color: "from-purple-500 to-violet-500",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FeaturesSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
+
+  const services = [
+    {
+      icon: Palette,
+      title: t("features.uiux"),
+      description: t("features.uiuxDesc"),
+      color: "from-pink-500 to-rose-500",
+    },
+    {
+      icon: Code,
+      title: t("features.webdev"),
+      description: t("features.webdevDesc"),
+      color: "from-cyan-500 to-blue-500",
+    },
+    {
+      icon: Zap,
+      title: t("features.landing"),
+      description: t("features.landingDesc"),
+      color: "from-yellow-500 to-orange-500",
+    },
+    {
+      icon: Layers,
+      title: t("features.brand"),
+      description: t("features.brandDesc"),
+      color: "from-purple-500 to-violet-500",
+    },
+  ];
 
   return (
     <section id="services" className="py-24 relative overflow-hidden">
@@ -63,7 +65,7 @@ const FeaturesSection = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="inline-block text-sm font-medium text-primary uppercase tracking-wider"
           >
-            আমাদের সেবাসমূহ
+            {t("features.label")}
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -71,12 +73,12 @@ const FeaturesSection = () => {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6"
           >
-            আলাদা হতে আপনার যা{" "}
+            {t("features.title")}{" "}
             <motion.span 
               className="gradient-text inline-block"
               whileHover={{ scale: 1.05 }}
             >
-              প্রয়োজন
+              {t("features.titleHighlight")}
             </motion.span>
           </motion.h2>
           <motion.p 
@@ -85,7 +87,7 @@ const FeaturesSection = () => {
             transition={{ delay: 0.5 }}
             className="text-muted-foreground text-lg"
           >
-            আপনার স্বপ্নকে বাস্তবে রূপ দিতে আমরা ব্যাপক ডিজাইন ও ডেভেলপমেন্ট সেবা প্রদান করি।
+            {t("features.subtitle")}
           </motion.p>
         </motion.div>
 
@@ -144,7 +146,7 @@ const FeaturesSection = () => {
                 className="text-2xl md:text-3xl font-bold"
                 whileHover={{ scale: 1.02 }}
               >
-                বিশেষজ্ঞদের দ্বারা তৈরি
+                {t("features.expertTitle")}
               </motion.h3>
               <motion.div
                 animate={{ rotate: [0, 15, -15, 0] }}
@@ -154,8 +156,7 @@ const FeaturesSection = () => {
               </motion.div>
             </div>
             <p className="text-muted-foreground mb-8 relative z-10">
-              আমাদের ডিজাইনার ও ডেভেলপার টিম একসাথে কাজ করে অসাধারণ 
-              ডিজিটাল অভিজ্ঞতা তৈরি করে যা ফলাফল নিয়ে আসে।
+              {t("features.expertDesc")}
             </p>
             <MagneticButton className="inline-block">
               <a href="#projects">
@@ -167,7 +168,7 @@ const FeaturesSection = () => {
                       whileHover={{ x: "100%" }}
                       transition={{ duration: 0.5 }}
                     />
-                    এখনই ট্রাই করুন →
+                    {t("features.tryNow")}
                   </Button>
                 </motion.div>
               </a>

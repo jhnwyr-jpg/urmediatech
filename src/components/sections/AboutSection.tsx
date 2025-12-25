@@ -1,13 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Award, Users, Clock, Smile } from "lucide-react";
-
-const stats = [
-  { icon: Award, value: 150, suffix: "+", label: "প্রজেক্ট সম্পন্ন" },
-  { icon: Users, value: 120, suffix: "+", label: "সন্তুষ্ট ক্লায়েন্ট" },
-  { icon: Clock, value: 5, suffix: " বছর", label: "অভিজ্ঞতা" },
-  { icon: Smile, value: 98, suffix: "%", label: "ক্লায়েন্ট সন্তুষ্টি" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AnimatedCounter = ({ value, suffix }: { value: number; suffix: string }) => {
   const [count, setCount] = useState(0);
@@ -45,6 +39,21 @@ const AnimatedCounter = ({ value, suffix }: { value: number; suffix: string }) =
 const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
+
+  const stats = [
+    { icon: Award, value: 150, suffix: "+", label: t("about.stat1") },
+    { icon: Users, value: 120, suffix: "+", label: t("about.stat2") },
+    { icon: Clock, value: 5, suffix: t("about.stat3Suffix"), label: t("about.stat3") },
+    { icon: Smile, value: 98, suffix: "%", label: t("about.stat4") },
+  ];
+
+  const features = [
+    t("about.feature1"),
+    t("about.feature2"),
+    t("about.feature3"),
+    t("about.feature4"),
+  ];
 
   return (
     <section id="about" className="py-24 relative overflow-hidden">
@@ -61,25 +70,21 @@ const AboutSection = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sm font-medium text-primary uppercase tracking-wider">
-              আমাদের সম্পর্কে
+              {t("about.label")}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6">
-              কেন বেছে নেবেন <span className="gradient-text">ইউআর মিডিয়া</span>?
+              {t("about.title")} <span className="gradient-text">{t("about.titleHighlight")}</span>?
             </h2>
             <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-              আমরা ডিজাইনার এবং ডেভেলপারদের একটি আবেগী দল যারা অসাধারণ 
-              ডিজিটাল অভিজ্ঞতা তৈরি করতে নিবেদিত। আমাদের ফোকাস হল সুন্দর, 
-              কার্যকর ওয়েবসাইট প্রদান করা যা ব্যবসা বৃদ্ধিতে সহায়তা করে।
+              {t("about.desc1")}
             </p>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              বছরের অভিজ্ঞতা এবং উৎকর্ষতার প্রতি প্রতিশ্রুতি নিয়ে, আমরা 
-              ধারণাগুলিকে অসাধারণ ডিজিটাল বাস্তবতায় রূপান্তর করি। প্রতিটি প্রজেক্ট 
-              বিস্তারিত মনোযোগ এবং ফলাফলের উপর ফোকাস দিয়ে তৈরি করা হয়।
+              {t("about.desc2")}
             </p>
 
             {/* Features list */}
             <div className="mt-8 space-y-4">
-              {["পিক্সেল-পারফেক্ট ডিজাইন", "পরিষ্কার, রক্ষণাবেক্ষণযোগ্য কোড", "SEO অপ্টিমাইজড", "মোবাইল রেসপন্সিভ"].map((feature, index) => (
+              {features.map((feature, index) => (
                 <motion.div
                   key={feature}
                   initial={{ opacity: 0, x: -20 }}

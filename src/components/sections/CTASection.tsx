@@ -32,11 +32,11 @@ const CTASection = () => {
           </motion.div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-6">
-            Ready to transform your digital presence?
+            আপনার ডিজিটাল উপস্থিতি রূপান্তর করতে প্রস্তুত?
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8">
-            Join hundreds of businesses that trust UR Media for their web design needs. 
-            Let's create something amazing together.
+            শত শত ব্যবসা তাদের ওয়েব ডিজাইনের জন্য ইউআর মিডিয়াকে বিশ্বাস করে। 
+            চলুন একসাথে অসাধারণ কিছু তৈরি করি।
           </p>
 
           <motion.div
@@ -50,7 +50,7 @@ const CTASection = () => {
                 size="lg"
                 className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 px-8 group"
               >
-                Get Started
+                শুরু করুন
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>

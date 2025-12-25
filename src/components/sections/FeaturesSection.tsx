@@ -7,26 +7,26 @@ import { Card3D, ScrollReveal, MagneticButton } from "@/components/ui/AnimatedCo
 const services = [
   {
     icon: Palette,
-    title: "UI/UX Design",
-    description: "Beautiful, intuitive interfaces that delight users and drive engagement.",
+    title: "UI/UX ডিজাইন",
+    description: "সুন্দর, স্বজ্ঞাত ইন্টারফেস যা ব্যবহারকারীদের মুগ্ধ করে এবং এনগেজমেন্ট বাড়ায়।",
     color: "from-pink-500 to-rose-500",
   },
   {
     icon: Code,
-    title: "Web Development",
-    description: "Clean, performant code built with the latest technologies.",
+    title: "ওয়েব ডেভেলপমেন্ট",
+    description: "সর্বাধুনিক প্রযুক্তি দিয়ে তৈরি পরিষ্কার, পারফরম্যান্স কোড।",
     color: "from-cyan-500 to-blue-500",
   },
   {
     icon: Zap,
-    title: "Landing Pages",
-    description: "High-converting landing pages optimized for maximum impact.",
+    title: "ল্যান্ডিং পেজ",
+    description: "সর্বোচ্চ প্রভাবের জন্য অপ্টিমাইজড হাই-কনভার্টিং ল্যান্ডিং পেজ।",
     color: "from-yellow-500 to-orange-500",
   },
   {
     icon: Layers,
-    title: "Brand Identity",
-    description: "Cohesive visual identities that make your brand memorable.",
+    title: "ব্র্যান্ড আইডেন্টিটি",
+    description: "সমন্বিত ভিজ্যুয়াল আইডেন্টিটি যা আপনার ব্র্যান্ডকে স্মরণীয় করে।",
     color: "from-purple-500 to-violet-500",
   },
 ];
@@ -63,7 +63,7 @@ const FeaturesSection = () => {
             transition={{ delay: 0.2, type: "spring" }}
             className="inline-block text-sm font-medium text-primary uppercase tracking-wider"
           >
-            Our Services
+            আমাদের সেবাসমূহ
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -71,12 +71,12 @@ const FeaturesSection = () => {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6"
           >
-            Everything You Need to{" "}
+            আলাদা হতে আপনার যা{" "}
             <motion.span 
               className="gradient-text inline-block"
               whileHover={{ scale: 1.05 }}
             >
-              Stand Out
+              প্রয়োজন
             </motion.span>
           </motion.h2>
           <motion.p 
@@ -85,7 +85,7 @@ const FeaturesSection = () => {
             transition={{ delay: 0.5 }}
             className="text-muted-foreground text-lg"
           >
-            We offer comprehensive design and development services to bring your vision to life.
+            আপনার স্বপ্নকে বাস্তবে রূপ দিতে আমরা ব্যাপক ডিজাইন ও ডেভেলপমেন্ট সেবা প্রদান করি।
           </motion.p>
         </motion.div>
 
@@ -144,7 +144,7 @@ const FeaturesSection = () => {
                 className="text-2xl md:text-3xl font-bold"
                 whileHover={{ scale: 1.02 }}
               >
-                Developed by experts
+                বিশেষজ্ঞদের দ্বারা তৈরি
               </motion.h3>
               <motion.div
                 animate={{ rotate: [0, 15, -15, 0] }}
@@ -154,8 +154,8 @@ const FeaturesSection = () => {
               </motion.div>
             </div>
             <p className="text-muted-foreground mb-8 relative z-10">
-              Our team of designers and developers work together to create 
-              exceptional digital experiences that drive results.
+              আমাদের ডিজাইনার ও ডেভেলপার টিম একসাথে কাজ করে অসাধারণ 
+              ডিজিটাল অভিজ্ঞতা তৈরি করে যা ফলাফল নিয়ে আসে।
             </p>
             <MagneticButton className="inline-block">
               <a href="#projects">
@@ -167,7 +167,7 @@ const FeaturesSection = () => {
                       whileHover={{ x: "100%" }}
                       transition={{ duration: 0.5 }}
                     />
-                    Try Now →
+                    এখনই ট্রাই করুন →
                   </Button>
                 </motion.div>
               </a>

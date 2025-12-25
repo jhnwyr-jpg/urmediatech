@@ -4,15 +4,15 @@ import logo from "@/assets/logo.ico";
 
 const footerLinks = {
   company: [
-    { name: "About", href: "#about" },
-    { name: "Services", href: "#services" },
-    { name: "Projects", href: "#projects" },
-    { name: "Contact", href: "#contact" },
+    { name: "আমাদের সম্পর্কে", href: "#about" },
+    { name: "সেবাসমূহ", href: "#services" },
+    { name: "প্রজেক্ট", href: "#projects" },
+    { name: "যোগাযোগ", href: "#contact" },
   ],
   services: [
-    { name: "Web Design", href: "#services" },
-    { name: "Development", href: "#services" },
-    { name: "Branding", href: "#services" },
+    { name: "ওয়েব ডিজাইন", href: "#services" },
+    { name: "ডেভেলপমেন্ট", href: "#services" },
+    { name: "ব্র্যান্ডিং", href: "#services" },
     { name: "SEO", href: "#services" },
   ],
 };
@@ -39,14 +39,14 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <a href="#home" className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
+              <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-10 h-10 invert" />
               <span className="font-bold text-xl">
-                UR <span className="gradient-text">Media</span>
+                ইউআর <span className="gradient-text">মিডিয়া</span>
               </span>
             </a>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
-              Creating beautiful, high-performance websites that help businesses 
-              grow and succeed in the digital world.
+              সুন্দর, উচ্চ-কর্মক্ষম ওয়েবসাইট তৈরি করি যা ব্যবসাকে 
+              ডিজিটাল বিশ্বে বাড়তে এবং সফল হতে সাহায্য করে।
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-4">
@@ -67,7 +67,7 @@ const Footer = () => {
 
           {/* Company Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Company</h4>
+            <h4 className="font-semibold text-lg mb-4">কোম্পানি</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -84,7 +84,7 @@ const Footer = () => {
 
           {/* Services Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Services</h4>
+            <h4 className="font-semibold text-lg mb-4">সেবাসমূহ</h4>
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
@@ -103,7 +103,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-primary-foreground/50 text-sm">
-            © 2024 UR Media. All rights reserved.
+            © ২০২৪ ইউআর মিডিয়া। সর্বস্বত্ব সংরক্ষিত।
           </p>
           
           {/* Back to top */}
@@ -113,7 +113,7 @@ const Footer = () => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
           >
-            <span className="text-sm">Back to top</span>
+            <span className="text-sm">উপরে যান</span>
             <div className="w-8 h-8 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
               <ArrowUp className="w-4 h-4" />
             </div>

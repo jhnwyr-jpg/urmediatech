@@ -3,10 +3,10 @@ import { useRef, useEffect, useState } from "react";
 import { Award, Users, Clock, Smile } from "lucide-react";
 
 const stats = [
-  { icon: Award, value: 150, suffix: "+", label: "Projects Completed" },
-  { icon: Users, value: 120, suffix: "+", label: "Happy Clients" },
-  { icon: Clock, value: 5, suffix: " Years", label: "Experience" },
-  { icon: Smile, value: 98, suffix: "%", label: "Client Satisfaction" },
+  { icon: Award, value: 150, suffix: "+", label: "প্রজেক্ট সম্পন্ন" },
+  { icon: Users, value: 120, suffix: "+", label: "সন্তুষ্ট ক্লায়েন্ট" },
+  { icon: Clock, value: 5, suffix: " বছর", label: "অভিজ্ঞতা" },
+  { icon: Smile, value: 98, suffix: "%", label: "ক্লায়েন্ট সন্তুষ্টি" },
 ];
 
 const AnimatedCounter = ({ value, suffix }: { value: number; suffix: string }) => {
@@ -61,25 +61,25 @@ const AboutSection = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sm font-medium text-primary uppercase tracking-wider">
-              About Us
+              আমাদের সম্পর্কে
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6">
-              Why Choose <span className="gradient-text">UR Media</span>?
+              কেন বেছে নেবেন <span className="gradient-text">ইউআর মিডিয়া</span>?
             </h2>
             <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-              We're a passionate team of designers and developers dedicated to creating 
-              exceptional digital experiences. Our focus is on delivering beautiful, 
-              functional websites that help businesses grow.
+              আমরা ডিজাইনার এবং ডেভেলপারদের একটি আবেগী দল যারা অসাধারণ 
+              ডিজিটাল অভিজ্ঞতা তৈরি করতে নিবেদিত। আমাদের ফোকাস হল সুন্দর, 
+              কার্যকর ওয়েবসাইট প্রদান করা যা ব্যবসা বৃদ্ধিতে সহায়তা করে।
             </p>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              With years of experience and a commitment to excellence, we transform 
-              ideas into stunning digital realities. Every project is crafted with 
-              attention to detail and a focus on results.
+              বছরের অভিজ্ঞতা এবং উৎকর্ষতার প্রতি প্রতিশ্রুতি নিয়ে, আমরা 
+              ধারণাগুলিকে অসাধারণ ডিজিটাল বাস্তবতায় রূপান্তর করি। প্রতিটি প্রজেক্ট 
+              বিস্তারিত মনোযোগ এবং ফলাফলের উপর ফোকাস দিয়ে তৈরি করা হয়।
             </p>
 
             {/* Features list */}
             <div className="mt-8 space-y-4">
-              {["Pixel-perfect designs", "Clean, maintainable code", "SEO optimized", "Mobile responsive"].map((feature, index) => (
+              {["পিক্সেল-পারফেক্ট ডিজাইন", "পরিষ্কার, রক্ষণাবেক্ষণযোগ্য কোড", "SEO অপ্টিমাইজড", "মোবাইল রেসপন্সিভ"].map((feature, index) => (
                 <motion.div
                   key={feature}
                   initial={{ opacity: 0, x: -20 }}

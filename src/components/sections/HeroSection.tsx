@@ -162,7 +162,7 @@ const HeroSection = () => {
               <Sparkles className="w-4 h-4 text-primary" />
             </motion.div>
             <span className="text-sm font-medium text-secondary-foreground tracking-wide relative z-10">
-              Premium Design Agency
+              প্রিমিয়াম ডিজাইন এজেন্সি
             </span>
             {/* Floating particles inside badge */}
             {[...Array(3)].map((_, i) => (
@@ -207,9 +207,9 @@ const HeroSection = () => {
                 animate={{ opacity: [0.2, 0.4, 0.2] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                Premium Website Design
+                প্রিমিয়াম ওয়েবসাইট ডিজাইন
               </motion.span>
-              Premium Website Design
+              প্রিমিয়াম ওয়েবসাইট ডিজাইন
             </motion.span>
             <br />
             <span className="relative inline-flex items-center">
@@ -220,7 +220,7 @@ const HeroSection = () => {
                 className="inline-block"
                 whileHover={{ scale: 1.05 }}
               >
-                made
+                হয়ে গেল
               </motion.span>
               {" "}
               <span className="relative mx-2">
@@ -255,7 +255,7 @@ const HeroSection = () => {
                   }}
                   className="relative z-10 bg-gradient-to-r from-cyan-500 via-violet-500 to-purple-600 bg-clip-text text-transparent cursor-pointer inline-block"
                 >
-                  simple
+                  সহজ
                   {/* Underline animation on hover */}
                   <motion.span
                     className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-violet-500 to-purple-600 rounded-full origin-left"
@@ -303,7 +303,7 @@ const HeroSection = () => {
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 relative"
           >
             <AnimatedText delay={0.6}>
-              Transform your digital presence with stunning conversion-focused landing pages that captivate your audience and drive results.
+              অসাধারণ কনভার্শন-কেন্দ্রিক ল্যান্ডিং পেজের মাধ্যমে আপনার ডিজিটাল উপস্থিতি রূপান্তর করুন যা আপনার দর্শকদের মুগ্ধ করে এবং ফলাফল নিয়ে আসে।
             </AnimatedText>
           </motion.p>
 
@@ -341,7 +341,7 @@ const HeroSection = () => {
                     >
                       <Play className="w-4 h-4" />
                     </motion.span>
-                    View Demo
+                    ডেমো দেখুন
                     <motion.span
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -361,7 +361,7 @@ const HeroSection = () => {
                       animate={{ x: ["-100%", "100%"] }}
                       transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
                     />
-                    Contact Us
+                    যোগাযোগ করুন
                     <motion.span
                       className="ml-2"
                       animate={{ scale: [1, 1.2, 1] }}
@@ -383,9 +383,9 @@ const HeroSection = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { number: "150+", label: "Projects", icon: BarChart3 },
-              { number: "98%", label: "Satisfaction", icon: TrendingUp },
-              { number: "5★", label: "Rating", icon: Star },
+              { number: "১৫০+", label: "প্রজেক্ট", icon: BarChart3 },
+              { number: "৯৮%", label: "সন্তুষ্টি", icon: TrendingUp },
+              { number: "৫★", label: "রেটিং", icon: Star },
             ].map((stat, index) => (
               <motion.div 
                 key={index} 
@@ -568,7 +568,7 @@ const HeroSection = () => {
                   transition={{ delay: 1.2 }}
                   className="text-sm font-semibold text-foreground"
                 >
-                  Dashboard Overview
+                  ড্যাশবোর্ড ওভারভিউ
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0 }}
@@ -576,7 +576,7 @@ const HeroSection = () => {
                   transition={{ delay: 1.3 }}
                   className="text-xs text-muted-foreground"
                 >
-                  Welcome back, Admin
+                  স্বাগতম, অ্যাডমিন
                 </motion.div>
               </div>
               <div className="flex gap-2">
@@ -584,13 +584,13 @@ const HeroSection = () => {
                   whileHover={{ scale: 1.05 }}
                   className="h-8 px-3 bg-muted/50 rounded-lg flex items-center gap-2 cursor-pointer text-xs text-muted-foreground"
                 >
-                  <span>Last 7 days</span>
+                  <span>গত ৭ দিন</span>
                 </motion.div>
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
                   className="h-8 px-4 gradient-bg rounded-lg flex items-center cursor-pointer text-xs text-white font-medium"
                 >
-                  Export
+                  এক্সপোর্ট
                 </motion.div>
               </div>
             </div>
@@ -598,9 +598,9 @@ const HeroSection = () => {
             {/* Stats cards */}
             <div className="grid grid-cols-3 gap-4 mt-4">
               {[
-                { icon: DollarSign, label: "Revenue", value: "$24,500", change: "+12.5%", color: "text-green-500" },
-                { icon: Users, label: "Visitors", value: "12,840", change: "+8.2%", color: "text-blue-500" },
-                { icon: TrendingUp, label: "Conversion", value: "3.24%", change: "+2.1%", color: "text-purple-500" },
+                { icon: DollarSign, label: "আয়", value: "৳২৪,৫০০", change: "+১২.৫%", color: "text-green-500" },
+                { icon: Users, label: "ভিজিটর", value: "১২,৮৪০", change: "+৮.২%", color: "text-blue-500" },
+                { icon: TrendingUp, label: "কনভার্শন", value: "৩.২৪%", change: "+২.১%", color: "text-purple-500" },
               ].map((stat, i) => (
                 <motion.div 
                   key={i} 
@@ -642,7 +642,7 @@ const HeroSection = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-medium text-foreground">Analytics</span>
+                    <span className="text-xs font-medium text-foreground">অ্যানালিটিক্স</span>
                   </div>
                   <Zap className="w-3 h-3 text-yellow-500" />
                 </div>
@@ -667,8 +667,8 @@ const HeroSection = () => {
                 transition={{ delay: 1.8 }}
                 className="w-48 bg-background/30 backdrop-blur-sm rounded-xl p-4 border border-border/30"
               >
-                <div className="text-xs font-medium text-foreground mb-3">Recent Activity</div>
-                {["New signup", "Payment received", "Order completed", "Review posted"].map((item, i) => (
+                <div className="text-xs font-medium text-foreground mb-3">সাম্প্রতিক কার্যক্রম</div>
+                {["নতুন সাইনআপ", "পেমেন্ট প্রাপ্ত", "অর্ডার সম্পন্ন", "রিভিউ পোস্ট"].map((item, i) => (
                   <motion.div 
                     key={i}
                     initial={{ opacity: 0, x: 10 }}

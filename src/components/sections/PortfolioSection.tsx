@@ -7,33 +7,33 @@ import { Card3D, ScrollReveal } from "@/components/ui/AnimatedComponents";
 const projects = [
   {
     id: 1,
-    title: "SaaS Dashboard",
-    category: "Web Application",
-    description: "Modern SaaS platform with intuitive dashboard and analytics features.",
+    title: "SaaS ড্যাশবোর্ড",
+    category: "ওয়েব অ্যাপ্লিকেশন",
+    description: "স্বজ্ঞাত ড্যাশবোর্ড এবং অ্যানালিটিক্স ফিচার সহ আধুনিক SaaS প্ল্যাটফর্ম।",
     demoUrl: "https://saas2413.netlify.app/",
     gradient: "from-blue-500 to-cyan-500",
   },
   {
     id: 2,
-    title: "Masala Restaurant",
-    category: "Business Website",
-    description: "Elegant restaurant website with menu showcase and online presence.",
+    title: "মসলা রেস্টুরেন্ট",
+    category: "ব্যবসায়িক ওয়েবসাইট",
+    description: "মেনু শোকেস এবং অনলাইন উপস্থিতি সহ মার্জিত রেস্টুরেন্ট ওয়েবসাইট।",
     demoUrl: "https://masalapage.netlify.app/",
     gradient: "from-orange-500 to-red-500",
   },
   {
     id: 3,
-    title: "Khejur Gur",
-    category: "Landing Page",
-    description: "Khejur Gur landing page with elegant design and smooth user experience.",
+    title: "খেজুর গুড়",
+    category: "ল্যান্ডিং পেজ",
+    description: "মার্জিত ডিজাইন এবং মসৃণ ব্যবহারকারী অভিজ্ঞতা সহ খেজুর গুড় ল্যান্ডিং পেজ।",
     demoUrl: "https://khgejurgur.netlify.app/",
     gradient: "from-amber-500 to-orange-500",
   },
   {
     id: 4,
-    title: "T-Shirt Store",
-    category: "E-commerce",
-    description: "Stylish e-commerce landing page for fashion and apparel brand.",
+    title: "টি-শার্ট স্টোর",
+    category: "ই-কমার্স",
+    description: "ফ্যাশন এবং পোশাক ব্র্যান্ডের জন্য স্টাইলিশ ই-কমার্স ল্যান্ডিং পেজ।",
     demoUrl: "https://tshirtpagela.netlify.app/",
     gradient: "from-green-500 to-teal-500",
   },
@@ -102,7 +102,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
                   transition={{ duration: 0.5 }}
                 />
                 <Globe className="w-4 h-4" />
-                View Live Demo
+                লাইভ ডেমো দেখুন
                 <motion.div
                   animate={{ x: [0, 3, 0], y: [0, -3, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
@@ -119,13 +119,13 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
             animate={{ opacity: 1 }}
             className="text-xs text-muted-foreground/70 mt-3 flex items-center gap-1 relative z-10"
           >
-            <motion.span 
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-green-500" 
-            />
-            Opens in a new tab
-          </motion.p>
+              <motion.span 
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-1.5 h-1.5 rounded-full bg-green-500" 
+              />
+              নতুন ট্যাবে খুলবে
+            </motion.p>
 
           {/* Decorative gradient corner */}
           <motion.div 
@@ -172,7 +172,7 @@ const PortfolioSection = () => {
             transition={{ delay: 0.2 }}
             className="text-sm font-medium text-primary uppercase tracking-wider"
           >
-            Our Work
+            আমাদের কাজ
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -180,13 +180,13 @@ const PortfolioSection = () => {
             transition={{ delay: 0.3, type: "spring" }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6"
           >
-            Recent{" "}
+            সাম্প্রতিক{" "}
             <motion.span 
               className="gradient-text inline-block"
               whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
               transition={{ duration: 0.3 }}
             >
-              Projects
+              প্রজেক্ট
             </motion.span>
           </motion.h2>
           <motion.p 
@@ -195,7 +195,7 @@ const PortfolioSection = () => {
             transition={{ delay: 0.5 }}
             className="text-muted-foreground text-lg"
           >
-            Explore our latest work. Click on any project to see the live demo in action.
+            আমাদের সাম্প্রতিক কাজ দেখুন। লাইভ ডেমো দেখতে যেকোনো প্রজেক্টে ক্লিক করুন।
           </motion.p>
         </motion.div>
 

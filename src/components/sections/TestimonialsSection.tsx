@@ -4,24 +4,24 @@ import { Star, Quote, Sparkles } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
-    role: "Marketing Director",
-    content: "UR Media transformed our online presence. The designs are stunning and conversions have increased significantly.",
-    avatar: "S",
+    name: "সারাহ জনসন",
+    role: "মার্কেটিং ডিরেক্টর",
+    content: "ইউআর মিডিয়া আমাদের অনলাইন উপস্থিতি রূপান্তরিত করেছে। ডিজাইনগুলো অসাধারণ এবং কনভার্শন উল্লেখযোগ্যভাবে বেড়েছে।",
+    avatar: "স",
     color: "from-violet-500 to-purple-600",
   },
   {
-    name: "Michael Chen",
-    role: "Startup Founder",
-    content: "Working with UR Media was a game-changer. Professional, fast, and the results speak for themselves.",
-    avatar: "M",
+    name: "মাইকেল চেন",
+    role: "স্টার্টআপ ফাউন্ডার",
+    content: "ইউআর মিডিয়ার সাথে কাজ করা ছিল গেম-চেঞ্জার। প্রফেশনাল, দ্রুত, এবং ফলাফল নিজেই বলে দেয়।",
+    avatar: "ম",
     color: "from-cyan-500 to-blue-600",
   },
   {
-    name: "Emily Roberts",
-    role: "E-commerce Owner",
-    content: "Best investment we made for our brand. The attention to detail and creativity exceeded our expectations.",
-    avatar: "E",
+    name: "এমিলি রবার্টস",
+    role: "ই-কমার্স মালিক",
+    content: "আমাদের ব্র্যান্ডের জন্য সেরা বিনিয়োগ। বিস্তারিত মনোযোগ এবং সৃজনশীলতা আমাদের প্রত্যাশা ছাড়িয়ে গেছে।",
+    avatar: "এ",
     color: "from-amber-500 to-orange-600",
   },
 ];
@@ -142,7 +142,7 @@ const TestimonialsSection = () => {
           >
             <Sparkles className="w-4 h-4 text-violet-400" />
             <span className="text-white/70 text-sm uppercase tracking-widest">
-              Trusted by businesses worldwide
+              বিশ্বব্যাপী ব্যবসার দ্বারা বিশ্বস্ত
             </span>
           </motion.div>
           
@@ -170,8 +170,8 @@ const TestimonialsSection = () => {
             transition={{ delay: 0.8 }}
             className="text-white/60 text-lg"
           >
-            <span className="text-white font-semibold">4.9</span> out of 5 stars from{" "}
-            <span className="text-white font-semibold">200+</span> reviews
+            <span className="text-white font-semibold">৪.৯</span> এর মধ্যে ৫ স্টার{" "}
+            <span className="text-white font-semibold">২০০+</span> রিভিউ থেকে
           </motion.p>
         </motion.div>
 
@@ -200,16 +200,16 @@ const TestimonialsSection = () => {
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
             transition={{ delay: 1.1, type: "spring" }}
           >
-            Join{" "}
+            যোগ দিন{" "}
             <motion.span
               className="bg-gradient-to-r from-violet-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent"
               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
               transition={{ duration: 5, repeat: Infinity }}
               style={{ backgroundSize: "200% 200%" }}
             >
-              120+
+              ১২০+
             </motion.span>{" "}
-            happy clients
+            সন্তুষ্ট ক্লায়েন্টদের সাথে
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -217,13 +217,13 @@ const TestimonialsSection = () => {
             transition={{ delay: 1.3 }}
             className="text-white/50 text-xl"
           >
-            plus{" "}
+            এবং{" "}
             <motion.span 
               className="text-white font-semibold"
               whileHover={{ scale: 1.1 }}
               style={{ display: "inline-block" }}
             >
-              you.
+              আপনি।
             </motion.span>
           </motion.p>
         </motion.div>

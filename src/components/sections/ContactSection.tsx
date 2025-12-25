@@ -56,17 +56,18 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(
+      const params = new URLSearchParams({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim(),
+      });
+
+      await fetch(
         "https://script.google.com/macros/s/AKfycbx3P-o84AKNPQrWl2YCHxs2EdjibYCl72MO3v-W17qazKeVif84Hn2YnGPgvnTvpSQ/exec",
         {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            message: formData.message.trim(),
-          }),
+          body: params,
         }
       );
 

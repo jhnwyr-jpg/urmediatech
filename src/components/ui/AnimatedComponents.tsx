@@ -1,6 +1,20 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, ReactNode } from "react";
+import { useRef, ReactNode, useEffect, useState } from "react";
+
+// Hook to check if we're on mobile
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+};
 
 interface AnimatedTextProps {
   children: string;
@@ -11,7 +25,9 @@ interface AnimatedTextProps {
 
 export const AnimatedText = ({ children, className = "", delay = 0, type = "words" }: AnimatedTextProps) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isMobile = useIsMobile();
+  // On mobile, trigger animation immediately; on desktop, use scroll-based
+  const isInView = useInView(ref, { once: true, margin: isMobile ? "100px" : "-50px" });
 
   if (type === "zoom") {
     return (
@@ -72,7 +88,9 @@ interface ScrollRevealProps {
 
 export const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }: ScrollRevealProps) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isMobile = useIsMobile();
+  // On mobile, use larger margin to trigger animations earlier/immediately
+  const isInView = useInView(ref, { once: true, margin: isMobile ? "50px" : "-100px" });
 
   const directions = {
     up: { y: 60, x: 0 },

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
@@ -18,6 +19,7 @@ const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { toast } = useToast();
+  const { t } = useLanguage();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -73,14 +75,14 @@ const ContactSection = () => {
       setFormData({ name: "", email: "", message: "" });
       
       toast({
-        title: "মেসেজ পাঠানো হয়েছে!",
-        description: "আমরা যত দ্রুত সম্ভব আপনার সাথে যোগাযোগ করব।",
+        title: t("contact.successTitle"),
+        description: t("contact.successDesc"),
       });
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
-        title: "ত্রুটি",
-        description: "মেসেজ পাঠাতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+        title: t("contact.errorTitle"),
+        description: t("contact.errorDesc"),
         variant: "destructive",
       });
     } finally {
@@ -105,15 +107,15 @@ const ContactSection = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sm font-medium text-primary uppercase tracking-wider">
-              যোগাযোগ করুন
+              {t("contact.label")}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mt-4 mb-6">
-              চলুন কিছু{" "}
-              <span className="gradient-text">অসাধারণ</span> তৈরি করি
+              {t("contact.title")}{" "}
+              <span className="gradient-text">{t("contact.titleHighlight")}</span>{" "}
+              {t("contact.titleEnd")}
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              আপনার ডিজিটাল উপস্থিতি রূপান্তর করতে প্রস্তুত? আমরা আপনার 
-              প্রজেক্ট সম্পর্কে শুনতে চাই। আমাদের মেসেজ করুন এবং একসাথে তৈরি করা শুরু করি।
+              {t("contact.subtitle")}
             </p>
 
             {/* Contact info */}
@@ -125,7 +127,7 @@ const ContactSection = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">ইমেইল করুন</p>
+                  <p className="text-sm text-muted-foreground">{t("contact.emailLabel")}</p>
                   <p className="font-medium text-foreground">hello@urmedia.com</p>
                 </div>
               </div>
@@ -138,8 +140,8 @@ const ContactSection = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">অবস্থান</p>
-                  <p className="font-medium text-foreground">ঢাকা, বাংলাদেশ</p>
+                  <p className="text-sm text-muted-foreground">{t("contact.locationLabel")}</p>
+                  <p className="font-medium text-foreground">{t("contact.location")}</p>
                 </div>
               </div>
             </div>
@@ -155,14 +157,14 @@ const ContactSection = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                  আপনার নাম
+                  {t("contact.nameLabel")}
                 </label>
                 <Input
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="আপনার নাম লিখুন"
+                  placeholder={t("contact.namePlaceholder")}
                   className={errors.name ? "border-destructive" : ""}
                 />
                 {errors.name && (
@@ -174,7 +176,7 @@ const ContactSection = () => {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                  ইমেইল ঠিকানা
+                  {t("contact.emailFieldLabel")}
                 </label>
                 <Input
                   id="email"
@@ -182,7 +184,7 @@ const ContactSection = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="আপনার ইমেইল লিখুন"
+                  placeholder={t("contact.emailPlaceholder")}
                   className={errors.email ? "border-destructive" : ""}
                 />
                 {errors.email && (
@@ -194,14 +196,14 @@ const ContactSection = () => {
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                  আপনার মেসেজ
+                  {t("contact.messageLabel")}
                 </label>
                 <Textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="আপনার প্রজেক্ট সম্পর্কে বলুন..."
+                  placeholder={t("contact.messagePlaceholder")}
                   rows={5}
                   className={errors.message ? "border-destructive" : ""}
                 />
@@ -226,17 +228,17 @@ const ContactSection = () => {
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
                     />
-                    পাঠানো হচ্ছে...
+                    {t("contact.sending")}
                   </>
                 ) : isSuccess ? (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    মেসেজ পাঠানো হয়েছে!
+                    {t("contact.sent")}
                   </>
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    মেসেজ পাঠান
+                    {t("contact.send")}
                   </>
                 )}
               </Button>

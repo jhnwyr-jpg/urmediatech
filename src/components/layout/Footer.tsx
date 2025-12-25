@@ -11,12 +11,13 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Re-compute links when language changes
   const footerLinks = {
     company: [
       { name: t("footer.about"), href: "#about" },

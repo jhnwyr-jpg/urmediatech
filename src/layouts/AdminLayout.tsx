@@ -2,23 +2,20 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-
-const AUTH_KEY = 'admin_authenticated';
+import { useAuth } from '@/hooks/useAuth';
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const navigate = useNavigate();
+  const { user, isAdmin, loading } = useAuth();
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem(AUTH_KEY) === 'true';
-    setIsAuthenticated(authStatus);
-    if (!authStatus) {
+    if (!loading && (!user || !isAdmin)) {
       navigate('/auth');
     }
-  }, [navigate]);
+  }, [user, isAdmin, loading, navigate]);
 
-  if (isAuthenticated === null) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <motion.div
@@ -30,7 +27,7 @@ const AdminLayout = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user || !isAdmin) {
     return null;
   }
 

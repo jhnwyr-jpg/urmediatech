@@ -21,13 +21,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAdminStatus = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    setIsAdmin(data?.is_admin ?? false);
+    try {
+      // Check if user has admin role using the secure user_roles table
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error checking admin status:', error.message);
+        setIsAdmin(false);
+        return;
+      }
+      
+      setIsAdmin(!!data);
+    } catch (err) {
+      console.error('Error checking admin status');
+      setIsAdmin(false);
+    }
   };
 
   useEffect(() => {

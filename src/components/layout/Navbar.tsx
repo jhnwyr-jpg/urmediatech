@@ -178,7 +178,7 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="md:hidden mt-2 overflow-hidden rounded-2xl relative"
+              className="md:hidden mt-3 overflow-hidden rounded-3xl relative"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.12) 100%)",
                 backdropFilter: "blur(24px) saturate(180%)",
@@ -187,21 +187,26 @@ const Navbar = () => {
                 boxShadow: "0 16px 48px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
               }}
             >
-              <div className="p-4 space-y-1 relative z-10">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      smoothScroll(e, link.href);
-                      setIsOpen(false);
-                    }}
-                    className="block px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all duration-300 text-sm font-medium rounded-xl"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-                <div className="pt-3 space-y-2 border-t border-white/10 mt-3">
+              <div className="px-6 py-6 space-y-2 relative z-10">
+                {/* Navigation Links Row */}
+                <div className="flex items-center justify-center gap-6 pb-4">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={(e) => {
+                        smoothScroll(e, link.href);
+                        setIsOpen(false);
+                      }}
+                      className="text-muted-foreground hover:text-foreground transition-all duration-300 text-sm font-medium"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </div>
+                
+                {/* CTA Section */}
+                <div className="pt-4 space-y-3 border-t border-white/10">
                   <a 
                     href="#contact" 
                     onClick={(e) => {
@@ -209,7 +214,7 @@ const Navbar = () => {
                       setIsOpen(false);
                     }}
                   >
-                    <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25">
+                    <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25 py-3">
                       Contact Us
                     </Button>
                   </a>
@@ -219,7 +224,7 @@ const Navbar = () => {
                       smoothScroll(e, "#contact");
                       setIsOpen(false);
                     }}
-                    className="flex items-center justify-center gap-1 w-full py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
+                    className="flex items-center justify-center gap-1 w-full py-3 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
                   >
                     Sign In
                     <ArrowRight className="w-4 h-4" />

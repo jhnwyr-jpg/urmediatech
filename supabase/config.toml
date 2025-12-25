@@ -1,1 +1,4 @@
 project_id = "levwbwmbyjlqsgrxdsqw"
+
+[functions.contact-to-sheets]
+verify_jwt = false

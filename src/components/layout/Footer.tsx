@@ -1,21 +1,7 @@
 import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, ArrowUp } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.ico";
-
-const footerLinks = {
-  company: [
-    { name: "আমাদের সম্পর্কে", href: "#about" },
-    { name: "সেবাসমূহ", href: "#services" },
-    { name: "প্রজেক্ট", href: "#projects" },
-    { name: "যোগাযোগ", href: "#contact" },
-  ],
-  services: [
-    { name: "ওয়েব ডিজাইন", href: "#services" },
-    { name: "ডেভেলপমেন্ট", href: "#services" },
-    { name: "ব্র্যান্ডিং", href: "#services" },
-    { name: "SEO", href: "#services" },
-  ],
-};
 
 const socialLinks = [
   { icon: Facebook, href: "#", label: "Facebook" },
@@ -25,8 +11,25 @@ const socialLinks = [
 ];
 
 const Footer = () => {
+  const { t } = useLanguage();
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const footerLinks = {
+    company: [
+      { name: t("footer.about"), href: "#about" },
+      { name: t("nav.services"), href: "#services" },
+      { name: t("footer.projects"), href: "#projects" },
+      { name: t("nav.contact"), href: "#contact" },
+    ],
+    services: [
+      { name: t("footer.webDesign"), href: "#services" },
+      { name: t("footer.development"), href: "#services" },
+      { name: t("footer.branding"), href: "#services" },
+      { name: "SEO", href: "#services" },
+    ],
   };
 
   return (
@@ -39,14 +42,13 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <a href="#home" className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-10 h-10 invert" />
+              <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
               <span className="font-bold text-xl">
-                ইউআর <span className="gradient-text">মিডিয়া</span>
+                UR <span className="gradient-text">Media</span>
               </span>
             </a>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
-              সুন্দর, উচ্চ-কর্মক্ষম ওয়েবসাইট তৈরি করি যা ব্যবসাকে 
-              ডিজিটাল বিশ্বে বাড়তে এবং সফল হতে সাহায্য করে।
+              {t("footer.desc")}
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-4">
@@ -67,7 +69,7 @@ const Footer = () => {
 
           {/* Company Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">কোম্পানি</h4>
+            <h4 className="font-semibold text-lg mb-4">{t("footer.company")}</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -84,7 +86,7 @@ const Footer = () => {
 
           {/* Services Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">সেবাসমূহ</h4>
+            <h4 className="font-semibold text-lg mb-4">{t("footer.services")}</h4>
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
@@ -103,7 +105,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-primary-foreground/50 text-sm">
-            © ২০২৪ ইউআর মিডিয়া। সর্বস্বত্ব সংরক্ষিত।
+            {t("footer.copyright")}
           </p>
           
           {/* Back to top */}
@@ -113,7 +115,7 @@ const Footer = () => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
           >
-            <span className="text-sm">উপরে যান</span>
+            <span className="text-sm">{t("footer.backToTop")}</span>
             <div className="w-8 h-8 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
               <ArrowUp className="w-4 h-4" />
             </div>

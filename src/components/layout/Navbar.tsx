@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.ico";
 
 const navLinks = [
-  { name: "Features", href: "#services" },
-  { name: "Projects", href: "#projects" },
-  { name: "Integrations", href: "#about" },
+  { name: "সেবাসমূহ", href: "#services" },
+  { name: "প্রজেক্ট", href: "#projects" },
+  { name: "আমাদের সম্পর্কে", href: "#about" },
 ];
 
 const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -80,9 +80,9 @@ const Navbar = () => {
             onClick={(e) => smoothScroll(e, "#home")}
             className="flex items-center gap-2 px-4 relative z-10"
           >
-            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
+            <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
-              UR <span className="text-primary">Media</span>
+              ইউআর <span className="text-primary">মিডিয়া</span>
             </span>
           </a>
 
@@ -104,7 +104,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 relative z-10">
             <a href="#contact" onClick={(e) => smoothScroll(e, "#contact")}>
               <Button variant="gradient" size="sm" className="rounded-full px-5 shadow-lg shadow-primary/25">
-                Contact Us
+                যোগাযোগ করুন
               </Button>
             </a>
             <a 
@@ -112,7 +112,7 @@ const Navbar = () => {
               onClick={(e) => smoothScroll(e, "#contact")}
               className="flex items-center gap-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
             >
-              Sign In
+              সাইন ইন
               <ArrowRight className="w-4 h-4" />
             </a>
           </div>
@@ -153,9 +153,9 @@ const Navbar = () => {
             onClick={(e) => smoothScroll(e, "#home")}
             className="flex items-center gap-2 relative z-10"
           >
-            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
+            <img src={logo} alt="ইউআর মিডিয়া লোগো" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
-              UR <span className="text-primary">Media</span>
+              ইউআর <span className="text-primary">মিডিয়া</span>
             </span>
           </a>
 
@@ -215,7 +215,7 @@ const Navbar = () => {
                     }}
                   >
                     <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25 py-3">
-                      Contact Us
+                      যোগাযোগ করুন
                     </Button>
                   </a>
                   <a 
@@ -226,7 +226,7 @@ const Navbar = () => {
                     }}
                     className="flex items-center justify-center gap-1 w-full py-3 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
                   >
-                    Sign In
+                    সাইন ইন
                     <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>

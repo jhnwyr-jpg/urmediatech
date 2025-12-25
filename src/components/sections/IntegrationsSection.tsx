@@ -110,7 +110,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.2 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"
           >
-            Connect your
+            আপনার সাথে সংযুক্ত করুন
           </motion.h2>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -118,7 +118,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.3 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-2"
           >
-            marketing & sales
+            মার্কেটিং ও সেলস
           </motion.h2>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -126,7 +126,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.4 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8"
           >
-            stack
+            টুলস
           </motion.h2>
           
           <motion.p 
@@ -135,8 +135,8 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.5 }}
             className="text-muted-foreground text-lg mb-16"
           >
-            Seamlessly integrate with the tools you already use to streamline 
-            your workflow and maximize efficiency.
+            আপনার ওয়ার্কফ্লো সুবিন্যস্ত করতে এবং দক্ষতা সর্বাধিক করতে 
+            আপনি ইতিমধ্যে যে টুলগুলি ব্যবহার করেন সেগুলির সাথে নির্বিঘ্নে ইন্টিগ্রেট করুন।
           </motion.p>
 
           {/* Integration icons grid */}

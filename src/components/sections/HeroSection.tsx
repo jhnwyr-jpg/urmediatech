@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import FloatingElements from "@/components/ui/FloatingElements";
 import { MagneticButton, AnimatedText } from "@/components/ui/AnimatedComponents";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const { t } = useLanguage();
 
   // Mouse parallax effect
   useEffect(() => {
@@ -162,7 +164,7 @@ const HeroSection = () => {
               <Sparkles className="w-4 h-4 text-primary" />
             </motion.div>
             <span className="text-sm font-medium text-secondary-foreground tracking-wide relative z-10">
-              প্রিমিয়াম ডিজাইন এজেন্সি
+              {t("hero.badge")}
             </span>
             {/* Floating particles inside badge */}
             {[...Array(3)].map((_, i) => (
@@ -207,9 +209,9 @@ const HeroSection = () => {
                 animate={{ opacity: [0.2, 0.4, 0.2] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                প্রিমিয়াম ওয়েবসাইট ডিজাইন
+                {t("hero.title1")}
               </motion.span>
-              প্রিমিয়াম ওয়েবসাইট ডিজাইন
+              {t("hero.title1")}
             </motion.span>
             <br />
             <span className="relative inline-flex items-center">
@@ -220,7 +222,7 @@ const HeroSection = () => {
                 className="inline-block"
                 whileHover={{ scale: 1.05 }}
               >
-                হয়ে গেল
+                {t("hero.title2")}
               </motion.span>
               {" "}
               <span className="relative mx-2">
@@ -255,7 +257,7 @@ const HeroSection = () => {
                   }}
                   className="relative z-10 bg-gradient-to-r from-cyan-500 via-violet-500 to-purple-600 bg-clip-text text-transparent cursor-pointer inline-block"
                 >
-                  সহজ
+                  {t("hero.title3")}
                   {/* Underline animation on hover */}
                   <motion.span
                     className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-violet-500 to-purple-600 rounded-full origin-left"
@@ -303,7 +305,7 @@ const HeroSection = () => {
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 relative"
           >
             <AnimatedText delay={0.6}>
-              অসাধারণ কনভার্শন-কেন্দ্রিক ল্যান্ডিং পেজের মাধ্যমে আপনার ডিজিটাল উপস্থিতি রূপান্তর করুন যা আপনার দর্শকদের মুগ্ধ করে এবং ফলাফল নিয়ে আসে।
+              {t("hero.subtitle")}
             </AnimatedText>
           </motion.p>
 
@@ -341,7 +343,7 @@ const HeroSection = () => {
                     >
                       <Play className="w-4 h-4" />
                     </motion.span>
-                    ডেমো দেখুন
+                    {t("hero.demo")}
                     <motion.span
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -361,7 +363,7 @@ const HeroSection = () => {
                       animate={{ x: ["-100%", "100%"] }}
                       transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
                     />
-                    যোগাযোগ করুন
+                    {t("hero.contact")}
                     <motion.span
                       className="ml-2"
                       animate={{ scale: [1, 1.2, 1] }}
@@ -383,9 +385,9 @@ const HeroSection = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
           >
             {[
-              { number: "১৫০+", label: "প্রজেক্ট", icon: BarChart3 },
-              { number: "৯৮%", label: "সন্তুষ্টি", icon: TrendingUp },
-              { number: "৫★", label: "রেটিং", icon: Star },
+              { number: "১৫০+", numberEn: "150+", labelKey: "hero.projects", icon: BarChart3 },
+              { number: "৯৮%", numberEn: "98%", labelKey: "hero.satisfaction", icon: TrendingUp },
+              { number: "৫★", numberEn: "5★", labelKey: "hero.rating", icon: Star },
             ].map((stat, index) => (
               <motion.div 
                 key={index} 
@@ -399,326 +401,318 @@ const HeroSection = () => {
                   transition={{ duration: 0.3 }}
                 />
                 <motion.div 
-                  className="text-2xl md:text-3xl font-bold gradient-text relative"
+                  className="relative"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9 + index * 0.1, type: "spring" }}
+                  transition={{ delay: 0.9 + index * 0.15, type: "spring" }}
                 >
-                  <motion.span
-                    animate={{ 
-                      textShadow: [
-                        "0 0 0px rgba(139, 92, 246, 0)",
-                        "0 0 20px rgba(139, 92, 246, 0.3)",
-                        "0 0 0px rgba(139, 92, 246, 0)",
-                      ]
-                    }}
+                  {/* Floating icon */}
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                    className="mx-auto mb-2"
                   >
-                    {stat.number}
-                  </motion.span>
-                </motion.div>
-                <motion.div 
-                  className="text-sm text-muted-foreground mt-1 flex items-center justify-center gap-1"
-                  whileHover={{ color: "hsl(var(--primary))" }}
-                >
-                  <stat.icon className="w-3 h-3 opacity-50" />
-                  {stat.label}
+                    <stat.icon className="w-5 h-5 text-primary/60 mx-auto" />
+                  </motion.div>
+                  <motion.p 
+                    className="text-2xl md:text-3xl font-bold gradient-text"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
+                  >
+                    {stat.numberEn}
+                  </motion.p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t(stat.labelKey)}
+                  </p>
                 </motion.div>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </div>
-
-      {/* Dashboard preview mockup with 3D effect */}
+      
+      {/* Premium Dashboard Preview */}
       <motion.div
-        initial={{ opacity: 0, y: 100, rotateX: 45 }}
-        animate={{ opacity: 1, y: 0, rotateX: 0 }}
-        transition={{ duration: 1, delay: 0.7, type: "spring", stiffness: 50 }}
-        whileHover={{ y: -10, rotateX: 5 }}
-        className="relative z-10 w-full max-w-4xl mx-auto mt-12 px-6"
-        style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
+        initial={{ opacity: 0, y: 100, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, delay: 1, type: "spring", stiffness: 50 }}
+        className="w-full max-w-5xl mx-auto mt-20 px-6 relative z-10"
       >
-        {/* Floating particles around browser */}
-        {[...Array(8)].map((_, i) => (
+        {/* Dashboard container with enhanced effects */}
+        <motion.div
+          whileHover={{ y: -5, scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 200 }}
+          className="relative"
+          style={{
+            transform: `perspective(1000px) rotateX(${mousePosition.y * 0.1}deg) rotateY(${mousePosition.x * 0.1}deg)`,
+          }}
+        >
+          {/* Glow effect behind dashboard */}
           <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              background: `linear-gradient(135deg, ${['#8b5cf6', '#06b6d4', '#ec4899', '#f59e0b'][i % 4]}, ${['#6366f1', '#0ea5e9', '#f43f5e', '#eab308'][i % 4]})`,
-              left: `${10 + (i * 12)}%`,
-              top: i % 2 === 0 ? '-20px' : 'auto',
-              bottom: i % 2 === 1 ? '-20px' : 'auto',
+            animate={{ 
+              opacity: [0.3, 0.5, 0.3],
+              scale: [0.98, 1.02, 0.98],
             }}
-            animate={{
-              y: i % 2 === 0 ? [0, -15, 0] : [0, 15, 0],
-              x: [0, (i % 3 - 1) * 10, 0],
-              scale: [1, 1.2, 1],
-              opacity: [0.6, 1, 0.6],
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.3,
-              ease: "easeInOut",
-            }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="absolute -inset-4 bg-gradient-to-r from-violet-600/30 via-purple-600/30 to-cyan-600/30 rounded-3xl blur-2xl"
           />
-        ))}
-
-        {/* Floating icons around browser */}
-        <motion.div
-          className="absolute -left-8 top-1/4 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg"
-          animate={{ 
-            y: [0, -20, 0], 
-            rotate: [0, 10, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <DollarSign className="w-5 h-5 text-white" />
-        </motion.div>
-
-        <motion.div
-          className="absolute -right-8 top-1/3 w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg"
-          animate={{ 
-            y: [0, 15, 0], 
-            rotate: [0, -10, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        >
-          <TrendingUp className="w-5 h-5 text-white" />
-        </motion.div>
-
-        <motion.div
-          className="absolute -left-6 bottom-1/4 w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg"
-          animate={{ 
-            y: [0, 12, 0], 
-            x: [0, -5, 0],
-            rotate: [0, -8, 0],
-          }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        >
-          <Users className="w-4 h-4 text-white" />
-        </motion.div>
-
-        <motion.div
-          className="absolute -right-6 bottom-1/3 w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg"
-          animate={{ 
-            y: [0, -12, 0], 
-            x: [0, 5, 0],
-            rotate: [0, 8, 0],
-          }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-        >
-          <Zap className="w-4 h-4 text-white" />
-        </motion.div>
-
-        {/* Orbiting ring effect */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl border border-primary/20 pointer-events-none"
-          animate={{ 
-            scale: [1, 1.05, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        <div className="relative bg-card rounded-2xl shadow-2xl border border-border/50 overflow-hidden">
-          {/* Browser chrome */}
-          <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border/50">
-            <div className="flex gap-1.5">
-              <motion.div 
-                whileHover={{ scale: 1.3 }}
-                className="w-3 h-3 rounded-full bg-destructive/60 cursor-pointer" 
-              />
-              <motion.div 
-                whileHover={{ scale: 1.3 }}
-                className="w-3 h-3 rounded-full bg-yellow-500/60 cursor-pointer" 
-              />
-              <motion.div 
-                whileHover={{ scale: 1.3 }}
-                className="w-3 h-3 rounded-full bg-green-500/60 cursor-pointer" 
-              />
-            </div>
-            <div className="flex-1 flex justify-center">
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="bg-background rounded-md px-4 py-1 text-xs text-muted-foreground"
-              >
-                urmedia.tech
-              </motion.div>
-            </div>
-          </div>
           
-          {/* Dashboard content with real-looking UI */}
-          <div className="p-6 space-y-4 relative">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-            />
-            
-            {/* Header row */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
+          {/* Main dashboard card */}
+          <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200/50 overflow-hidden">
+            {/* Browser-like header */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-slate-50/80 border-b border-slate-200/50">
+              <div className="flex gap-1.5">
                 <motion.div 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.2 }}
-                  className="text-sm font-semibold text-foreground"
-                >
-                  ড্যাশবোর্ড ওভারভিউ
-                </motion.div>
+                  whileHover={{ scale: 1.3 }}
+                  className="w-3 h-3 rounded-full bg-red-400"
+                />
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.3 }}
-                  className="text-xs text-muted-foreground"
-                >
-                  স্বাগতম, অ্যাডমিন
-                </motion.div>
+                  whileHover={{ scale: 1.3 }}
+                  className="w-3 h-3 rounded-full bg-yellow-400"
+                />
+                <motion.div 
+                  whileHover={{ scale: 1.3 }}
+                  className="w-3 h-3 rounded-full bg-green-400"
+                />
               </div>
-              <div className="flex gap-2">
+              <div className="flex-1 flex justify-center">
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
-                  className="h-8 px-3 bg-muted/50 rounded-lg flex items-center gap-2 cursor-pointer text-xs text-muted-foreground"
+                  className="px-4 py-1 bg-white rounded-md text-xs text-slate-400 border border-slate-200/50"
                 >
-                  <span>গত ৭ দিন</span>
-                </motion.div>
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  className="h-8 px-4 gradient-bg rounded-lg flex items-center cursor-pointer text-xs text-white font-medium"
-                >
-                  এক্সপোর্ট
+                  dashboard.urmedia.com
                 </motion.div>
               </div>
-            </div>
-            
-            {/* Stats cards */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {[
-                { icon: DollarSign, label: "আয়", value: "৳২৪,৫০০", change: "+১২.৫%", color: "text-green-500" },
-                { icon: Users, label: "ভিজিটর", value: "১২,৮৪০", change: "+৮.২%", color: "text-blue-500" },
-                { icon: TrendingUp, label: "কনভার্শন", value: "৩.২৪%", change: "+২.১%", color: "text-purple-500" },
-              ].map((stat, i) => (
-                <motion.div 
-                  key={i} 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4 + i * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="bg-background/50 backdrop-blur-sm rounded-xl p-4 border border-border/30 cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <stat.icon className={`w-4 h-4 ${stat.color}`} />
-                    <motion.div 
-                      className="flex items-center gap-0.5 text-xs text-green-500"
-                      animate={{ y: [0, -2, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                    >
-                      <ArrowUpRight className="w-3 h-3" />
-                      {stat.change}
-                    </motion.div>
-                  </div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                  <div className="text-lg font-bold text-foreground group-hover:gradient-text transition-all">
-                    {stat.value}
-                  </div>
-                </motion.div>
-              ))}
             </div>
 
-            {/* Bottom row - Chart and Activity */}
-            <div className="flex gap-4 mt-4">
-              {/* Mini chart area */}
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.7 }}
-                whileHover={{ scale: 1.02 }}
-                className="flex-1 bg-background/30 backdrop-blur-sm rounded-xl p-4 border border-border/30 cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-medium text-foreground">অ্যানালিটিক্স</span>
-                  </div>
-                  <Zap className="w-3 h-3 text-yellow-500" />
+            {/* Dashboard content */}
+            <div className="p-6 md:p-8">
+              {/* Top bar */}
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <motion.h3 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.3 }}
+                    className="text-xl font-semibold text-slate-800"
+                  >
+                    {t("hero.dashboard")}
+                  </motion.h3>
+                  <motion.p 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.4 }}
+                    className="text-sm text-slate-500"
+                  >
+                    {t("hero.welcome")}
+                  </motion.p>
                 </div>
-                {/* Animated bar chart */}
-                <div className="flex items-end gap-1.5 h-16">
-                  {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
+                <div className="flex items-center gap-3">
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1.5 bg-slate-100 rounded-lg text-xs text-slate-600 cursor-pointer hover:bg-slate-200 transition-colors"
+                  >
+                    {t("hero.last7days")}
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1.5 bg-violet-600 rounded-lg text-xs text-white cursor-pointer hover:bg-violet-700 transition-colors"
+                  >
+                    {t("hero.export")}
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Stats grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {[
+                  { labelKey: "hero.revenue", value: "৳২৫,৪৫০", valueEn: "$25,450", change: "+12%", icon: DollarSign, color: "from-violet-500 to-purple-600" },
+                  { labelKey: "hero.visitors", value: "১২,৮৪৫", valueEn: "12,845", change: "+8%", icon: Users, color: "from-cyan-500 to-blue-600" },
+                  { labelKey: "hero.conversion", value: "৩.২%", valueEn: "3.2%", change: "+5%", icon: TrendingUp, color: "from-green-500 to-emerald-600" },
+                  { labelKey: "hero.analytics", value: "৯৮.৫%", valueEn: "98.5%", change: "+2%", icon: BarChart3, color: "from-amber-500 to-orange-600" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5 + i * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="relative p-4 bg-white rounded-xl border border-slate-100 shadow-sm cursor-pointer group overflow-hidden"
+                  >
+                    {/* Hover gradient */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 0.1 }}
+                      className={`absolute inset-0 bg-gradient-to-br ${stat.color}`}
+                    />
+                    
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <motion.div 
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                        className={`p-2 rounded-lg bg-gradient-to-br ${stat.color}`}
+                      >
+                        <stat.icon className="w-4 h-4 text-white" />
+                      </motion.div>
+                      <motion.span 
+                        className="text-xs text-green-600 font-medium flex items-center gap-0.5"
+                        animate={{ y: [0, -2, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <ArrowUpRight className="w-3 h-3" />
+                        {stat.change}
+                      </motion.span>
+                    </div>
+                    <motion.p 
+                      className="text-2xl font-bold text-slate-800 relative z-10"
+                      animate={{ scale: [1, 1.02, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}
+                    >
+                      {stat.valueEn}
+                    </motion.p>
+                    <p className="text-sm text-slate-500 relative z-10">{t(stat.labelKey)}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Chart area */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.9 }}
+                className="relative h-48 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100 p-4 overflow-hidden"
+              >
+                {/* Animated chart bars */}
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3 h-32">
+                  {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 80].map((height, i) => (
                     <motion.div
                       key={i}
                       initial={{ height: 0 }}
                       animate={{ height: `${height}%` }}
-                      transition={{ delay: 1.8 + i * 0.1, duration: 0.5, type: "spring" }}
-                      className="flex-1 gradient-bg rounded-t-sm opacity-80"
-                    />
+                      transition={{ delay: 2 + i * 0.1, duration: 0.8, type: "spring" }}
+                      whileHover={{ scale: 1.1, y: -5 }}
+                      className="flex-1 bg-gradient-to-t from-violet-600 to-purple-400 rounded-t-md cursor-pointer relative group"
+                    >
+                      {/* Tooltip on hover */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        whileHover={{ opacity: 1, y: 0 }}
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded whitespace-nowrap"
+                      >
+                        {height}%
+                      </motion.div>
+                    </motion.div>
                   ))}
                 </div>
+                
+                {/* Animated gradient line */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 150" preserveAspectRatio="none">
+                  <motion.path
+                    d="M0,120 Q50,100 100,80 T200,60 T300,40 T400,30"
+                    fill="none"
+                    stroke="url(#gradient)"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ delay: 2.5, duration: 1.5 }}
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#8b5cf6" />
+                      <stop offset="100%" stopColor="#06b6d4" />
+                    </linearGradient>
+                  </defs>
+                </svg>
               </motion.div>
-              
-              {/* Activity list */}
+
+              {/* Activity feed */}
               <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.8 }}
-                className="w-48 bg-background/30 backdrop-blur-sm rounded-xl p-4 border border-border/30"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.2 }}
+                className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"
               >
-                <div className="text-xs font-medium text-foreground mb-3">সাম্প্রতিক কার্যক্রম</div>
-                {["নতুন সাইনআপ", "পেমেন্ট প্রাপ্ত", "অর্ডার সম্পন্ন", "রিভিউ পোস্ট"].map((item, i) => (
-                  <motion.div 
-                    key={i}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.9 + i * 0.1 }}
-                    className="flex items-center gap-2 py-1.5"
-                  >
-                    <motion.div 
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                      className="w-1.5 h-1.5 rounded-full bg-primary"
-                    />
-                    <span className="text-xs text-muted-foreground truncate">{item}</span>
-                  </motion.div>
-                ))}
+                <div className="p-4 bg-slate-50/80 rounded-xl">
+                  <h4 className="text-sm font-medium text-slate-600 mb-3">{t("hero.recentActivity")}</h4>
+                  <div className="space-y-2">
+                    {[
+                      { textKey: "hero.activity1", time: "2m ago", color: "bg-green-500" },
+                      { textKey: "hero.activity2", time: "5m ago", color: "bg-violet-500" },
+                      { textKey: "hero.activity3", time: "12m ago", color: "bg-cyan-500" },
+                      { textKey: "hero.activity4", time: "25m ago", color: "bg-amber-500" },
+                    ].map((activity, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 2.4 + i * 0.1 }}
+                        whileHover={{ x: 5 }}
+                        className="flex items-center gap-3 text-sm cursor-pointer"
+                      >
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                          className={`w-2 h-2 rounded-full ${activity.color}`} 
+                        />
+                        <span className="text-slate-600">{t(activity.textKey)}</span>
+                        <span className="text-slate-400 text-xs ml-auto">{activity.time}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Quick actions */}
+                <div className="p-4 bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-slate-600">Quick Actions</h4>
+                    <motion.div
+                      animate={{ rotate: [0, 180, 360] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    >
+                      <Zap className="w-4 h-4 text-violet-500" />
+                    </motion.div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["Create", "Import", "Export", "Share"].map((action, i) => (
+                      <motion.div
+                        key={action}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 2.6 + i * 0.1 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-3 py-2 bg-white rounded-lg text-sm text-slate-600 text-center cursor-pointer hover:bg-violet-100 hover:text-violet-700 transition-colors border border-slate-100"
+                      >
+                        {action}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
-        </div>
-        
-        {/* Animated glow effect */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute inset-0 -z-10 gradient-bg blur-3xl" 
-        />
-      </motion.div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2"
-        >
-          <motion.div 
-            animate={{ y: [0, 8, 0], opacity: [1, 0.5, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-1.5 h-1.5 rounded-full bg-primary" 
-          />
+          
+          {/* Floating elements around dashboard */}
+          <motion.div
+            animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl shadow-lg flex items-center justify-center"
+          >
+            <TrendingUp className="w-8 h-8 text-white" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, delay: 1 }}
+            className="absolute -bottom-4 -left-4 w-14 h-14 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl shadow-lg flex items-center justify-center"
+          >
+            <Sparkles className="w-7 h-7 text-white" />
+          </motion.div>
         </motion.div>
       </motion.div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </section>
   );
 };

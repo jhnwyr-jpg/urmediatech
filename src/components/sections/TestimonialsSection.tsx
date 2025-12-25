@@ -1,104 +1,106 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Star, Quote, Sparkles } from "lucide-react";
-
-const testimonials = [
-  {
-    name: "সারাহ জনসন",
-    role: "মার্কেটিং ডিরেক্টর",
-    content: "ইউআর মিডিয়া আমাদের অনলাইন উপস্থিতি রূপান্তরিত করেছে। ডিজাইনগুলো অসাধারণ এবং কনভার্শন উল্লেখযোগ্যভাবে বেড়েছে।",
-    avatar: "স",
-    color: "from-violet-500 to-purple-600",
-  },
-  {
-    name: "মাইকেল চেন",
-    role: "স্টার্টআপ ফাউন্ডার",
-    content: "ইউআর মিডিয়ার সাথে কাজ করা ছিল গেম-চেঞ্জার। প্রফেশনাল, দ্রুত, এবং ফলাফল নিজেই বলে দেয়।",
-    avatar: "ম",
-    color: "from-cyan-500 to-blue-600",
-  },
-  {
-    name: "এমিলি রবার্টস",
-    role: "ই-কমার্স মালিক",
-    content: "আমাদের ব্র্যান্ডের জন্য সেরা বিনিয়োগ। বিস্তারিত মনোযোগ এবং সৃজনশীলতা আমাদের প্রত্যাশা ছাড়িয়ে গেছে।",
-    avatar: "এ",
-    color: "from-amber-500 to-orange-600",
-  },
-];
-
-const TestimonialCard = ({ testimonial, index, isInView }: { testimonial: typeof testimonials[0]; index: number; isInView: boolean }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100, rotateY: index % 2 === 0 ? -15 : 15 }}
-      animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : { opacity: 0, x: index % 2 === 0 ? -100 : 100, rotateY: index % 2 === 0 ? -15 : 15 }}
-      transition={{ duration: 0.8, delay: 0.3 + index * 0.2, type: "spring", stiffness: 50 }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="group relative"
-      style={{ perspective: "1000px" }}
-    >
-      {/* Glow effect on hover */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        className={`absolute -inset-1 bg-gradient-to-r ${testimonial.color} rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500`}
-      />
-      
-      <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 overflow-hidden h-full">
-        {/* Quote icon */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={isInView ? { opacity: 0.1, scale: 1 } : { opacity: 0, scale: 0 }}
-          transition={{ delay: 0.5 + index * 0.2 }}
-          className="absolute top-4 right-4"
-        >
-          <Quote className="w-16 h-16 text-white" />
-        </motion.div>
-        
-        {/* Avatar and info */}
-        <div className="flex items-center gap-4 mb-6 relative z-10">
-          <motion.div 
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            className={`w-14 h-14 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center font-bold text-xl text-white shadow-lg`}
-          >
-            {testimonial.avatar}
-          </motion.div>
-          <div>
-            <motion.p 
-              className="font-semibold text-lg text-white"
-              whileHover={{ x: 3 }}
-            >
-              {testimonial.name}
-            </motion.p>
-            <p className="text-white/50 text-sm">{testimonial.role}</p>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <motion.p 
-          className="text-white/80 leading-relaxed relative z-10 text-base"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.6 + index * 0.2 }}
-        >
-          "{testimonial.content}"
-        </motion.p>
-        
-        {/* Bottom gradient line */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-          transition={{ delay: 0.8 + index * 0.2, duration: 0.6 }}
-          className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${testimonial.color}`}
-          style={{ transformOrigin: "left" }}
-        />
-      </div>
-    </motion.div>
-  );
-};
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const TestimonialsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
+
+  const testimonials = [
+    {
+      nameKey: "testimonials.name1",
+      roleKey: "testimonials.role1",
+      contentKey: "testimonials.content1",
+      avatar: "S",
+      color: "from-violet-500 to-purple-600",
+    },
+    {
+      nameKey: "testimonials.name2",
+      roleKey: "testimonials.role2",
+      contentKey: "testimonials.content2",
+      avatar: "M",
+      color: "from-cyan-500 to-blue-600",
+    },
+    {
+      nameKey: "testimonials.name3",
+      roleKey: "testimonials.role3",
+      contentKey: "testimonials.content3",
+      avatar: "E",
+      color: "from-amber-500 to-orange-600",
+    },
+  ];
+
+  const TestimonialCard = ({ testimonial, index }: { testimonial: typeof testimonials[0]; index: number }) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100, rotateY: index % 2 === 0 ? -15 : 15 }}
+        animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : { opacity: 0, x: index % 2 === 0 ? -100 : 100, rotateY: index % 2 === 0 ? -15 : 15 }}
+        transition={{ duration: 0.8, delay: 0.3 + index * 0.2, type: "spring", stiffness: 50 }}
+        whileHover={{ y: -8, scale: 1.02 }}
+        className="group relative"
+        style={{ perspective: "1000px" }}
+      >
+        {/* Glow effect on hover */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          className={`absolute -inset-1 bg-gradient-to-r ${testimonial.color} rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500`}
+        />
+        
+        <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 overflow-hidden h-full">
+          {/* Quote icon */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={isInView ? { opacity: 0.1, scale: 1 } : { opacity: 0, scale: 0 }}
+            transition={{ delay: 0.5 + index * 0.2 }}
+            className="absolute top-4 right-4"
+          >
+            <Quote className="w-16 h-16 text-white" />
+          </motion.div>
+          
+          {/* Avatar and info */}
+          <div className="flex items-center gap-4 mb-6 relative z-10">
+            <motion.div 
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              className={`w-14 h-14 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center font-bold text-xl text-white shadow-lg`}
+            >
+              {testimonial.avatar}
+            </motion.div>
+            <div>
+              <motion.p 
+                className="font-semibold text-lg text-white"
+                whileHover={{ x: 3 }}
+              >
+                {t(testimonial.nameKey)}
+              </motion.p>
+              <p className="text-white/50 text-sm">{t(testimonial.roleKey)}</p>
+            </div>
+          </div>
+          
+          {/* Content */}
+          <motion.p 
+            className="text-white/80 leading-relaxed relative z-10 text-base"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ delay: 0.6 + index * 0.2 }}
+          >
+            "{t(testimonial.contentKey)}"
+          </motion.p>
+          
+          {/* Bottom gradient line */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ delay: 0.8 + index * 0.2, duration: 0.6 }}
+            className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${testimonial.color}`}
+            style={{ transformOrigin: "left" }}
+          />
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <section className="relative py-32 overflow-hidden bg-[#0f0a2e]">
@@ -142,7 +144,7 @@ const TestimonialsSection = () => {
           >
             <Sparkles className="w-4 h-4 text-violet-400" />
             <span className="text-white/70 text-sm uppercase tracking-widest">
-              বিশ্বব্যাপী ব্যবসার দ্বারা বিশ্বস্ত
+              {t("testimonials.badge")}
             </span>
           </motion.div>
           
@@ -170,8 +172,8 @@ const TestimonialsSection = () => {
             transition={{ delay: 0.8 }}
             className="text-white/60 text-lg"
           >
-            <span className="text-white font-semibold">৪.৯</span> এর মধ্যে ৫ স্টার{" "}
-            <span className="text-white font-semibold">২০০+</span> রিভিউ থেকে
+            <span className="text-white font-semibold">4.9</span> {t("testimonials.rating")}{" "}
+            <span className="text-white font-semibold">200+</span> {t("testimonials.reviews")}
           </motion.p>
         </motion.div>
 
@@ -179,10 +181,9 @@ const TestimonialsSection = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           {testimonials.map((testimonial, index) => (
             <TestimonialCard 
-              key={testimonial.name} 
+              key={testimonial.nameKey} 
               testimonial={testimonial} 
               index={index}
-              isInView={isInView}
             />
           ))}
         </div>
@@ -200,16 +201,16 @@ const TestimonialsSection = () => {
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
             transition={{ delay: 1.1, type: "spring" }}
           >
-            যোগ দিন{" "}
+            {t("testimonials.join")}{" "}
             <motion.span
               className="bg-gradient-to-r from-violet-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent"
               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
               transition={{ duration: 5, repeat: Infinity }}
               style={{ backgroundSize: "200% 200%" }}
             >
-              ১২০+
+              120+
             </motion.span>{" "}
-            সন্তুষ্ট ক্লায়েন্টদের সাথে
+            {t("testimonials.happyClients")}
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -217,13 +218,13 @@ const TestimonialsSection = () => {
             transition={{ delay: 1.3 }}
             className="text-white/50 text-xl"
           >
-            এবং{" "}
+            {t("testimonials.plus")}{" "}
             <motion.span 
               className="text-white font-semibold"
               whileHover={{ scale: 1.1 }}
               style={{ display: "inline-block" }}
             >
-              আপনি।
+              {t("testimonials.you")}
             </motion.span>
           </motion.p>
         </motion.div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const contactSchema = z.object({
@@ -56,20 +57,17 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      const params = new URLSearchParams({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        message: formData.message.trim(),
+      const { error } = await supabase.functions.invoke("contact-to-sheets", {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        },
       });
 
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbx3P-o84AKNPQrWl2YCHxs2EdjibYCl72MO3v-W17qazKeVif84Hn2YnGPgvnTvpSQ/exec",
-        {
-          method: "POST",
-          mode: "no-cors",
-          body: params,
-        }
-      );
+      if (error) {
+        throw error;
+      }
 
       setIsSuccess(true);
       setFormData({ name: "", email: "", message: "" });

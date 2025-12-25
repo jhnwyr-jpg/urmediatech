@@ -29,7 +29,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             whileHover={{ scale: 1.05, rotateX: 5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-soft mb-8 cursor-default"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-card border border-border/50 shadow-soft mb-8 cursor-default"
             style={{ transformStyle: "preserve-3d" }}
           >
             <motion.div
@@ -38,7 +38,7 @@ const HeroSection = () => {
             >
               <Sparkles className="w-4 h-4 text-primary" />
             </motion.div>
-            <span className="text-sm font-medium text-secondary-foreground">
+            <span className="text-sm font-medium text-secondary-foreground tracking-wide">
               Premium Design Agency
             </span>
           </motion.div>

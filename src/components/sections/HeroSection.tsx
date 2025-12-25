@@ -22,14 +22,14 @@ const HeroSection = () => {
       />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div className="max-w-4xl mx-auto text-center">
           {/* Badge with 3D hover */}
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             whileHover={{ scale: 1.05, rotateX: 5 }}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-soft mb-8 cursor-default mx-auto"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-soft mb-8 cursor-default w-auto"
             style={{ transformStyle: "preserve-3d" }}
           >
             <motion.div
@@ -39,7 +39,7 @@ const HeroSection = () => {
             >
               <Sparkles className="w-4 h-4 text-primary" />
             </motion.div>
-            <span className="text-sm font-medium text-secondary-foreground whitespace-nowrap">
+            <span className="text-sm font-medium text-secondary-foreground">
               Premium Design Agency
             </span>
           </motion.div>

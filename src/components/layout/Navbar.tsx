@@ -104,7 +104,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2 relative z-10">
             <a href="#contact" onClick={(e) => smoothScroll(e, "#contact")}>
               <Button variant="gradient" size="sm" className="rounded-full px-5 shadow-lg shadow-primary/25">
-                Start Free Trial
+                Contact Us
               </Button>
             </a>
             <a 
@@ -210,7 +210,7 @@ const Navbar = () => {
                     }}
                   >
                     <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25">
-                      Start Free Trial
+                      Contact Us
                     </Button>
                   </a>
                   <a 

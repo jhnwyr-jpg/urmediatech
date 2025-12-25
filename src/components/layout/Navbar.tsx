@@ -12,6 +12,14 @@ const navLinks = [
   { name: "Contact", href: "#contact" },
 ];
 
+const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  e.preventDefault();
+  const target = document.querySelector(href);
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,6 +46,7 @@ const Navbar = () => {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => smoothScroll(e, link.href)}
                 className="text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
               >
                 {link.name}
@@ -47,7 +56,7 @@ const Navbar = () => {
 
           {/* CTA Button - Desktop */}
           <div className="hidden md:block">
-            <a href="#contact">
+            <a href="#contact" onClick={(e) => smoothScroll(e, "#contact")}>
               <Button variant="gradient" size="sm">
                 Get Started
               </Button>
@@ -80,13 +89,22 @@ const Navbar = () => {
                   <a
                     key={link.name}
                     href={link.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => {
+                      smoothScroll(e, link.href);
+                      setIsOpen(false);
+                    }}
                     className="block text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium py-2"
                   >
                     {link.name}
                   </a>
                 ))}
-                <a href="#contact" onClick={() => setIsOpen(false)}>
+                <a 
+                  href="#contact" 
+                  onClick={(e) => {
+                    smoothScroll(e, "#contact");
+                    setIsOpen(false);
+                  }}
+                >
                   <Button variant="gradient" size="sm" className="w-full mt-4">
                     Get Started
                   </Button>

@@ -113,6 +113,18 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+    line-height: 1.7;
+  }
+
+  /* Better Bangla text rendering */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  p, span, a, li, label {
+    line-height: 1.8;
   }
 
   html {

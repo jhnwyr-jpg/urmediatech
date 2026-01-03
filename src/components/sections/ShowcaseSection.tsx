@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { TrendingUp, Eye, MousePointer, Sparkles, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ShowcaseSection = () => {
   const ref = useRef(null);
@@ -9,6 +10,7 @@ const ShowcaseSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const isInView2 = useInView(ref2, { once: true, margin: "-100px" });
   const isInView3 = useInView(ref3, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
 
   return (
     <>
@@ -105,7 +107,7 @@ const ShowcaseSection = () => {
                     transition={{ delay: 0.4 }}
                     className="font-bold text-xl"
                   >
-                    Pixel-Perfect Designs
+                    {t("showcase.pixelPerfect")}
                   </motion.h3>
                   <motion.p 
                     initial={{ opacity: 0 }}
@@ -113,7 +115,7 @@ const ShowcaseSection = () => {
                     transition={{ delay: 0.5 }}
                     className="text-muted-foreground text-sm"
                   >
-                    Every detail matters
+                    {t("showcase.everyDetail")}
                   </motion.p>
                 </div>
               </div>
@@ -146,7 +148,7 @@ const ShowcaseSection = () => {
                     transition={{ delay: 1 }}
                     className="text-xs text-muted-foreground"
                   >
-                    Just now
+                    {t("showcase.justNow")}
                   </motion.div>
                 </motion.div>
                 <motion.div 
@@ -175,7 +177,7 @@ const ShowcaseSection = () => {
                     transition={{ delay: 1.2 }}
                     className="text-xs text-muted-foreground"
                   >
-                    2m ago
+                    {t("showcase.2mAgo")}
                   </motion.div>
                 </motion.div>
               </div>
@@ -202,7 +204,7 @@ const ShowcaseSection = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                 transition={{ delay: 0.4 }}
               >
-                See what's working and{" "}
+                {t("showcase.seeWorking")}{" "}
                 <motion.span 
                   className="gradient-text inline-block"
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -210,7 +212,7 @@ const ShowcaseSection = () => {
                   transition={{ delay: 0.6, type: "spring" }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  optimize it
+                  {t("showcase.optimize")}
                 </motion.span>
               </motion.h2>
               <motion.p 
@@ -219,8 +221,7 @@ const ShowcaseSection = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ delay: 0.7 }}
               >
-                We create stunning websites that not only look beautiful but also convert. 
-                Our data-driven approach ensures your digital presence delivers real results.
+                {t("showcase.seeWorkingDesc")}
               </motion.p>
             </motion.div>
           </div>
@@ -249,7 +250,7 @@ const ShowcaseSection = () => {
                 animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                 transition={{ delay: 0.2 }}
               >
-                Measure your success with real data
+                {t("showcase.measureSuccess")}
               </motion.h2>
               <motion.p 
                 className="text-primary-foreground/80 text-lg leading-relaxed mb-6"
@@ -257,11 +258,10 @@ const ShowcaseSection = () => {
                 animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ delay: 0.3 }}
               >
-                No more guessing if your website is performing well. Get detailed 
-                analytics and actionable insights that help you make better decisions.
+                {t("showcase.measureSuccessDesc")}
               </motion.p>
               <ul className="space-y-3">
-                {["Track visitor engagement", "Monitor conversion rates", "Analyze user journeys"].map((item, i) => (
+                {[t("showcase.track1"), t("showcase.track2"), t("showcase.track3")].map((item, i) => (
                   <motion.li 
                     key={i} 
                     className="flex items-center gap-3"
@@ -307,11 +307,11 @@ const ShowcaseSection = () => {
                 >
                   <TrendingUp className="w-6 h-6" />
                 </motion.div>
-                <span className="font-semibold">Performance Overview</span>
+                <span className="font-semibold">{t("showcase.performanceOverview")}</span>
               </div>
               <div className="space-y-4 relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-foreground/70">Conversion Rate</span>
+                  <span className="text-sm text-primary-foreground/70">{t("showcase.conversionRate")}</span>
                   <motion.span 
                     className="font-bold"
                     initial={{ opacity: 0 }}
@@ -330,7 +330,7 @@ const ShowcaseSection = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-foreground/70">Page Views</span>
+                  <span className="text-sm text-primary-foreground/70">{t("showcase.pageViews")}</span>
                   <motion.span 
                     className="font-bold"
                     initial={{ opacity: 0 }}
@@ -386,33 +386,31 @@ const ShowcaseSection = () => {
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <MousePointer className="w-12 h-12 text-primary-foreground/80" />
+                <MousePointer className="w-10 h-10" />
               </motion.div>
             </motion.div>
             <motion.h2 
               className="text-3xl md:text-4xl font-bold mb-6"
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={isInView3 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+              transition={{ delay: 0.4, type: "spring" }}
             >
-              Boost your online presence with{" "}
-              <motion.span
-                className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent"
-                initial={{ opacity: 0 }}
-                animate={isInView3 ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ delay: 0.6 }}
+              {t("showcase.intuitive")}{" "}
+              <motion.span 
+                className="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent"
+                whileHover={{ scale: 1.05 }}
+                style={{ display: "inline-block" }}
               >
-                UR Media
+                {t("showcase.userExperience")}
               </motion.span>
             </motion.h2>
             <motion.p 
-              className="text-primary-foreground/70 text-lg"
+              className="text-primary-foreground/70 text-lg leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.6 }}
             >
-              Streamline your workflow and boost productivity with our comprehensive 
-              suite of design and development services.
+              {t("showcase.intuitiveDesc")}
             </motion.p>
           </motion.div>
         </div>

@@ -6,11 +6,10 @@ import {
   MessageCircle, 
   Search, 
   Palette, 
-  Github,
-  Figma,
-  Slack
+  Github
 } from "lucide-react";
 import { Card3D } from "@/components/ui/AnimatedComponents";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const integrations = [
   { name: "Stripe", icon: CreditCard, color: "from-blue-500 to-indigo-600" },
@@ -52,6 +51,7 @@ const FloatingIcon = ({
 const IntegrationsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { t } = useLanguage();
 
   return (
     <section ref={ref} className="py-32 bg-accent/20 relative overflow-hidden">
@@ -110,7 +110,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.2 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"
           >
-            আপনার সাথে সংযুক্ত করুন
+            {t("integrations.title1")}
           </motion.h2>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -118,7 +118,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.3 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-2"
           >
-            মার্কেটিং ও সেলস
+            {t("integrations.title2")}
           </motion.h2>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -126,7 +126,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.4 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8"
           >
-            টুলস
+            {t("integrations.title3")}
           </motion.h2>
           
           <motion.p 
@@ -135,8 +135,7 @@ const IntegrationsSection = () => {
             transition={{ delay: 0.5 }}
             className="text-muted-foreground text-lg mb-16"
           >
-            আপনার ওয়ার্কফ্লো সুবিন্যস্ত করতে এবং দক্ষতা সর্বাধিক করতে 
-            আপনি ইতিমধ্যে যে টুলগুলি ব্যবহার করেন সেগুলির সাথে নির্বিঘ্নে ইন্টিগ্রেট করুন।
+            {t("integrations.subtitle")}
           </motion.p>
 
           {/* Integration icons grid */}

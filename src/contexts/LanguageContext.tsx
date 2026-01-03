@@ -147,6 +147,26 @@ const translations = {
     "cta.subtitle": "শত শত ব্যবসা তাদের ওয়েব ডিজাইনের জন্য ইউআর মিডিয়াকে বিশ্বাস করে। চলুন একসাথে অসাধারণ কিছু তৈরি করি।",
     "cta.button": "শুরু করুন",
     
+    // Showcase
+    "showcase.pixelPerfect": "পিক্সেল-পারফেক্ট ডিজাইন",
+    "showcase.everyDetail": "প্রতিটি বিস্তারিত গুরুত্বপূর্ণ",
+    "showcase.justNow": "এইমাত্র",
+    "showcase.2mAgo": "২ মিনিট আগে",
+    "showcase.seeWorking": "দেখুন কী কাজ করছে এবং",
+    "showcase.optimize": "অপ্টিমাইজ করুন",
+    "showcase.seeWorkingDesc": "আমরা অসাধারণ ওয়েবসাইট তৈরি করি যা শুধু সুন্দর নয়, কনভার্টও করে। আমাদের ডেটা-চালিত পদ্ধতি নিশ্চিত করে আপনার ডিজিটাল উপস্থিতি প্রকৃত ফলাফল দেয়।",
+    "showcase.measureSuccess": "বাস্তব ডেটা দিয়ে আপনার সাফল্য পরিমাপ করুন",
+    "showcase.measureSuccessDesc": "আর অনুমান করার দরকার নেই আপনার ওয়েবসাইট ভালো পারফর্ম করছে কিনা। বিস্তারিত অ্যানালিটিক্স এবং কার্যকর অন্তর্দৃষ্টি পান যা আপনাকে আরও ভালো সিদ্ধান্ত নিতে সাহায্য করে।",
+    "showcase.track1": "ভিজিটর এনগেজমেন্ট ট্র্যাক করুন",
+    "showcase.track2": "কনভার্শন রেট মনিটর করুন",
+    "showcase.track3": "ইউজার জার্নি বিশ্লেষণ করুন",
+    "showcase.performanceOverview": "পারফরম্যান্স ওভারভিউ",
+    "showcase.conversionRate": "কনভার্শন রেট",
+    "showcase.pageViews": "পেজ ভিউ",
+    "showcase.intuitive": "স্বজ্ঞাত",
+    "showcase.userExperience": "ইউজার এক্সপেরিয়েন্স",
+    "showcase.intuitiveDesc": "প্রতিটি ইন্টারঅ্যাকশন স্বাভাবিক এবং স্বজ্ঞাত মনে হওয়া উচিত। আমরা ব্যবহারকারী-কেন্দ্রিক ডিজাইন তৈরি করি যা ব্যবহারকারীদের মুগ্ধ করে এবং ধরে রাখে।",
+    
     // Footer
     "footer.desc": "সুন্দর, উচ্চ-কর্মক্ষম ওয়েবসাইট তৈরি করি যা ব্যবসাকে ডিজিটাল বিশ্বে বাড়তে এবং সফল হতে সাহায়তা করে।",
     "footer.company": "কোম্পানি",
@@ -296,6 +316,26 @@ const translations = {
     "cta.title": "Ready to transform your digital presence?",
     "cta.subtitle": "Join hundreds of businesses that trust UR Media for their web design needs. Let's create something amazing together.",
     "cta.button": "Get Started",
+    
+    // Showcase
+    "showcase.pixelPerfect": "Pixel-Perfect Designs",
+    "showcase.everyDetail": "Every detail matters",
+    "showcase.justNow": "Just now",
+    "showcase.2mAgo": "2m ago",
+    "showcase.seeWorking": "See what's working and",
+    "showcase.optimize": "optimize it",
+    "showcase.seeWorkingDesc": "We create stunning websites that not only look beautiful but also convert. Our data-driven approach ensures your digital presence delivers real results.",
+    "showcase.measureSuccess": "Measure your success with real data",
+    "showcase.measureSuccessDesc": "No more guessing if your website is performing well. Get detailed analytics and actionable insights that help you make better decisions.",
+    "showcase.track1": "Track visitor engagement",
+    "showcase.track2": "Monitor conversion rates",
+    "showcase.track3": "Analyze user journeys",
+    "showcase.performanceOverview": "Performance Overview",
+    "showcase.conversionRate": "Conversion Rate",
+    "showcase.pageViews": "Page Views",
+    "showcase.intuitive": "Intuitive",
+    "showcase.userExperience": "user experience",
+    "showcase.intuitiveDesc": "Every interaction should feel natural and intuitive. We create user-centric designs that delight and retain users.",
     
     // Footer
     "footer.desc": "Creating beautiful, high-performance websites that help businesses grow and succeed in the digital world.",

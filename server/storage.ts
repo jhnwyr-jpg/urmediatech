@@ -1,4 +1,4 @@
-import { type Profile, type InsertProfile, type Post, type InsertPost } from "@shared/schema";
+import { type Profile, type InsertProfile, type Post, type InsertPost } from "../shared/schema";
 
 export interface IStorage {
   getProfileByUserId(userId: string): Promise<Profile | undefined>;

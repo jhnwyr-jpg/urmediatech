@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
-const ALLOWED_EMAIL = "your-email@example.com"; // Change this to the allowed email
+const ALLOWED_EMAIL = "stuckff481@gmail.com"; // Restrict access to this specific user
 
 export function LoginPanel({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const { toast } = useToast();

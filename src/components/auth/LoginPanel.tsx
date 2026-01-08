@@ -4,7 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
-import { queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+
+const ALLOWED_EMAIL = "your-email@example.com"; // Change this to the allowed email
 
 export function LoginPanel({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const { toast } = useToast();
@@ -12,9 +14,36 @@ export function LoginPanel({ open, onOpenChange }: { open: boolean, onOpenChange
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        toast({ title: "Logged in successfully" });
-        queryClient.invalidateQueries({ queryKey: ["/api/me"] });
-        onOpenChange(false);
+        if (session.user.email !== ALLOWED_EMAIL) {
+          await supabase.auth.signOut();
+          toast({ 
+            title: "Access Denied", 
+            description: "You do not have permission to access this panel.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        try {
+          await apiRequest("POST", "/api/login", {
+            email: session.user.email,
+            userId: session.user.id,
+            fullName: session.user.user_metadata?.full_name,
+            avatarUrl: session.user.user_metadata?.avatar_url,
+            isAdmin: true, // Assuming this one person is an admin
+          });
+          
+          toast({ title: "Logged in successfully" });
+          queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+          onOpenChange(false);
+        } catch (error) {
+          console.error("Profile sync error:", error);
+          toast({ 
+            title: "Sync Error", 
+            description: "Failed to sync profile data.",
+            variant: "destructive"
+          });
+        }
       }
       if (event === "USER_UPDATED") {
         toast({ title: "Profile updated" });

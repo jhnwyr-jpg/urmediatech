@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server/index.ts",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "build": "vite build && esbuild server/index.ts --platform=node --bundle --outdir=dist/server",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
@@ -47,6 +51,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",

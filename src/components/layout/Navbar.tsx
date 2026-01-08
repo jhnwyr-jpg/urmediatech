@@ -8,6 +8,7 @@ import logo from "@/assets/logo.ico";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { LoginPanel } from "@/components/auth/LoginPanel";
 
 const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
@@ -19,27 +20,13 @@ const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
 
   const { data: user } = useQuery({
     queryKey: ["/api/me"],
     retry: false,
-  });
-
-  const loginMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/login", {
-        email: "admin@urmedia.com",
-        userId: "admin_user_123",
-        isAdmin: true,
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/me"] });
-      toast({ title: "Logged in as Admin" });
-    },
   });
 
   const logoutMutation = useMutation({
@@ -124,13 +111,13 @@ const Navbar = () => {
                 variant="gradient" 
                 size="sm" 
                 className="rounded-full px-5 shadow-lg shadow-primary/25"
-                onClick={() => loginMutation.mutate()}
-                disabled={loginMutation.isPending}
+                onClick={() => setShowLogin(true)}
               >
                 {t("nav.signin")}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             )}
+            <LoginPanel open={showLogin} onOpenChange={setShowLogin} />
           </div>
         </motion.div>
 
@@ -138,13 +125,6 @@ const Navbar = () => {
         <motion.div 
           className="md:hidden flex items-center justify-between px-4 py-3 rounded-full relative overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)",
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2)",
-          }}
-        >
             background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)",
             backdropFilter: "blur(20px) saturate(180%)",
             WebkitBackdropFilter: "blur(20px) saturate(180%)",

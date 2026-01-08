@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -59,16 +59,14 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase.functions.invoke("contact-to-sheets", {
-        body: {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          message: formData.message.trim(),
-        },
+      const res = await apiRequest("POST", "/api/contact", {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim(),
       });
 
-      if (error) {
-        throw error;
+      if (!res.ok) {
+        throw new Error("Failed to send message");
       }
 
       setIsSuccess(true);

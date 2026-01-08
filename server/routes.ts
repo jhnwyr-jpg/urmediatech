@@ -1,7 +1,15 @@
-import { Express } from "express";
+import { Express, Request } from "express";
 import { storage } from "./storage";
 import { insertPostSchema } from "../shared/schema";
 import { z } from "zod";
+
+// Extend Request type to include session
+interface RequestWithSession extends Request {
+  session: {
+    userId?: string;
+    destroy: (callback: (err: any) => void) => void;
+  };
+}
 
 const contactSchema = z.object({
   name: z.string().trim().min(1).max(100),
@@ -55,9 +63,10 @@ export async function registerRoutes(app: Express) {
 
   // Admin API to create posts
   app.post("/api/posts", async (req, res) => {
-    if (!req.session?.userId) return res.status(401).json({ message: "Unauthorized" });
+    const sessionReq = req as unknown as RequestWithSession;
+    if (!sessionReq.session?.userId) return res.status(401).json({ message: "Unauthorized" });
     
-    const profile = await storage.getProfileByUserId(req.session.userId);
+    const profile = await storage.getProfileByUserId(sessionReq.session.userId);
     if (!profile?.isAdmin) return res.status(403).json({ message: "Forbidden: Admin access required" });
 
     const parsed = insertPostSchema.safeParse(req.body);
@@ -88,8 +97,9 @@ export async function registerRoutes(app: Express) {
         });
       }
 
-      if (req.session) {
-        req.session.userId = userId;
+      const sessionReq = req as unknown as RequestWithSession;
+      if (sessionReq.session) {
+        sessionReq.session.userId = userId;
       }
       res.json(profile);
     } catch (error) {
@@ -99,9 +109,10 @@ export async function registerRoutes(app: Express) {
   });
 
   app.get("/api/me", async (req, res) => {
-    if (!req.session?.userId) return res.status(401).json({ message: "Not logged in" });
+    const sessionReq = req as unknown as RequestWithSession;
+    if (!sessionReq.session?.userId) return res.status(401).json({ message: "Not logged in" });
     try {
-      const profile = await storage.getProfileByUserId(req.session.userId);
+      const profile = await storage.getProfileByUserId(sessionReq.session.userId);
       if (!profile) return res.status(404).json({ message: "Profile not found" });
       res.json(profile);
     } catch (error) {
@@ -110,8 +121,9 @@ export async function registerRoutes(app: Express) {
   });
 
   app.post("/api/logout", (req, res) => {
-    if (req.session) {
-      req.session.destroy((err) => {
+    const sessionReq = req as unknown as RequestWithSession;
+    if (sessionReq.session) {
+      sessionReq.session.destroy((err) => {
         if (err) return res.status(500).json({ message: "Logout failed" });
         res.sendStatus(200);
       });

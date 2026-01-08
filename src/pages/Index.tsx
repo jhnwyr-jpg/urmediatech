@@ -10,19 +10,8 @@ import ContactSection from "@/components/sections/ContactSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import { useEffect, useState } from "react";
 
 const Index = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
-  }
-
   return (
     <main className="min-h-screen bg-background">
       <Navbar />

@@ -1,32 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
+import { componentTagger } from "lovable-tagger";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-export default defineConfig({
-  plugins: [react()],
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
   server: {
-    allowedHosts: true,
-    host: "0.0.0.0",
-    port: 5000,
-    strictPort: true,
-    hmr: {
-      clientPort: 443,
-      protocol: "wss",
-    },
+    host: "::",
+    port: 8080,
   },
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
-      "@shared": path.resolve(__dirname, "shared"),
-      "@": path.resolve(__dirname, "src"),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-  root: path.resolve(__dirname),
-  build: {
-    outDir: path.resolve(__dirname, "dist/public"),
-    emptyOutDir: true,
-  },
-});
+}));

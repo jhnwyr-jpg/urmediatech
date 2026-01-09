@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.ico";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { LoginPanel } from "@/components/auth/LoginPanel";
 
 const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
   e.preventDefault();
@@ -20,24 +16,7 @@ const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const { t } = useLanguage();
-  const { toast } = useToast();
-
-  const { data: user } = useQuery({
-    queryKey: ["/api/me"],
-    retry: false,
-  });
-
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(["/api/me"], null);
-      toast({ title: "Logged out" });
-    },
-  });
 
   const navLinks = [
     { name: t("nav.services"), href: "#services" },
@@ -53,6 +32,7 @@ const Navbar = () => {
       className="fixed top-0 left-0 right-0 z-50 px-4 pt-4"
     >
       <nav className="max-w-4xl mx-auto">
+        {/* Desktop Navbar - Apple Liquid Glass Style */}
         <motion.div 
           className="hidden md:flex items-center justify-between gap-2 px-2 py-2 rounded-full relative overflow-hidden"
           style={{
@@ -63,6 +43,41 @@ const Navbar = () => {
             boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.1)",
           }}
         >
+          {/* Animated liquid gradient overlay */}
+          <motion.div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: "linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.1) 25%, rgba(6,182,212,0.1) 50%, rgba(139,92,246,0.1) 75%, transparent 100%)",
+            }}
+            animate={{
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+          
+          {/* Shimmer effect */}
+          <motion.div
+            className="absolute inset-0 rounded-full pointer-events-none opacity-30"
+            style={{
+              background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)",
+              backgroundSize: "200% 100%",
+            }}
+            animate={{
+              backgroundPosition: ["-100% 0%", "200% 0%"],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              repeatDelay: 2,
+              ease: "easeInOut",
+            }}
+          />
+
+          {/* Logo */}
           <a 
             href="#home" 
             onClick={(e) => smoothScroll(e, "#home")}
@@ -74,6 +89,7 @@ const Navbar = () => {
             </span>
           </a>
 
+          {/* Center Navigation */}
           <div className="flex items-center gap-1 relative z-10">
             {navLinks.map((link) => (
               <a
@@ -87,37 +103,22 @@ const Navbar = () => {
             ))}
           </div>
 
+          {/* CTA Buttons */}
           <div className="flex items-center gap-2 relative z-10">
             <LanguageToggle />
-            {user ? (
-              <div className="flex items-center gap-2">
-                {user.isAdmin && (
-                  <Button variant="ghost" size="sm" className="rounded-full">
-                    <LayoutDashboard className="w-4 h-4 mr-1" />
-                    Admin
-                  </Button>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="rounded-full"
-                  onClick={() => logoutMutation.mutate()}
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                variant="gradient" 
-                size="sm" 
-                className="rounded-full px-5 shadow-lg shadow-primary/25"
-                onClick={() => setShowLogin(true)}
-              >
-                {t("nav.signin")}
-                <ArrowRight className="w-4 h-4 ml-1" />
+            <a href="#contact" onClick={(e) => smoothScroll(e, "#contact")}>
+              <Button variant="gradient" size="sm" className="rounded-full px-5 shadow-lg shadow-primary/25">
+                {t("nav.contact")}
               </Button>
-            )}
-            <LoginPanel open={showLogin} onOpenChange={setShowLogin} />
+            </a>
+            <a 
+              href="#contact" 
+              onClick={(e) => smoothScroll(e, "#contact")}
+              className="flex items-center gap-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
+            >
+              {t("nav.signin")}
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </motion.div>
 

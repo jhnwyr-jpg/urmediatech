@@ -59,6 +59,20 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("contact_submissions")
+        .insert({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          message: formData.message.trim(),
+        });
+
+      if (dbError) {
+        console.error("DB Error:", dbError);
+      }
+
+      // Also send to Google Sheets
       const { error } = await supabase.functions.invoke("contact-to-sheets", {
         body: {
           name: formData.name.trim(),
@@ -68,7 +82,7 @@ const ContactSection = () => {
       });
 
       if (error) {
-        throw error;
+        console.error("Sheets Error:", error);
       }
 
       setIsSuccess(true);

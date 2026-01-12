@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, AlertCircle, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -39,11 +41,32 @@ const AdminLogin = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await signIn(formData.email, formData.password);
-      if (error) {
-        setErrors({ general: "Invalid email or password" });
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        if (error) {
+          setErrors({ general: error.message });
+        } else {
+          setErrors({ general: "" });
+          setIsSignUp(false);
+          // Auto sign in after signup
+          const { error: signInError } = await signIn(formData.email, formData.password);
+          if (!signInError) {
+            navigate("/admin");
+          }
+        }
       } else {
-        navigate("/admin");
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) {
+          setErrors({ general: "Invalid email or password" });
+        } else {
+          navigate("/admin");
+        }
       }
     } catch {
       setErrors({ general: "An error occurred. Please try again." });
@@ -69,8 +92,12 @@ const AdminLogin = () => {
             <div className="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
-            <p className="text-muted-foreground mt-2">Sign in to access the admin panel</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              {isSignUp ? "Create Account" : "Admin Login"}
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              {isSignUp ? "Sign up to create your account" : "Sign in to access the admin panel"}
+            </p>
           </div>
 
           {errors.general && (
@@ -141,16 +168,33 @@ const AdminLogin = () => {
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
                 />
+              ) : isSignUp ? (
+                <>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Sign Up
+                </>
               ) : (
                 "Sign In"
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              ← Back to website
-            </a>
+          <div className="mt-6 text-center space-y-3">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setErrors({});
+              }}
+              className="text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+            </button>
+            <div>
+              <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                ← Back to website
+              </a>
+            </div>
           </div>
         </div>
       </motion.div>

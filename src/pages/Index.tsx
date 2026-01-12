@@ -10,10 +10,12 @@ import ContactSection from "@/components/sections/ContactSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import TrackingPixels from "@/components/TrackingPixels";
 
 const Index = () => {
   return (
     <main className="min-h-screen bg-background">
+      <TrackingPixels currentPage="home" />
       <Navbar />
       <HeroSection />
       <FeaturesSection />

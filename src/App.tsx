@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import FacebookPixel from "@/components/FacebookPixel";
+import TrackingPixels from "@/components/TrackingPixels";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/Login";
@@ -21,7 +21,6 @@ const App = () => (
     <AuthProvider>
       <LanguageProvider>
         <TooltipProvider>
-          <FacebookPixel />
           <Toaster />
           <Sonner />
           <BrowserRouter>

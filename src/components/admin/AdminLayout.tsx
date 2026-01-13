@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   MessageSquare,
-  ShoppingCart,
+  BarChart3,
   Settings,
   LogOut,
   Menu,
@@ -18,12 +18,9 @@ interface AdminLayoutProps {
   children: ReactNode;
 }
 
-import { BarChart3 } from "lucide-react";
-
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
   { icon: MessageSquare, label: "Contacts", path: "/admin/contacts" },
-  { icon: ShoppingCart, label: "Orders", path: "/admin/orders" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];

@@ -5,15 +5,18 @@ import {
   Download,
   FileSpreadsheet,
   MessageSquare,
-  ShoppingCart,
   TrendingUp,
   DollarSign,
   Calendar,
+  CheckCircle,
+  Clock,
+  PlayCircle,
+  XCircle,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChartContainer,
   ChartTooltip,
@@ -29,7 +32,9 @@ import {
   LineChart,
   XAxis,
   YAxis,
-  ResponsiveContainer,
+  Cell,
+  Pie,
+  PieChart,
 } from "recharts";
 import {
   useAnalytics,
@@ -50,19 +55,34 @@ const chartConfig = {
     label: "Contacts",
     color: "hsl(255 80% 68%)",
   },
-  orders: {
-    label: "Orders",
+  pending: {
+    label: "Pending",
+    color: "hsl(45 93% 47%)",
+  },
+  running: {
+    label: "Running",
+    color: "hsl(220 80% 60%)",
+  },
+  success: {
+    label: "Success",
     color: "hsl(142 76% 36%)",
   },
   revenue: {
     label: "Revenue",
-    color: "hsl(45 93% 47%)",
+    color: "hsl(142 76% 36%)",
   },
+};
+
+const statusColors = {
+  pending: "hsl(45 93% 47%)",
+  running: "hsl(220 80% 60%)",
+  success: "hsl(142 76% 36%)",
+  cancelled: "hsl(0 84% 60%)",
 };
 
 const AdminReports = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>("1m");
-  const { contacts, orders, dailyData, totals, isLoading } = useAnalytics(timeRange);
+  const { contacts, dailyData, statusSummary, totals, isLoading } = useAnalytics(timeRange);
 
   const handleExportContacts = (type: "csv" | "excel") => {
     const exportData = contacts.map((c) => ({
@@ -70,6 +90,8 @@ const AdminReports = () => {
       Email: c.email,
       Phone: c.phone || "",
       Message: c.message,
+      Status: c.status,
+      Amount: c.amount || 0,
       Date: format(new Date(c.created_at), "yyyy-MM-dd HH:mm"),
     }));
     if (type === "csv") {
@@ -79,27 +101,13 @@ const AdminReports = () => {
     }
   };
 
-  const handleExportOrders = (type: "csv" | "excel") => {
-    const exportData = orders.map((o) => ({
-      "Customer Name": o.customer_name,
-      "Customer Email": o.customer_email,
-      Status: o.status,
-      "Total Amount": o.total_amount,
-      Notes: o.notes || "",
-      Date: format(new Date(o.created_at!), "yyyy-MM-dd HH:mm"),
-    }));
-    if (type === "csv") {
-      exportToCSV(exportData, "orders_report");
-    } else {
-      exportToExcel(exportData, "orders_report");
-    }
-  };
-
   const handleExportSummary = (type: "csv" | "excel") => {
     const exportData = dailyData.map((d) => ({
       Date: d.date,
-      Contacts: d.contacts,
-      Orders: d.orders,
+      "Total Contacts": d.contacts,
+      Pending: d.pending,
+      Running: d.running,
+      Success: d.success,
       Revenue: d.revenue,
     }));
     if (type === "csv") {
@@ -109,6 +117,13 @@ const AdminReports = () => {
     }
   };
 
+  const pieData = [
+    { name: "Pending", value: statusSummary.pending, color: statusColors.pending },
+    { name: "Running", value: statusSummary.running, color: statusColors.running },
+    { name: "Success", value: statusSummary.success, color: statusColors.success },
+    { name: "Cancelled", value: statusSummary.cancelled, color: statusColors.cancelled },
+  ].filter((d) => d.value > 0);
+
   const statCards = [
     {
       title: "Total Contacts",
@@ -117,22 +132,49 @@ const AdminReports = () => {
       color: "bg-primary/10 text-primary",
     },
     {
-      title: "Total Orders",
-      value: totals.totalOrders,
-      icon: ShoppingCart,
-      color: "bg-green-500/10 text-green-600",
-    },
-    {
       title: "Total Revenue",
       value: `৳${totals.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: "bg-yellow-500/10 text-yellow-600",
+      color: "bg-green-500/10 text-green-600",
     },
     {
-      title: "Avg Order Value",
-      value: `৳${Math.round(totals.avgOrderValue).toLocaleString()}`,
+      title: "Avg Deal Value",
+      value: `৳${Math.round(totals.avgDealValue).toLocaleString()}`,
       icon: TrendingUp,
       color: "bg-blue-500/10 text-blue-600",
+    },
+    {
+      title: "Success Rate",
+      value: `${Math.round(totals.successRate)}%`,
+      icon: CheckCircle,
+      color: "bg-yellow-500/10 text-yellow-600",
+    },
+  ];
+
+  const statusCards = [
+    {
+      title: "Pending",
+      value: statusSummary.pending,
+      icon: Clock,
+      color: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+    },
+    {
+      title: "Running",
+      value: statusSummary.running,
+      icon: PlayCircle,
+      color: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+    },
+    {
+      title: "Success",
+      value: statusSummary.success,
+      icon: CheckCircle,
+      color: "bg-green-500/10 text-green-600 border-green-500/20",
+    },
+    {
+      title: "Cancelled",
+      value: statusSummary.cancelled,
+      icon: XCircle,
+      color: "bg-red-500/10 text-red-600 border-red-500/20",
     },
   ];
 
@@ -144,7 +186,7 @@ const AdminReports = () => {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Reports & Analytics</h1>
             <p className="text-muted-foreground mt-1">
-              Track contacts, sales data, and export reports
+              Track contacts, status, and revenue reports
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -192,13 +234,43 @@ const AdminReports = () => {
           ))}
         </div>
 
+        {/* Status Summary Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {statusCards.map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
+            >
+              <Card className={`border ${stat.color.split(" ")[2]}`}>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg ${stat.color.split(" ").slice(0, 2).join(" ")} flex items-center justify-center`}
+                    >
+                      <stat.icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">{stat.title}</p>
+                      <p className="text-xl font-bold text-foreground">
+                        {isLoading ? "..." : stat.value}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Contacts Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -256,54 +328,39 @@ const AdminReports = () => {
             </Card>
           </motion.div>
 
-          {/* Orders Chart */}
+          {/* Status Distribution Pie Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
           >
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardHeader>
                 <CardTitle className="text-lg font-semibold">
-                  Orders & Sales
+                  Status Distribution
                 </CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleExportOrders("csv")}
-                  >
-                    <Download className="w-4 h-4 mr-1" />
-                    CSV
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleExportOrders("excel")}
-                  >
-                    <FileSpreadsheet className="w-4 h-4 mr-1" />
-                    Excel
-                  </Button>
-                </div>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                  <BarChart data={dailyData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      className="text-xs"
-                    />
-                    <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar
-                      dataKey="orders"
-                      fill="hsl(142 76% 36%)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
+                  </PieChart>
                 </ChartContainer>
               </CardContent>
             </Card>
@@ -314,7 +371,7 @@ const AdminReports = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.6 }}
+          transition={{ duration: 0.3, delay: 0.7 }}
         >
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -345,8 +402,8 @@ const AdminReports = () => {
                 <LineChart data={dailyData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(45 93% 47%)" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(45 93% 47%)" stopOpacity={0} />
+                      <stop offset="5%" stopColor="hsl(142 76% 36%)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(142 76% 36%)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -369,9 +426,9 @@ const AdminReports = () => {
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="hsl(45 93% 47%)"
+                    stroke="hsl(142 76% 36%)"
                     strokeWidth={2}
-                    dot={{ fill: "hsl(45 93% 47%)", strokeWidth: 2, r: 4 }}
+                    dot={{ fill: "hsl(142 76% 36%)", strokeWidth: 2, r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>
@@ -380,17 +437,17 @@ const AdminReports = () => {
           </Card>
         </motion.div>
 
-        {/* Combined Overview */}
+        {/* Status by Day Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.7 }}
+          transition={{ duration: 0.3, delay: 0.8 }}
         >
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <BarChart3 className="w-5 h-5" />
-                Combined Overview
+                Status Overview by Day
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -406,16 +463,23 @@ const AdminReports = () => {
                   <YAxis tickLine={false} axisLine={false} className="text-xs" />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar
-                    dataKey="contacts"
-                    fill="hsl(255 80% 68%)"
-                    radius={[4, 4, 0, 0]}
-                    name="Contacts"
+                    dataKey="pending"
+                    stackId="a"
+                    fill="hsl(45 93% 47%)"
+                    name="Pending"
                   />
                   <Bar
-                    dataKey="orders"
+                    dataKey="running"
+                    stackId="a"
+                    fill="hsl(220 80% 60%)"
+                    name="Running"
+                  />
+                  <Bar
+                    dataKey="success"
+                    stackId="a"
                     fill="hsl(142 76% 36%)"
                     radius={[4, 4, 0, 0]}
-                    name="Orders"
+                    name="Success"
                   />
                 </BarChart>
               </ChartContainer>

@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, ShoppingCart, TrendingUp, Users } from "lucide-react";
+import { MessageSquare, TrendingUp, DollarSign, CheckCircle, Clock, PlayCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 
 interface Stats {
   totalContacts: number;
-  totalOrders: number;
   todayContacts: number;
-  todayOrders: number;
+  totalRevenue: number;
+  successCount: number;
+  runningCount: number;
+  pendingCount: number;
 }
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState<Stats>({
     totalContacts: 0,
-    totalOrders: 0,
     todayContacts: 0,
-    todayOrders: 0,
+    totalRevenue: 0,
+    successCount: 0,
+    runningCount: 0,
+    pendingCount: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,31 +31,34 @@ const AdminDashboard = () => {
         today.setHours(0, 0, 0, 0);
         const todayIso = today.toISOString();
 
-        // Fetch contact submissions count
-        const { count: totalContacts } = await supabase
+        // Fetch all contact submissions
+        const { data: contacts, error } = await supabase
           .from("contact_submissions")
-          .select("*", { count: "exact", head: true });
+          .select("*");
 
-        const { count: todayContacts } = await supabase
-          .from("contact_submissions")
-          .select("*", { count: "exact", head: true })
-          .gte("created_at", todayIso);
+        if (error) throw error;
 
-        // Fetch orders count
-        const { count: totalOrders } = await supabase
-          .from("orders")
-          .select("*", { count: "exact", head: true });
+        const allContacts = contacts || [];
+        const todayContacts = allContacts.filter(
+          (c) => new Date(c.created_at) >= today
+        );
 
-        const { count: todayOrders } = await supabase
-          .from("orders")
-          .select("*", { count: "exact", head: true })
-          .gte("created_at", todayIso);
+        const successContacts = allContacts.filter((c) => c.status === "success");
+        const runningContacts = allContacts.filter((c) => c.status === "running");
+        const pendingContacts = allContacts.filter((c) => c.status === "pending");
+
+        const totalRevenue = successContacts.reduce(
+          (sum, c) => sum + (c.amount || 0),
+          0
+        );
 
         setStats({
-          totalContacts: totalContacts ?? 0,
-          totalOrders: totalOrders ?? 0,
-          todayContacts: todayContacts ?? 0,
-          todayOrders: todayOrders ?? 0,
+          totalContacts: allContacts.length,
+          todayContacts: todayContacts.length,
+          totalRevenue,
+          successCount: successContacts.length,
+          runningCount: runningContacts.length,
+          pendingCount: pendingContacts.length,
         });
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -72,24 +79,38 @@ const AdminDashboard = () => {
       trend: `+${stats.todayContacts} today`,
     },
     {
-      title: "Total Orders",
-      value: stats.totalOrders,
-      icon: ShoppingCart,
+      title: "Total Revenue",
+      value: `৳${stats.totalRevenue.toLocaleString()}`,
+      icon: DollarSign,
       color: "bg-green-500/10 text-green-600",
-      trend: `+${stats.todayOrders} today`,
+      trend: "From successful deals",
+    },
+    {
+      title: "Success",
+      value: stats.successCount,
+      icon: CheckCircle,
+      color: "bg-emerald-500/10 text-emerald-600",
+      trend: "Completed deals",
+    },
+    {
+      title: "Running",
+      value: stats.runningCount,
+      icon: PlayCircle,
+      color: "bg-purple-500/10 text-purple-600",
+      trend: "In progress",
+    },
+    {
+      title: "Pending",
+      value: stats.pendingCount,
+      icon: Clock,
+      color: "bg-orange-500/10 text-orange-600",
+      trend: "Awaiting action",
     },
     {
       title: "Today's Contacts",
       value: stats.todayContacts,
-      icon: Users,
-      color: "bg-purple-500/10 text-purple-600",
-      trend: "New today",
-    },
-    {
-      title: "Today's Orders",
-      value: stats.todayOrders,
       icon: TrendingUp,
-      color: "bg-orange-500/10 text-orange-600",
+      color: "bg-pink-500/10 text-pink-600",
       trend: "New today",
     },
   ];
@@ -104,7 +125,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {statCards.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -134,7 +155,7 @@ const AdminDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
             className="bg-card rounded-2xl border border-border/50 p-6"
           >
             <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
@@ -146,17 +167,17 @@ const AdminDashboard = () => {
                 <MessageSquare className="w-5 h-5 text-primary" />
                 <div>
                   <p className="font-medium text-foreground">View Contact Submissions</p>
-                  <p className="text-sm text-muted-foreground">See all messages from customers</p>
+                  <p className="text-sm text-muted-foreground">Manage status and amounts</p>
                 </div>
               </a>
               <a
-                href="/admin/orders"
+                href="/admin/reports"
                 className="flex items-center gap-4 p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
               >
-                <ShoppingCart className="w-5 h-5 text-primary" />
+                <TrendingUp className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="font-medium text-foreground">Manage Orders</p>
-                  <p className="text-sm text-muted-foreground">View and update order status</p>
+                  <p className="font-medium text-foreground">View Reports</p>
+                  <p className="text-sm text-muted-foreground">Analytics and export data</p>
                 </div>
               </a>
             </div>
@@ -165,7 +186,7 @@ const AdminDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
+            transition={{ duration: 0.3, delay: 0.7 }}
             className="bg-card rounded-2xl border border-border/50 p-6"
           >
             <h2 className="text-lg font-semibold text-foreground mb-4">Settings</h2>
@@ -180,8 +201,8 @@ const AdminDashboard = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">Facebook Pixel</p>
-                  <p className="text-sm text-muted-foreground">Configure tracking pixel</p>
+                  <p className="font-medium text-foreground">Tracking Pixels</p>
+                  <p className="text-sm text-muted-foreground">Configure Facebook & other pixels</p>
                 </div>
               </a>
             </div>

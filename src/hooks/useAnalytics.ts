@@ -4,48 +4,49 @@ import { subDays, subMonths, format, startOfDay, eachDayOfInterval, parseISO } f
 
 export type TimeRange = "1w" | "1m" | "5m";
 
-interface ContactSubmission {
+export interface ContactSubmission {
   id: string;
   name: string;
   email: string;
   phone: string | null;
   message: string;
-  created_at: string;
-}
-
-interface Order {
-  id: string;
-  customer_name: string;
-  customer_email: string;
   status: string;
-  total_amount: number;
-  notes: string | null;
+  amount: number;
   created_at: string;
 }
 
 interface DailyData {
   date: string;
   contacts: number;
-  orders: number;
+  pending: number;
+  running: number;
+  success: number;
   revenue: number;
+}
+
+interface StatusSummary {
+  pending: number;
+  running: number;
+  success: number;
+  cancelled: number;
 }
 
 interface AnalyticsData {
   contacts: ContactSubmission[];
-  orders: Order[];
   dailyData: DailyData[];
+  statusSummary: StatusSummary;
   totals: {
     totalContacts: number;
-    totalOrders: number;
     totalRevenue: number;
-    avgOrderValue: number;
+    avgDealValue: number;
+    successRate: number;
   };
   isLoading: boolean;
+  refetch: () => void;
 }
 
 export const useAnalytics = (timeRange: TimeRange): AnalyticsData => {
   const [contacts, setContacts] = useState<ContactSubmission[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const getStartDate = (range: TimeRange): Date => {
@@ -62,38 +63,28 @@ export const useAnalytics = (timeRange: TimeRange): AnalyticsData => {
     }
   };
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    const startDate = getStartDate(timeRange);
+    const startIso = startDate.toISOString();
+
+    try {
+      const { data, error } = await supabase
+        .from("contact_submissions")
+        .select("*")
+        .gte("created_at", startIso)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setContacts(data || []);
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const startDate = getStartDate(timeRange);
-      const startIso = startDate.toISOString();
-
-      try {
-        const [contactsRes, ordersRes] = await Promise.all([
-          supabase
-            .from("contact_submissions")
-            .select("*")
-            .gte("created_at", startIso)
-            .order("created_at", { ascending: true }),
-          supabase
-            .from("orders")
-            .select("*")
-            .gte("created_at", startIso)
-            .order("created_at", { ascending: true }),
-        ]);
-
-        if (contactsRes.error) throw contactsRes.error;
-        if (ordersRes.error) throw ordersRes.error;
-
-        setContacts(contactsRes.data || []);
-        setOrders(ordersRes.data || []);
-      } catch (error) {
-        console.error("Error fetching analytics:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
   }, [timeRange]);
 
@@ -113,33 +104,47 @@ export const useAnalytics = (timeRange: TimeRange): AnalyticsData => {
         return cDate >= dayStart && cDate < dayEnd;
       });
 
-      const dayOrders = orders.filter((o) => {
-        const oDate = parseISO(o.created_at!);
-        return oDate >= dayStart && oDate < dayEnd;
-      });
-
-      const dayRevenue = dayOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+      const pending = dayContacts.filter((c) => c.status === "pending").length;
+      const running = dayContacts.filter((c) => c.status === "running").length;
+      const success = dayContacts.filter((c) => c.status === "success").length;
+      const revenue = dayContacts
+        .filter((c) => c.status === "success")
+        .reduce((sum, c) => sum + (c.amount || 0), 0);
 
       return {
         date: format(day, "MMM dd"),
         contacts: dayContacts.length,
-        orders: dayOrders.length,
-        revenue: dayRevenue,
+        pending,
+        running,
+        success,
+        revenue,
       };
     });
-  }, [contacts, orders, timeRange]);
+  }, [contacts, timeRange]);
+
+  const statusSummary = useMemo(() => {
+    return {
+      pending: contacts.filter((c) => c.status === "pending").length,
+      running: contacts.filter((c) => c.status === "running").length,
+      success: contacts.filter((c) => c.status === "success").length,
+      cancelled: contacts.filter((c) => c.status === "cancelled").length,
+    };
+  }, [contacts]);
 
   const totals = useMemo(() => {
-    const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+    const successContacts = contacts.filter((c) => c.status === "success");
+    const totalRevenue = successContacts.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const successRate = contacts.length > 0 ? (successContacts.length / contacts.length) * 100 : 0;
+
     return {
       totalContacts: contacts.length,
-      totalOrders: orders.length,
       totalRevenue,
-      avgOrderValue: orders.length > 0 ? totalRevenue / orders.length : 0,
+      avgDealValue: successContacts.length > 0 ? totalRevenue / successContacts.length : 0,
+      successRate,
     };
-  }, [contacts, orders]);
+  }, [contacts]);
 
-  return { contacts, orders, dailyData, totals, isLoading };
+  return { contacts, dailyData, statusSummary, totals, isLoading, refetch: fetchData };
 };
 
 export const exportToCSV = (data: any[], filename: string) => {
@@ -154,7 +159,6 @@ export const exportToCSV = (data: any[], filename: string) => {
           const value = row[header];
           if (value === null || value === undefined) return "";
           const stringValue = String(value);
-          // Escape quotes and wrap in quotes if contains comma or newline
           if (stringValue.includes(",") || stringValue.includes("\n") || stringValue.includes('"')) {
             return `"${stringValue.replace(/"/g, '""')}"`;
           }
@@ -175,7 +179,6 @@ export const exportToCSV = (data: any[], filename: string) => {
 export const exportToExcel = (data: any[], filename: string) => {
   if (data.length === 0) return;
 
-  // Create Excel-compatible XML
   const headers = Object.keys(data[0]);
   
   let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>

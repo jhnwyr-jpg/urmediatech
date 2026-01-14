@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          requirements: Json | null
+          session_id: string
+          status: string | null
+          updated_at: string
+          visitor_info: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requirements?: Json | null
+          session_id: string
+          status?: string | null
+          updated_at?: string
+          visitor_info?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requirements?: Json | null
+          session_id?: string
+          status?: string | null
+          updated_at?: string
+          visitor_info?: Json | null
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string | null
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           amount: number | null
@@ -44,6 +106,54 @@ export type Database = {
           name?: string
           phone?: string | null
           status?: string
+        }
+        Relationships: []
+      }
+      meetings: {
+        Row: {
+          created_at: string
+          id: string
+          meeting_date: string
+          meeting_time: string
+          notes: string | null
+          project_name: string | null
+          requirements: Json | null
+          service_type: string | null
+          status: string
+          updated_at: string
+          visitor_email: string | null
+          visitor_name: string
+          visitor_phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          meeting_date: string
+          meeting_time: string
+          notes?: string | null
+          project_name?: string | null
+          requirements?: Json | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+          visitor_email?: string | null
+          visitor_name: string
+          visitor_phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          meeting_date?: string
+          meeting_time?: string
+          notes?: string | null
+          project_name?: string | null
+          requirements?: Json | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+          visitor_email?: string | null
+          visitor_name?: string
+          visitor_phone?: string | null
         }
         Relationships: []
       }
@@ -152,6 +262,45 @@ export type Database = {
           is_admin?: boolean | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          category: string
+          created_at: string
+          delivery_days: number | null
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          delivery_days?: number | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          delivery_days?: number | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string
         }
         Relationships: []
       }

@@ -9,7 +9,7 @@ import AboutSection from "@/components/sections/AboutSection";
 import ContactSection from "@/components/sections/ContactSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import AIChatBot from "@/components/ui/AIChatBot";
 import TrackingPixels from "@/components/TrackingPixels";
 
 const Index = () => {
@@ -27,7 +27,7 @@ const Index = () => {
       <ContactSection />
       <CTASection />
       <Footer />
-      <WhatsAppButton />
+      <AIChatBot />
     </main>
   );
 };

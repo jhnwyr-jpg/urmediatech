@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   X,
+  CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,6 +22,7 @@ interface AdminLayoutProps {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
   { icon: MessageSquare, label: "Contacts", path: "/admin/contacts" },
+  { icon: CalendarDays, label: "Meetings", path: "/admin/meetings" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];

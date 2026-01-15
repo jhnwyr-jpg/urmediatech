@@ -6,8 +6,21 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import TrackingPixels from "@/components/TrackingPixels";
+
+// Public Pages
 import Index from "./pages/Index";
+import About from "./pages/About";
+import Services from "./pages/Services";
+import VideoEditing from "./pages/services/VideoEditing";
+import MotionGraphics from "./pages/services/MotionGraphics";
+import SocialMediaContent from "./pages/services/SocialMediaContent";
+import Portfolio from "./pages/Portfolio";
+import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
+
+// Admin Pages
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminContacts from "./pages/admin/Contacts";
@@ -26,13 +39,27 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/video-editing" element={<VideoEditing />} />
+              <Route path="/services/motion-graphics" element={<MotionGraphics />} />
+              <Route path="/services/social-media-content" element={<SocialMediaContent />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              
+              {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/contacts" element={<AdminContacts />} />
               <Route path="/admin/meetings" element={<AdminMeetings />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
+              
+              {/* 404 */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

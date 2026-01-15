@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Facebook, Twitter, Instagram, Linkedin, ArrowUp } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -11,25 +12,24 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Re-compute links when language changes
   const footerLinks = {
     company: [
-      { name: t("footer.about"), href: "#about" },
-      { name: t("nav.services"), href: "#services" },
-      { name: t("footer.projects"), href: "#projects" },
-      { name: t("nav.contact"), href: "#contact" },
+      { name: t("footer.about"), href: "/about" },
+      { name: t("nav.services"), href: "/services" },
+      { name: t("footer.projects"), href: "/portfolio" },
+      { name: t("nav.contact"), href: "/contact" },
     ],
     services: [
-      { name: t("footer.webDesign"), href: "#services" },
-      { name: t("footer.development"), href: "#services" },
-      { name: t("footer.branding"), href: "#services" },
-      { name: "SEO", href: "#services" },
+      { name: "Video Editing", href: "/services/video-editing" },
+      { name: "Motion Graphics", href: "/services/motion-graphics" },
+      { name: "Social Media", href: "/services/social-media-content" },
+      { name: "Blog", href: "/blog" },
     ],
   };
 
@@ -42,12 +42,12 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <a href="#home" className="flex items-center gap-2 mb-4">
+            <Link to="/" className="flex items-center gap-2 mb-4">
               <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
               <span className="font-bold text-xl">
                 UR <span className="gradient-text">Media</span>
               </span>
-            </a>
+            </Link>
             <p className="text-primary-foreground/70 max-w-sm mb-6">
               {t("footer.desc")}
             </p>
@@ -74,12 +74,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -91,12 +91,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -11,6 +11,7 @@ export const organizationSchema = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
+    email: "contact@urmedia.tech",
     availableLanguage: ["English", "Bengali"],
   },
 };

@@ -18,18 +18,24 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const footerLinks = {
     company: [
-      { name: t("footer.about"), href: "/about" },
-      { name: t("nav.services"), href: "/services" },
-      { name: t("footer.projects"), href: "/portfolio" },
-      { name: t("nav.contact"), href: "/contact" },
+      { name: t("footer.about"), sectionId: "about" },
+      { name: t("nav.services"), sectionId: "services" },
+      { name: t("footer.projects"), sectionId: "portfolio" },
+      { name: t("nav.contact"), sectionId: "contact" },
     ],
     services: [
-      { name: "Video Editing", href: "/services/video-editing" },
-      { name: "Motion Graphics", href: "/services/motion-graphics" },
-      { name: "Social Media", href: "/services/social-media-content" },
-      { name: "Blog", href: "/blog" },
+      { name: "Video Editing", sectionId: "services" },
+      { name: "Motion Graphics", sectionId: "services" },
+      { name: "Social Media", sectionId: "services" },
     ],
   };
 
@@ -42,7 +48,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
+            <Link to="/" className="flex items-center gap-2 mb-4" onClick={scrollToTop}>
               <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
               <span className="font-bold text-xl">
                 UR <span className="gradient-text">Media</span>
@@ -74,12 +80,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
+                  <button
+                    onClick={() => scrollToSection(link.sectionId)}
                     className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
                   >
                     {link.name}
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -91,12 +97,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
+                  <button
+                    onClick={() => scrollToSection(link.sectionId)}
                     className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
                   >
                     {link.name}
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

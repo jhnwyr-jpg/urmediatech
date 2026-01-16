@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,15 +10,29 @@ import logo from "@/assets/logo.ico";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
-  const location = useLocation();
 
   const navLinks = [
-    { name: t("nav.services"), href: "/services" },
-    { name: t("nav.projects"), href: "/portfolio" },
-    { name: t("nav.about"), href: "/about" },
+    { name: t("nav.services"), href: "#services" },
+    { name: t("nav.projects"), href: "#portfolio" },
+    { name: t("nav.about"), href: "#about" },
   ];
 
-  const isActive = (href: string) => location.pathname === href;
+  const scrollToSection = (href: string) => {
+    const sectionId = href.replace("#", "");
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsOpen(false);
+  };
+
+  const scrollToContact = () => {
+    const element = document.getElementById("contact");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    setIsOpen(false);
+  };
 
   return (
     <motion.header
@@ -77,6 +91,7 @@ const Navbar = () => {
           <Link 
             to="/" 
             className="flex items-center gap-2 px-4 relative z-10"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
@@ -87,33 +102,27 @@ const Navbar = () => {
           {/* Center Navigation */}
           <div className="flex items-center gap-1 relative z-10">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.href}
-                to={link.href}
-                className={`px-4 py-2 transition-all duration-300 text-sm font-medium rounded-full hover:bg-white/10 ${
-                  isActive(link.href) ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => scrollToSection(link.href)}
+                className="px-4 py-2 transition-all duration-300 text-sm font-medium rounded-full hover:bg-white/10 text-muted-foreground hover:text-foreground"
               >
                 {link.name}
-              </Link>
+              </button>
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Button */}
           <div className="flex items-center gap-2 relative z-10">
             <LanguageToggle />
-            <Link to="/contact">
-              <Button variant="gradient" size="sm" className="rounded-full px-5 shadow-lg shadow-primary/25">
-                {t("nav.contact")}
-              </Button>
-            </Link>
-            <Link 
-              to="/blog"
-              className="flex items-center gap-1 px-4 py-2 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
+            <Button 
+              variant="gradient" 
+              size="sm" 
+              className="rounded-full px-5 shadow-lg shadow-primary/25"
+              onClick={scrollToContact}
             >
-              Blog
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              {t("nav.contact")}
+            </Button>
           </div>
         </motion.div>
 
@@ -150,6 +159,7 @@ const Navbar = () => {
           <Link 
             to="/"
             className="flex items-center gap-2 relative z-10"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">
@@ -192,37 +202,26 @@ const Navbar = () => {
                 {/* Navigation Links Row */}
                 <div className="flex items-center justify-center gap-6 pb-4">
                   {navLinks.map((link) => (
-                    <Link
+                    <button
                       key={link.href}
-                      to={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`transition-all duration-300 text-sm font-medium ${
-                        isActive(link.href) ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      onClick={() => scrollToSection(link.href)}
+                      className="transition-all duration-300 text-sm font-medium text-muted-foreground hover:text-foreground"
                     >
                       {link.name}
-                    </Link>
+                    </button>
                   ))}
                 </div>
                 
                 {/* CTA Section */}
-                <div className="pt-4 space-y-3 border-t border-white/10">
-                  <Link 
-                    to="/contact"
-                    onClick={() => setIsOpen(false)}
+                <div className="pt-4 border-t border-white/10">
+                  <Button 
+                    variant="gradient" 
+                    size="sm" 
+                    className="w-full rounded-full shadow-lg shadow-primary/25 py-3"
+                    onClick={scrollToContact}
                   >
-                    <Button variant="gradient" size="sm" className="w-full rounded-full shadow-lg shadow-primary/25 py-3">
-                      {t("nav.contact")}
-                    </Button>
-                  </Link>
-                  <Link 
-                    to="/blog"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-1 w-full py-3 text-muted-foreground hover:text-foreground transition-colors duration-300 text-sm font-medium"
-                  >
-                    Blog
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                    {t("nav.contact")}
+                  </Button>
                 </div>
               </div>
             </motion.div>

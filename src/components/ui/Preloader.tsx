@@ -35,8 +35,13 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
         >
           <motion.img 
             src={logo} 
-            alt="UR Media" 
+            alt="UR Media - Loading Premium Video Editing Experience" 
             className="w-24 h-24 invert"
+            width={96}
+            height={96}
+            loading="eager"
+            decoding="sync"
+            fetchPriority="high"
             animate={{ 
               rotateY: [0, 360],
             }}

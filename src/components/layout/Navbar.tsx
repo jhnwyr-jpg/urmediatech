@@ -93,7 +93,15 @@ const Navbar = () => {
             className="flex items-center gap-2 px-4 relative z-10"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
+            <img 
+              src={logo} 
+              alt="UR Media - Professional Video Editing Agency Logo" 
+              className="w-8 h-8"
+              width={32}
+              height={32}
+              loading="eager"
+              decoding="async"
+            />
             <span className="font-bold text-lg text-foreground">
               UR <span className="text-primary">Media</span>
             </span>
@@ -161,7 +169,15 @@ const Navbar = () => {
             className="flex items-center gap-2 relative z-10"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <img src={logo} alt="UR Media Logo" className="w-8 h-8" />
+            <img 
+              src={logo} 
+              alt="UR Media - Professional Video Editing Agency Logo" 
+              className="w-8 h-8"
+              width={32}
+              height={32}
+              loading="eager"
+              decoding="async"
+            />
             <span className="font-bold text-lg text-foreground">
               UR <span className="text-primary">Media</span>
             </span>

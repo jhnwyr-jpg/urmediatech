@@ -141,7 +141,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t("contact.emailLabel")}</p>
-                  <p className="font-medium text-foreground">hello@urmedia.com</p>
+                  <p className="font-medium text-foreground">contact@urmedia.tech</p>
                 </div>
               </div>
               

@@ -49,7 +49,15 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4" onClick={scrollToTop}>
-              <img src={logo} alt="UR Media Logo" className="w-10 h-10 invert" />
+              <img 
+                src={logo} 
+                alt="UR Media - Professional Video Editing Agency Logo" 
+                className="w-10 h-10 invert"
+                width={40}
+                height={40}
+                loading="lazy"
+                decoding="async"
+              />
               <span className="font-bold text-xl">
                 UR <span className="gradient-text">Media</span>
               </span>

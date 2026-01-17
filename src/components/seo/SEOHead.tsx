@@ -28,20 +28,22 @@ const SEOHead = ({
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={canonical} />
 
-      {/* Open Graph */}
+      {/* Open Graph / Facebook / WhatsApp / LinkedIn */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content="UR Media - Innovating Your Digital Presence" />
+      <meta property="og:description" content="Explore our creative services and projects at urmedia.tech" />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:alt" content="UR Media - Digital Solutions and Creative Services" />
       <meta property="og:site_name" content="UR Media" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={canonical} />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content="UR Media | Digital Solutions" />
+      <meta name="twitter:description" content="Explore our creative services and projects at urmedia.tech" />
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content="UR Media - Digital Solutions and Creative Services" />
 
       {/* JSON-LD Structured Data */}
       {jsonLd && (

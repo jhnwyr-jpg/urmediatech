@@ -18,10 +18,11 @@ const Index = () => {
   return (
     <main className="min-h-screen bg-background">
       <SEOHead
-        title="UR Media | Professional Video Editing Agency"
-        description="Professional video editing services for brands and creators. Expert motion graphics, social media content, and brand videos with fast turnaround and premium quality."
-        keywords="video editing, motion graphics, social media content, brand videos, YouTube editing, TikTok content, professional video editor"
+        title="UR Media | Digital Solutions & Creative Services"
+        description="UR Media provides expert digital marketing, branding, and creative solutions to grow your business online. Visit urmedia.tech to explore our services."
+        keywords="digital marketing, branding, creative services, video editing, motion graphics, social media content, web design, digital agency, content creation, brand videos"
         canonical="https://urmedia.tech"
+        ogImage="https://urmedia.tech/og-image.png"
         jsonLd={[organizationSchema, websiteSchema, professionalServiceSchema]}
       />
       <TrackingPixels currentPage="home" />

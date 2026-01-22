@@ -23,6 +23,8 @@ export type Database = {
           status: string | null
           updated_at: string
           visitor_info: Json | null
+          visitor_name: string | null
+          visitor_phone: string | null
         }
         Insert: {
           created_at?: string
@@ -32,6 +34,8 @@ export type Database = {
           status?: string | null
           updated_at?: string
           visitor_info?: Json | null
+          visitor_name?: string | null
+          visitor_phone?: string | null
         }
         Update: {
           created_at?: string
@@ -41,6 +45,8 @@ export type Database = {
           status?: string | null
           updated_at?: string
           visitor_info?: Json | null
+          visitor_name?: string | null
+          visitor_phone?: string | null
         }
         Relationships: []
       }

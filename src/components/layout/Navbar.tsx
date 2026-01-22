@@ -27,10 +27,7 @@ const Navbar = () => {
   };
 
   const scrollToContact = () => {
-    const element = document.getElementById("contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    window.dispatchEvent(new CustomEvent("open-support-chat"));
     setIsOpen(false);
   };
 

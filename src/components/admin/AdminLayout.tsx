@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   MessageSquare,
+  MessageCircle,
   BarChart3,
   Settings,
   LogOut,
@@ -22,6 +23,7 @@ interface AdminLayoutProps {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
   { icon: MessageSquare, label: "Contacts", path: "/admin/contacts" },
+  { icon: MessageCircle, label: "Chats", path: "/admin/chats" },
   { icon: CalendarDays, label: "Meetings", path: "/admin/meetings" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },

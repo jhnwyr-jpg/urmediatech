@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import AdminProjects from "./pages/admin/Projects";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/admin/meetings" element={<AdminMeetings />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="/admin/projects" element={<AdminProjects />} />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />

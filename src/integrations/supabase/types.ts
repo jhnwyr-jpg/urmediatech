@@ -271,6 +271,54 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          category_bn: string
+          category_en: string
+          created_at: string
+          demo_url: string
+          description_bn: string | null
+          description_en: string | null
+          gradient: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          title_bn: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          category_bn: string
+          category_en: string
+          created_at?: string
+          demo_url: string
+          description_bn?: string | null
+          description_en?: string | null
+          gradient?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title_bn: string
+          title_en: string
+          updated_at?: string
+        }
+        Update: {
+          category_bn?: string
+          category_en?: string
+          created_at?: string
+          demo_url?: string
+          description_bn?: string | null
+          description_en?: string | null
+          gradient?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          title_bn?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           category: string

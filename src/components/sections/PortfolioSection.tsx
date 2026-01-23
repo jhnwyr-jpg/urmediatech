@@ -1,49 +1,90 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExternalLink, Globe, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card3D, ScrollReveal } from "@/components/ui/AnimatedComponents";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+
+type Project = {
+  id: string;
+  title_en: string;
+  title_bn: string;
+  description_en: string | null;
+  description_bn: string | null;
+  category_en: string;
+  category_bn: string;
+  demo_url: string;
+  gradient: string;
+};
 
 const PortfolioSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  const projects = [
-    {
-      id: 1,
-      title: t("portfolio.saas"),
-      category: t("portfolio.saasCategory"),
-      description: t("portfolio.saasDesc"),
-      demoUrl: "https://saas2413.netlify.app/",
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      id: 2,
-      title: t("portfolio.masala"),
-      category: t("portfolio.masalaCategory"),
-      description: t("portfolio.masalaDesc"),
-      demoUrl: "https://masalapage.netlify.app/",
-      gradient: "from-orange-500 to-red-500",
-    },
-    {
-      id: 3,
-      title: t("portfolio.khejur"),
-      category: t("portfolio.khejurCategory"),
-      description: t("portfolio.khejurDesc"),
-      demoUrl: "https://khgejurgur.netlify.app/",
-      gradient: "from-amber-500 to-orange-500",
-    },
-    {
-      id: 4,
-      title: t("portfolio.tshirt"),
-      category: t("portfolio.tshirtCategory"),
-      description: t("portfolio.tshirtDesc"),
-      demoUrl: "https://tshirtpagela.netlify.app/",
-      gradient: "from-green-500 to-teal-500",
-    },
-  ];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("id, title_en, title_bn, description_en, description_bn, category_en, category_bn, demo_url, gradient")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
+
+      if (!error && data) {
+        setProjects(data as Project[]);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Fallback to hardcoded projects if none in DB
+  const displayProjects =
+    projects.length > 0
+      ? projects.map((p) => ({
+          id: p.id,
+          title: language === "bn" ? p.title_bn : p.title_en,
+          category: language === "bn" ? p.category_bn : p.category_en,
+          description: language === "bn" ? (p.description_bn ?? "") : (p.description_en ?? ""),
+          demoUrl: p.demo_url,
+          gradient: p.gradient,
+        }))
+      : [
+          {
+            id: "1",
+            title: t("portfolio.saas"),
+            category: t("portfolio.saasCategory"),
+            description: t("portfolio.saasDesc"),
+            demoUrl: "https://saas2413.netlify.app/",
+            gradient: "from-blue-500 to-cyan-500",
+          },
+          {
+            id: "2",
+            title: t("portfolio.masala"),
+            category: t("portfolio.masalaCategory"),
+            description: t("portfolio.masalaDesc"),
+            demoUrl: "https://masalapage.netlify.app/",
+            gradient: "from-orange-500 to-red-500",
+          },
+          {
+            id: "3",
+            title: t("portfolio.khejur"),
+            category: t("portfolio.khejurCategory"),
+            description: t("portfolio.khejurDesc"),
+            demoUrl: "https://khgejurgur.netlify.app/",
+            gradient: "from-amber-500 to-orange-500",
+          },
+          {
+            id: "4",
+            title: t("portfolio.tshirt"),
+            category: t("portfolio.tshirtCategory"),
+            description: t("portfolio.tshirtDesc"),
+            demoUrl: "https://tshirtpagela.netlify.app/",
+            gradient: "from-green-500 to-teal-500",
+          },
+        ];
 
   return (
     <section id="portfolio" className="py-24 bg-muted/30 relative overflow-hidden">
@@ -103,7 +144,7 @@ const PortfolioSection = () => {
 
         {/* Portfolio Grid */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {projects.map((project, index) => (
+          {displayProjects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} t={t} />
           ))}
         </div>
@@ -112,7 +153,15 @@ const PortfolioSection = () => {
   );
 };
 
-const ProjectCard = ({ project, index, t }: { project: any; index: number; t: (key: string) => string }) => {
+const ProjectCard = ({
+  project,
+  index,
+  t,
+}: {
+  project: { id: string; title: string; category: string; description: string; demoUrl: string; gradient: string };
+  index: number;
+  t: (key: string) => string;
+}) => {
   return (
     <ScrollReveal delay={index * 0.15} direction={index % 2 === 0 ? "left" : "right"}>
       <Card3D className="h-full">
@@ -192,13 +241,13 @@ const ProjectCard = ({ project, index, t }: { project: any; index: number; t: (k
             animate={{ opacity: 1 }}
             className="text-xs text-muted-foreground/70 mt-3 flex items-center gap-1 relative z-10"
           >
-              <motion.span 
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-1.5 h-1.5 rounded-full bg-green-500" 
-              />
-              {t("portfolio.newTab")}
-            </motion.p>
+            <motion.span 
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1.5 h-1.5 rounded-full bg-green-500" 
+            />
+            {t("portfolio.newTab")}
+          </motion.p>
 
           {/* Decorative gradient corner */}
           <motion.div 

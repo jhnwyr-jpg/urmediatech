@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 // Public Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ChatPage from "./pages/Chat";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/Login";
@@ -33,6 +34,7 @@ const App = () => (
             <Routes>
               {/* Single Page Landing */}
               <Route path="/" element={<Index />} />
+              <Route path="/chat" element={<ChatPage />} />
               
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import logo from "@/assets/logo.ico";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
-  const navigate = useNavigate();
 
   const navLinks = [
     { name: t("nav.services"), href: "#services" },
@@ -27,8 +26,11 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-  const goToChat = () => {
-    navigate("/chat");
+  const scrollToContact = () => {
+    const element = document.getElementById("contact");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
     setIsOpen(false);
   };
 
@@ -125,7 +127,7 @@ const Navbar = () => {
               variant="gradient" 
               size="sm" 
               className="rounded-full px-5 shadow-lg shadow-primary/25"
-              onClick={goToChat}
+              onClick={scrollToContact}
             >
               {t("nav.contact")}
             </Button>
@@ -232,7 +234,7 @@ const Navbar = () => {
                     variant="gradient" 
                     size="sm" 
                     className="w-full rounded-full shadow-lg shadow-primary/25 py-3"
-                    onClick={goToChat}
+                    onClick={scrollToContact}
                   >
                     {t("nav.contact")}
                   </Button>

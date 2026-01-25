@@ -21,6 +21,7 @@ const AIChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(() => crypto.randomUUID());
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [adminSeen, setAdminSeen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,6 +39,56 @@ const AIChatBot = () => {
     }
   }, [isOpen, isMinimized]);
 
+  // Subscribe to admin_seen status
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const channel = supabase
+      .channel(`chatbot-admin-seen:${conversationId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "chat_conversations", filter: `id=eq.${conversationId}` },
+        (payload) => {
+          const row = payload.new as any;
+          if (row.admin_seen) {
+            setAdminSeen(true);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
+
+  // Subscribe to admin messages when admin_seen is true
+  useEffect(() => {
+    if (!conversationId || !adminSeen) return;
+
+    const channel = supabase
+      .channel(`chatbot-admin-messages:${conversationId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "chat_messages", filter: `conversation_id=eq.${conversationId}` },
+        (payload) => {
+          const row = payload.new as any;
+          // Only add assistant messages from admin (not AI)
+          if (row.role === "assistant") {
+            setMessages(prev => {
+              if (prev.some((m: any) => m.id === row.id)) return prev;
+              return [...prev, { role: "assistant", content: row.content }];
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId, adminSeen]);
+
   // Initialize conversation
   const initConversation = async () => {
     if (conversationId) return conversationId;
@@ -45,7 +96,7 @@ const AIChatBot = () => {
     const { data, error } = await supabase
       .from("chat_conversations")
       .insert({ session_id: sessionId })
-      .select("id")
+      .select("id, admin_seen")
       .single();
 
     if (error) {
@@ -54,6 +105,7 @@ const AIChatBot = () => {
     }
 
     setConversationId(data.id);
+    setAdminSeen(data.admin_seen || false);
     return data.id;
   };
 
@@ -151,13 +203,17 @@ const AIChatBot = () => {
     await saveMessage("user", userMessage.content);
 
     try {
-      const allMessages = [...messages, userMessage];
-      const assistantContent = await streamChat(allMessages);
-      
-      // Save assistant message
-      if (assistantContent) {
-        await saveMessage("assistant", assistantContent);
+      // Only get AI response if admin hasn't seen the chat yet
+      if (!adminSeen) {
+        const allMessages = [...messages, userMessage];
+        const assistantContent = await streamChat(allMessages);
+        
+        // Save assistant message
+        if (assistantContent) {
+          await saveMessage("assistant", assistantContent);
+        }
       }
+      // If admin has seen, message is saved and admin will reply via realtime
     } catch (error) {
       console.error("Chat error:", error);
       const errorMessage: Message = {

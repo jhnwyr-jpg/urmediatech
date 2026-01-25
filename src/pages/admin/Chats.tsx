@@ -117,6 +117,16 @@ const AdminChats = () => {
       setVisitorTyping(false);
       return;
     }
+    
+    // Mark conversation as admin_seen when selected
+    const markAdminSeen = async () => {
+      await supabase
+        .from("chat_conversations")
+        .update({ admin_seen: true })
+        .eq("id", selectedId);
+    };
+    markAdminSeen();
+    
     fetchMessages(selectedId).catch((e) => {
       console.error("Fetch messages error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to load messages." });

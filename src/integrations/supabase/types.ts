@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       chat_conversations: {
         Row: {
+          admin_seen: boolean | null
           admin_typing: boolean | null
           created_at: string
           id: string
@@ -31,6 +32,7 @@ export type Database = {
           visitor_typing: boolean | null
         }
         Insert: {
+          admin_seen?: boolean | null
           admin_typing?: boolean | null
           created_at?: string
           id?: string
@@ -46,6 +48,7 @@ export type Database = {
           visitor_typing?: boolean | null
         }
         Update: {
+          admin_seen?: boolean | null
           admin_typing?: boolean | null
           created_at?: string
           id?: string

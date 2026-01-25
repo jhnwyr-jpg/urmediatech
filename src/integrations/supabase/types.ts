@@ -16,8 +16,11 @@ export type Database = {
     Tables: {
       chat_conversations: {
         Row: {
+          admin_typing: boolean | null
           created_at: string
           id: string
+          last_seen_by_admin: string | null
+          last_seen_by_visitor: string | null
           requirements: Json | null
           session_id: string
           status: string | null
@@ -25,10 +28,14 @@ export type Database = {
           visitor_info: Json | null
           visitor_name: string | null
           visitor_phone: string | null
+          visitor_typing: boolean | null
         }
         Insert: {
+          admin_typing?: boolean | null
           created_at?: string
           id?: string
+          last_seen_by_admin?: string | null
+          last_seen_by_visitor?: string | null
           requirements?: Json | null
           session_id: string
           status?: string | null
@@ -36,10 +43,14 @@ export type Database = {
           visitor_info?: Json | null
           visitor_name?: string | null
           visitor_phone?: string | null
+          visitor_typing?: boolean | null
         }
         Update: {
+          admin_typing?: boolean | null
           created_at?: string
           id?: string
+          last_seen_by_admin?: string | null
+          last_seen_by_visitor?: string | null
           requirements?: Json | null
           session_id?: string
           status?: string | null
@@ -47,6 +58,7 @@ export type Database = {
           visitor_info?: Json | null
           visitor_name?: string | null
           visitor_phone?: string | null
+          visitor_typing?: boolean | null
         }
         Relationships: []
       }
@@ -56,6 +68,7 @@ export type Database = {
           conversation_id: string | null
           created_at: string
           id: string
+          is_seen: boolean | null
           role: string
         }
         Insert: {
@@ -63,6 +76,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string
           id?: string
+          is_seen?: boolean | null
           role: string
         }
         Update: {
@@ -70,6 +84,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string
           id?: string
+          is_seen?: boolean | null
           role?: string
         }
         Relationships: [

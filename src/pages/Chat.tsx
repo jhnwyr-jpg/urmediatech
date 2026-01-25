@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Headset, User, Loader2, Phone, ArrowLeft, MessageCircle } from "lucide-react";
+import { Send, Headset, User, Loader2, Phone, ArrowLeft, MessageCircle, Check, CheckCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 type Role = "user" | "assistant";
-type Message = { id?: string; role: Role; content: string; created_at?: string };
+type Message = { id?: string; role: Role; content: string; created_at?: string; is_seen?: boolean };
 
 const SUPPORT_SESSION_KEY = "urmedia_support_session_id";
 const SUPPORT_CONV_KEY = "urmedia_support_conversation_id";
@@ -31,6 +31,8 @@ const ChatPage = () => {
   const [conversationId, setConversationId] = useState<string | null>(() => 
     localStorage.getItem(SUPPORT_CONV_KEY)
   );
+  const [adminTyping, setAdminTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const savedVisitor = useMemo(() => {
     try {
@@ -60,7 +62,7 @@ const ChatPage = () => {
     }
   }, [canChat]);
 
-  // Load existing messages + subscribe
+  // Load existing messages + subscribe to messages and typing
   useEffect(() => {
     if (!conversationId) return;
 
@@ -68,7 +70,7 @@ const ChatPage = () => {
     (async () => {
       const { data, error } = await supabase
         .from("chat_messages")
-        .select("id, role, content, created_at")
+        .select("id, role, content, created_at, is_seen")
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
 
@@ -78,10 +80,23 @@ const ChatPage = () => {
           return;
         }
         setMessages((data as Message[]) ?? []);
+        
+        // Mark unseen assistant messages as seen
+        const unseenIds = (data || [])
+          .filter((m: any) => m.role === "assistant" && !m.is_seen)
+          .map((m: any) => m.id);
+        
+        if (unseenIds.length > 0) {
+          await supabase
+            .from("chat_messages")
+            .update({ is_seen: true })
+            .in("id", unseenIds);
+        }
       }
     })();
 
-    const channel = supabase
+    // Subscribe to new messages
+    const messagesChannel = supabase
       .channel(`support-chat-page:${conversationId}`)
       .on(
         "postgres_changes",
@@ -90,15 +105,47 @@ const ChatPage = () => {
           const row = payload.new as any;
           setMessages((prev) => {
             if (prev.some((m) => m.id && m.id === row.id)) return prev;
-            return [...prev, { id: row.id, role: row.role, content: row.content, created_at: row.created_at }];
+            return [...prev, { id: row.id, role: row.role, content: row.content, created_at: row.created_at, is_seen: row.is_seen }];
           });
+          
+          // Mark as seen if it's from admin
+          if (row.role === "assistant") {
+            supabase
+              .from("chat_messages")
+              .update({ is_seen: true })
+              .eq("id", row.id);
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "chat_messages", filter: `conversation_id=eq.${conversationId}` },
+        (payload) => {
+          const row = payload.new as any;
+          setMessages((prev) =>
+            prev.map((m) => (m.id === row.id ? { ...m, is_seen: row.is_seen } : m))
+          );
+        }
+      )
+      .subscribe();
+
+    // Subscribe to typing indicator
+    const typingChannel = supabase
+      .channel(`support-typing:${conversationId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "chat_conversations", filter: `id=eq.${conversationId}` },
+        (payload) => {
+          const row = payload.new as any;
+          setAdminTyping(row.admin_typing === true);
         }
       )
       .subscribe();
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(channel);
+      supabase.removeChannel(messagesChannel);
+      supabase.removeChannel(typingChannel);
     };
   }, [conversationId]);
 
@@ -146,11 +193,43 @@ const ChatPage = () => {
     }
   }, [toast, visitorName, visitorPhone]);
 
+  // Update visitor typing status
+  const updateTypingStatus = useCallback(async (isTyping: boolean) => {
+    if (!conversationId) return;
+    await supabase
+      .from("chat_conversations")
+      .update({ visitor_typing: isTyping })
+      .eq("id", conversationId);
+  }, [conversationId]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    
+    // Set typing to true
+    updateTypingStatus(true);
+    
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set timeout to clear typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      updateTypingStatus(false);
+    }, 2000);
+  };
+
   const handleSend = useCallback(async () => {
     if (!conversationId || !input.trim() || isLoading) return;
     const content = input.trim();
     setInput("");
     setIsLoading(true);
+    
+    // Clear typing status
+    updateTypingStatus(false);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
 
     setMessages((prev) => [...prev, { role: "user", content }]);
 
@@ -171,7 +250,7 @@ const ChatPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [conversationId, input, isLoading, toast]);
+  }, [conversationId, input, isLoading, toast, updateTypingStatus]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -197,7 +276,7 @@ const ChatPage = () => {
               <p className="text-xs opacity-80">Online • Replying in admin panel</p>
             </div>
           </div>
-          <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+          <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
         </div>
       </header>
 
@@ -301,17 +380,55 @@ const ChatPage = () => {
                       }`}
                     >
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                      {message.created_at && (
-                        <p className={`text-[10px] mt-1 ${
-                          message.role === "user" ? "text-primary-foreground/60" : "text-muted-foreground"
-                        }`}>
-                          {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      )}
+                      <div className={`flex items-center gap-1 mt-1 ${
+                        message.role === "user" ? "justify-end" : ""
+                      }`}>
+                        {message.created_at && (
+                          <span className={`text-[10px] ${
+                            message.role === "user" ? "text-primary-foreground/60" : "text-muted-foreground"
+                          }`}>
+                            {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
+                        {/* Seen status for user messages */}
+                        {message.role === "user" && message.id && (
+                          <span className="text-primary-foreground/60">
+                            {message.is_seen ? (
+                              <CheckCheck className="w-3.5 h-3.5" />
+                            ) : (
+                              <Check className="w-3.5 h-3.5" />
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
+              
+              {/* Admin typing indicator */}
+              {adminTyping && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex gap-3"
+                >
+                  <div className="w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center">
+                    <Headset className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                      <span className="text-xs text-muted-foreground">typing...</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
               
               {isLoading && (
                 <motion.div 
@@ -340,7 +457,7 @@ const ChatPage = () => {
                 <Input
                   ref={inputRef}
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={handleInputChange}
                   onKeyDown={onKeyDown}
                   placeholder="Type your message..."
                   disabled={isLoading}

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { CalendarPlus, MessageCircle, RefreshCw, Send, User } from "lucide-react";
+import { CalendarPlus, MessageCircle, RefreshCw, Send, User, Check, CheckCheck } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,6 +21,7 @@ type Conversation = {
   status: string | null;
   visitor_name: string | null;
   visitor_phone: string | null;
+  visitor_typing?: boolean;
 };
 
 type Message = {
@@ -29,6 +30,7 @@ type Message = {
   created_at: string;
   role: "user" | "assistant";
   content: string;
+  is_seen?: boolean;
 };
 
 const AdminChats = () => {
@@ -39,6 +41,8 @@ const AdminChats = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [reply, setReply] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [visitorTyping, setVisitorTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [meetingDate, setMeetingDate] = useState("");
@@ -54,7 +58,7 @@ const AdminChats = () => {
     try {
       const { data, error } = await supabase
         .from("chat_conversations")
-        .select("id, created_at, status, visitor_name, visitor_phone")
+        .select("id, created_at, status, visitor_name, visitor_phone, visitor_typing")
         .order("created_at", { ascending: false });
       if (error) throw error;
       setConversations((data as Conversation[]) ?? []);
@@ -70,11 +74,23 @@ const AdminChats = () => {
   const fetchMessages = async (conversationId: string) => {
     const { data, error } = await supabase
       .from("chat_messages")
-      .select("id, conversation_id, created_at, role, content")
+      .select("id, conversation_id, created_at, role, content, is_seen")
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
     if (error) throw error;
     setMessages((data as Message[]) ?? []);
+    
+    // Mark unseen user messages as seen
+    const unseenIds = (data || [])
+      .filter((m: any) => m.role === "user" && !m.is_seen)
+      .map((m: any) => m.id);
+    
+    if (unseenIds.length > 0) {
+      await supabase
+        .from("chat_messages")
+        .update({ is_seen: true })
+        .in("id", unseenIds);
+    }
   };
 
   useEffect(() => {
@@ -98,6 +114,7 @@ const AdminChats = () => {
   useEffect(() => {
     if (!selectedId) {
       setMessages([]);
+      setVisitorTyping(false);
       return;
     }
     fetchMessages(selectedId).catch((e) => {
@@ -105,7 +122,8 @@ const AdminChats = () => {
       toast({ variant: "destructive", title: "Error", description: "Failed to load messages." });
     });
 
-    const channel = supabase
+    // Subscribe to messages
+    const messagesChannel = supabase
       .channel(`admin-chats:messages:${selectedId}`)
       .on(
         "postgres_changes",
@@ -116,18 +134,83 @@ const AdminChats = () => {
             if (prev.some((m) => m.id === row.id)) return prev;
             return [...prev, row as Message];
           });
+          
+          // Mark as seen if it's from user
+          if (row.role === "user") {
+            supabase
+              .from("chat_messages")
+              .update({ is_seen: true })
+              .eq("id", row.id);
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "chat_messages", filter: `conversation_id=eq.${selectedId}` },
+        (payload) => {
+          const row = payload.new as any;
+          setMessages((prev) =>
+            prev.map((m) => (m.id === row.id ? { ...m, is_seen: row.is_seen } : m))
+          );
+        }
+      )
+      .subscribe();
+
+    // Subscribe to typing indicator
+    const typingChannel = supabase
+      .channel(`admin-typing:${selectedId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "chat_conversations", filter: `id=eq.${selectedId}` },
+        (payload) => {
+          const row = payload.new as any;
+          setVisitorTyping(row.visitor_typing === true);
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(messagesChannel);
+      supabase.removeChannel(typingChannel);
     };
   }, [selectedId, toast]);
+
+  // Update admin typing status
+  const updateTypingStatus = useCallback(async (isTyping: boolean) => {
+    if (!selectedId) return;
+    await supabase
+      .from("chat_conversations")
+      .update({ admin_typing: isTyping })
+      .eq("id", selectedId);
+  }, [selectedId]);
+
+  const handleReplyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReply(e.target.value);
+    
+    // Set typing to true
+    updateTypingStatus(true);
+    
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set timeout to clear typing after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      updateTypingStatus(false);
+    }, 2000);
+  };
 
   const sendReply = async () => {
     if (!selectedId || !reply.trim() || isSending) return;
     setIsSending(true);
+    
+    // Clear typing status
+    updateTypingStatus(false);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
     try {
       const { error } = await supabase.from("chat_messages").insert({
         conversation_id: selectedId,
@@ -263,16 +346,51 @@ const AdminChats = () => {
                 {messages.map((m) => (
                   <div key={m.id} className={`flex ${m.role === "assistant" ? "justify-start" : "justify-end"}`}>
                     <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap ${
+                      className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                         m.role === "assistant"
                           ? "bg-secondary text-foreground"
                           : "bg-primary text-primary-foreground"
                       }`}
                     >
-                      {m.content}
+                      <p className="whitespace-pre-wrap">{m.content}</p>
+                      <div className={`flex items-center gap-1 mt-1 text-[10px] ${
+                        m.role === "assistant" ? "text-muted-foreground" : "text-primary-foreground/60 justify-end"
+                      }`}>
+                        <span>{new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        {m.role === "assistant" && (
+                          <span>
+                            {m.is_seen ? (
+                              <CheckCheck className="w-3.5 h-3.5 inline" />
+                            ) : (
+                              <Check className="w-3.5 h-3.5 inline" />
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
+                
+                {/* Visitor typing indicator */}
+                {visitorTyping && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex justify-end"
+                  >
+                    <div className="bg-primary/20 border border-primary/30 rounded-2xl px-4 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        </div>
+                        <span className="text-xs text-muted-foreground">typing...</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </ScrollArea>
 
@@ -280,7 +398,7 @@ const AdminChats = () => {
               <div className="flex gap-2">
                 <Input
                   value={reply}
-                  onChange={(e) => setReply(e.target.value)}
+                  onChange={handleReplyChange}
                   placeholder="Reply as support…"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {

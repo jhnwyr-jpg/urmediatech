@@ -20,6 +20,7 @@ import AdminMeetings from "./pages/admin/Meetings";
 import AdminReports from "./pages/admin/Reports";
 import AdminSettings from "./pages/admin/Settings";
 import AdminChats from "./pages/admin/Chats";
+import AdminUsers from "./pages/admin/Users";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/admin/chats" element={<AdminChats />} />
               <Route path="/admin/meetings" element={<AdminMeetings />} />
               <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/projects" element={<AdminProjects />} />
               

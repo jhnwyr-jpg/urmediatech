@@ -5,11 +5,12 @@ import {
   UserPlus,
   Shield,
   ShieldCheck,
-  ShieldAlert,
   Trash2,
   Mail,
   Search,
   Crown,
+  Send,
+  Loader2,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -85,6 +86,10 @@ const AdminUsers = () => {
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserRole, setNewUserRole] = useState<"admin" | "moderator" | "user">("user");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingInvite, setIsSendingInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"admin" | "moderator" | "user">("user");
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -245,6 +250,51 @@ const AdminUsers = () => {
   const moderatorCount = users.filter((u) => u.role === "moderator").length;
   const userCount = users.filter((u) => u.role === "user" || !u.role).length;
 
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSendingInvite(true);
+    try {
+      const siteUrl = window.location.origin;
+      const inviterName = currentUser?.email || "Admin";
+
+      const { data, error } = await supabase.functions.invoke("send-user-invite", {
+        body: {
+          email: inviteEmail,
+          role: inviteRole,
+          inviterName,
+          siteUrl,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success(`Invitation sent to ${inviteEmail}`);
+        setInviteEmail("");
+        setInviteRole("user");
+        setIsInviteDialogOpen(false);
+      } else {
+        throw new Error(data?.error || "Failed to send invitation");
+      }
+    } catch (error: any) {
+      console.error("Error sending invitation:", error);
+      toast.error(error.message || "Failed to send invitation email");
+    } finally {
+      setIsSendingInvite(false);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -256,14 +306,100 @@ const AdminUsers = () => {
               Manage admin users and their roles
             </p>
           </div>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <UserPlus className="w-4 h-4" />
-                Add User Role
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          <div className="flex gap-2">
+            {/* Send Invite Dialog */}
+            <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Send className="w-4 h-4" />
+                  Send Invite
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Send Email Invitation</DialogTitle>
+                  <DialogDescription>
+                    Send an invitation email to a new user with their assigned role.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invite-email">Email Address</Label>
+                    <Input
+                      id="invite-email"
+                      type="email"
+                      placeholder="user@example.com"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="invite-role">Role</Label>
+                    <Select
+                      value={inviteRole}
+                      onValueChange={(value: "admin" | "moderator" | "user") =>
+                        setInviteRole(value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">
+                          <div className="flex items-center gap-2">
+                            <Crown className="w-4 h-4 text-red-600" />
+                            Admin - Full Access
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="moderator">
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                            Moderator - Limited Access
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="user">
+                          <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-gray-600" />
+                            User - Basic Access
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsInviteDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSendInvite} disabled={isSendingInvite} className="gap-2">
+                    {isSendingInvite ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Send Invitation
+                      </>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Add Role Dialog */}
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <UserPlus className="w-4 h-4" />
+                  Add User Role
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add User Role</DialogTitle>
                 <DialogDescription>
@@ -328,6 +464,7 @@ const AdminUsers = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {/* Stats Cards */}

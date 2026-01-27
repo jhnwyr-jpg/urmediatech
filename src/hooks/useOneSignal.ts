@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import "@/styles/onesignal-custom.css";
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ export const useOneSignal = () => {
         // Fetch App ID from edge function
         const { data } = await supabase.functions.invoke('get-onesignal-config');
         const appId = data?.appId;
+        const safariWebId = data?.safariWebId;
 
         if (!appId) {
           console.log("OneSignal: App ID not configured yet");
@@ -38,7 +40,7 @@ export const useOneSignal = () => {
         window.OneSignalDeferred.push(async (OneSignal: any) => {
           await OneSignal.init({
             appId: appId,
-            safari_web_id: undefined,
+            safari_web_id: safariWebId || undefined,
             notifyButton: {
               enable: false,
             },
@@ -50,9 +52,9 @@ export const useOneSignal = () => {
                     type: "push",
                     autoPrompt: true,
                     text: {
-                      actionMessage: "Get notified about our latest updates and offers!",
-                      acceptButton: "Allow",
-                      cancelButton: "Maybe Later",
+                      actionMessage: "🔔 আমাদের latest updates এবং offers পেতে notifications চালু করুন!",
+                      acceptButton: "✨ Allow",
+                      cancelButton: "পরে",
                     },
                     delay: {
                       pageViews: 1,

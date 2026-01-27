@@ -13,6 +13,7 @@ import {
   CalendarDays,
   FolderKanban,
   Users,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +29,7 @@ const navItems = [
   { icon: MessageCircle, label: "Chats", path: "/admin/chats" },
   { icon: CalendarDays, label: "Meetings", path: "/admin/meetings" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
+  { icon: Bell, label: "Notifications", path: "/admin/notifications" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: Users, label: "Users", path: "/admin/users" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },

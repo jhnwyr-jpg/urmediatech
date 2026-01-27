@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
-// Replace with your OneSignal App ID when ready
-const ONESIGNAL_APP_ID = "YOUR_ONESIGNAL_APP_ID";
+import { supabase } from "@/integrations/supabase/client";
 
 declare global {
   interface Window {
@@ -15,15 +13,17 @@ export const useOneSignal = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   useEffect(() => {
-    // Skip if no valid App ID or already initialized
-    if (ONESIGNAL_APP_ID === "YOUR_ONESIGNAL_APP_ID") {
-      console.log("OneSignal: App ID not configured yet");
-      return;
-    }
-
-    // Initialize OneSignal
     const initOneSignal = async () => {
       try {
+        // Fetch App ID from edge function
+        const { data } = await supabase.functions.invoke('get-onesignal-config');
+        const appId = data?.appId;
+
+        if (!appId) {
+          console.log("OneSignal: App ID not configured yet");
+          return;
+        }
+
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         
         // Load OneSignal SDK
@@ -37,12 +37,12 @@ export const useOneSignal = () => {
 
         window.OneSignalDeferred.push(async (OneSignal: any) => {
           await OneSignal.init({
-            appId: ONESIGNAL_APP_ID,
-            safari_web_id: undefined, // Add Safari Web ID if needed
+            appId: appId,
+            safari_web_id: undefined,
             notifyButton: {
-              enable: false, // We'll use native prompt instead
+              enable: false,
             },
-            allowLocalhostAsSecureOrigin: true, // For development
+            allowLocalhostAsSecureOrigin: true,
             promptOptions: {
               slidedown: {
                 prompts: [
@@ -56,7 +56,7 @@ export const useOneSignal = () => {
                     },
                     delay: {
                       pageViews: 1,
-                      timeDelay: 3, // Show after 3 seconds
+                      timeDelay: 3,
                     },
                   },
                 ],
@@ -89,7 +89,6 @@ export const useOneSignal = () => {
     initOneSignal();
 
     return () => {
-      // Cleanup if needed
       if (window.OneSignal) {
         window.OneSignal.Notifications?.removeEventListener?.("permissionChange");
       }
@@ -107,7 +106,7 @@ export const useOneSignal = () => {
     }
   };
 
-  // Set external user ID for targeting (useful for logged-in users)
+  // Set external user ID for targeting
   const setExternalUserId = async (userId: string) => {
     if (window.OneSignal && isInitialized) {
       try {

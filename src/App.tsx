@@ -13,6 +13,10 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ChatPage from "./pages/Chat";
 
+// Client Pages
+import ClientLogin from "./pages/client/Login";
+import ClientDashboard from "./pages/client/Dashboard";
+
 // Admin Pages
 import AdminLogin from "./pages/admin/Login";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -39,6 +43,10 @@ const App = () => (
               {/* Single Page Landing */}
               <Route path="/" element={<Index />} />
               <Route path="/chat" element={<ChatPage />} />
+              
+              {/* Client Routes */}
+              <Route path="/client/login" element={<ClientLogin />} />
+              <Route path="/client/dashboard" element={<ClientDashboard />} />
               
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />

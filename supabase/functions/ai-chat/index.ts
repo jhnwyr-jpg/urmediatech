@@ -43,16 +43,41 @@ serve(async (req) => {
 
   try {
     const { messages, conversationId, sessionId } = await req.json();
-    
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Check for custom API key in database settings
+    let apiKey = Deno.env.get("LOVABLE_API_KEY");
+    
+    const { data: settingsData } = await supabase
+      .from("site_settings")
+      .select("key, value")
+      .in("key", ["ai_use_custom_key", "ai_custom_api_key", "ai_chat_enabled"]);
+
+    const settingsMap = settingsData?.reduce((acc, item) => {
+      acc[item.key] = item.value;
+      return acc;
+    }, {} as Record<string, string | null>) || {};
+
+    // Check if AI chat is disabled
+    if (settingsMap.ai_chat_enabled === "false") {
+      return new Response(JSON.stringify({ error: "AI Chat is currently disabled" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Use custom API key if enabled and available
+    if (settingsMap.ai_use_custom_key === "true" && settingsMap.ai_custom_api_key) {
+      apiKey = settingsMap.ai_custom_api_key;
+    }
+
+    if (!apiKey) {
+      throw new Error("No API key configured. Please set LOVABLE_API_KEY or configure a custom key in admin settings.");
+    }
 
     // Fetch active services from database
     const { data: services, error: servicesError } = await supabase
@@ -97,7 +122,7 @@ serve(async (req) => {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

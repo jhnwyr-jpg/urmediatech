@@ -27,6 +27,7 @@ import AdminSettings from "./pages/admin/Settings";
 import AdminChats from "./pages/admin/Chats";
 import AdminUsers from "./pages/admin/Users";
 import AdminNotifications from "./pages/admin/Notifications";
+import AdminClientServices from "./pages/admin/ClientServices";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,8 @@ const App = () => (
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/projects" element={<AdminProjects />} />
+              <Route path="/admin/notifications" element={<AdminNotifications />} />
+              <Route path="/admin/client-services" element={<AdminClientServices />} />
               <Route path="/admin/notifications" element={<AdminNotifications />} />
               
               {/* 404 */}

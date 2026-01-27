@@ -175,10 +175,12 @@ const Notifications = () => {
               </CardHeader>
               <CardContent>
                 <div className="bg-muted rounded-lg p-4 space-y-2">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-lg">
-                      UR
-                    </div>
+                    <div className="flex items-start gap-3">
+                    <img 
+                      src="/favicon.ico" 
+                      alt="UR Media" 
+                      className="w-10 h-10 rounded-lg"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm truncate">
                         {title || "Notification Title"}

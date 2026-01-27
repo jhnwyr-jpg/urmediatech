@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import AdminLayout from "@/components/admin/AdminLayout";
 import TrackingPixelsSettings from "@/components/admin/TrackingPixelsSettings";
+import AIChatbotSettings from "@/components/admin/AIChatbotSettings";
 
 const AdminSettings = () => {
   return (
@@ -12,11 +13,21 @@ const AdminSettings = () => {
           <p className="text-muted-foreground mt-1">Configure your website settings</p>
         </div>
 
-        {/* Tracking & Pixel Settings */}
+        {/* AI Chatbot Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
+          className="bg-card rounded-2xl border border-border/50 p-6"
+        >
+          <AIChatbotSettings />
+        </motion.div>
+
+        {/* Tracking & Pixel Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
           className="bg-card rounded-2xl border border-border/50 p-6"
         >
           <TrackingPixelsSettings />
@@ -26,7 +37,7 @@ const AdminSettings = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
           className="bg-secondary/50 rounded-2xl p-6 max-w-2xl"
         >
           <h3 className="font-medium text-foreground mb-3">How to find your Pixel IDs:</h3>

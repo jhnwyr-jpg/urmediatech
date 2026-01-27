@@ -12,9 +12,13 @@ serve(async (req) => {
 
   try {
     const appId = Deno.env.get('ONESIGNAL_APP_ID');
+    const safariWebId = Deno.env.get('ONESIGNAL_SAFARI_WEB_ID');
     
     return new Response(
-      JSON.stringify({ appId: appId || null }),
+      JSON.stringify({ 
+        appId: appId || null,
+        safariWebId: safariWebId || null
+      }),
       { 
         status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -22,7 +26,7 @@ serve(async (req) => {
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ appId: null }),
+      JSON.stringify({ appId: null, safariWebId: null }),
       { 
         status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

@@ -255,16 +255,14 @@ const AIChatBot = () => {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ delay: 1, type: "spring", stiffness: 200 }}
             onClick={openChat}
-            className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
             aria-label="Open AI Chat"
           >
-            <MessageCircle className="w-6 h-6" />
-            <motion.div
-              className="absolute inset-0 rounded-full bg-primary"
-              initial={{ scale: 1, opacity: 0.5 }}
-              animate={{ scale: 1.5, opacity: 0 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-            />
+            <MessageCircle className="w-6 h-6 relative z-10" />
+            {/* Subtle pulse ring - contained within button */}
+            <span className="absolute inset-0 rounded-full bg-primary-foreground/20 animate-ping opacity-75" style={{ animationDuration: '2s' }} />
+            {/* Gradient overlay for premium look */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-white/20 pointer-events-none" />
           </motion.button>
         )}
       </AnimatePresence>

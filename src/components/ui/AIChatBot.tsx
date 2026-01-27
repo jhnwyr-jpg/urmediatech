@@ -246,7 +246,7 @@ const AIChatBot = () => {
 
   return (
     <>
-      {/* Chat Button */}
+      {/* Chat Button - Apple Liquid Glass Style */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
@@ -255,14 +255,103 @@ const AIChatBot = () => {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ delay: 1, type: "spring", stiffness: 200 }}
             onClick={openChat}
-            className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
+            className="fixed bottom-6 right-6 z-50 group"
             aria-label="Open AI Chat"
           >
-            <MessageCircle className="w-6 h-6 relative z-10" />
-            {/* Subtle pulse ring - contained within button */}
-            <span className="absolute inset-0 rounded-full bg-primary-foreground/20 animate-ping opacity-75" style={{ animationDuration: '2s' }} />
-            {/* Gradient overlay for premium look */}
-            <span className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-white/20 pointer-events-none" />
+            {/* Outer glow ring */}
+            <motion.div
+              className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{
+                background: 'radial-gradient(circle, rgba(123, 95, 255, 0.3) 0%, transparent 70%)',
+              }}
+              animate={{
+                scale: [1, 1.1, 1],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            
+            {/* Pulse rings */}
+            <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-primary" style={{ animationDuration: '3s' }} />
+            <span className="absolute inset-0 rounded-full animate-ping opacity-10 bg-primary" style={{ animationDuration: '3s', animationDelay: '1s' }} />
+            
+            {/* Main button with liquid glass effect */}
+            <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-2xl">
+              {/* Glass background */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(123, 95, 255, 0.95) 0%, rgba(166, 120, 255, 0.9) 50%, rgba(123, 95, 255, 0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              />
+              
+              {/* Liquid shimmer effect */}
+              <motion.div
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                }}
+                animate={{
+                  x: ['-100%', '100%'],
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+              />
+              
+              {/* Aurora gradient overlay */}
+              <motion.div
+                className="absolute -top-1/2 -right-1/2 w-full h-full rounded-full pointer-events-none"
+                style={{
+                  background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 60%)',
+                }}
+                animate={{
+                  rotate: [0, 360],
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              />
+              
+              {/* Top highlight */}
+              <div 
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/3 rounded-full pointer-events-none"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%)',
+                }}
+              />
+              
+              {/* Bottom shadow */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(0deg, rgba(0,0,0,0.15) 0%, transparent 100%)',
+                }}
+              />
+              
+              {/* Icon container */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div
+                  animate={{
+                    y: [0, -2, 0],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <MessageCircle className="w-7 h-7 text-white drop-shadow-lg" />
+                </motion.div>
+              </div>
+              
+              {/* Inner border glow */}
+              <div 
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{
+                  boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -1px 1px rgba(0,0,0,0.1)',
+                }}
+              />
+            </div>
+            
+            {/* Hover scale effect */}
+            <motion.div 
+              className="absolute inset-0 rounded-full"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+            />
           </motion.button>
         )}
       </AnimatePresence>

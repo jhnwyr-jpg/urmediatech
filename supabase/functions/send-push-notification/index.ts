@@ -46,9 +46,10 @@ serve(async (req) => {
     }
 
     // Build OneSignal notification payload
+    // Use "All" segment which is the default OneSignal segment for all subscribed users
     const notificationPayload: Record<string, unknown> = {
       app_id: ONESIGNAL_APP_ID,
-      included_segments: ['Subscribed Users'],
+      included_segments: ['All'],
       headings: { en: title },
       contents: { en: message },
     };

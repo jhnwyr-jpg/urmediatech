@@ -100,6 +100,54 @@ export type Database = {
           },
         ]
       }
+      client_services: {
+        Row: {
+          client_id: string
+          created_at: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          paid_amount: number
+          payment_status: string
+          price: number
+          service_description: string | null
+          service_name: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          payment_status?: string
+          price?: number
+          service_description?: string | null
+          service_name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          payment_status?: string
+          price?: number
+          service_description?: string | null
+          service_name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           amount: number | null
@@ -258,32 +306,41 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
           created_at: string | null
           email: string | null
           full_name: string | null
           id: string
           is_admin: boolean | null
+          is_client: boolean | null
+          phone: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
           is_admin?: boolean | null
+          is_client?: boolean | null
+          phone?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
           is_admin?: boolean | null
+          is_client?: boolean | null
+          phone?: string | null
           updated_at?: string | null
           user_id?: string
         }

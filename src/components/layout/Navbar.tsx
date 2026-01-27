@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,6 +10,7 @@ import logo from "@/assets/logo.ico";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: t("nav.services"), href: "#services" },
@@ -120,9 +121,18 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div className="flex items-center gap-2 relative z-10">
             <LanguageToggle />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="rounded-full px-4 border-primary/30 hover:bg-primary/10"
+              onClick={() => navigate("/client/login")}
+            >
+              <User size={16} className="mr-1.5" />
+              {t("nav.clientLogin")}
+            </Button>
             <Button 
               variant="gradient" 
               size="sm" 
@@ -229,7 +239,19 @@ const Navbar = () => {
                 </div>
                 
                 {/* CTA Section */}
-                <div className="pt-4 border-t border-white/10">
+                <div className="pt-4 border-t border-white/10 space-y-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full rounded-full border-primary/30 hover:bg-primary/10 py-3"
+                    onClick={() => {
+                      navigate("/client/login");
+                      setIsOpen(false);
+                    }}
+                  >
+                    <User size={16} className="mr-1.5" />
+                    {t("nav.clientLogin")}
+                  </Button>
                   <Button 
                     variant="gradient" 
                     size="sm" 

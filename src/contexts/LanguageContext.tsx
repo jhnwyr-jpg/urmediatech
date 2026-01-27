@@ -16,6 +16,7 @@ const translations = {
     "nav.about": "আমাদের সম্পর্কে",
     "nav.contact": "যোগাযোগ করুন",
     "nav.signin": "সাইন ইন",
+    "nav.clientLogin": "ক্লায়েন্ট লগইন",
     
     // Hero
     "hero.badge": "প্রফেশনাল ওয়েব ডেভেলপমেন্ট এজেন্সি",
@@ -186,6 +187,7 @@ const translations = {
     "nav.about": "About",
     "nav.contact": "Contact Us",
     "nav.signin": "Sign In",
+    "nav.clientLogin": "Client Login",
     
     // Hero
     "hero.badge": "Professional Web Development Agency",

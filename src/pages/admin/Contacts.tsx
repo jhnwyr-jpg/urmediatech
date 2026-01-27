@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Mail, Calendar, User, Search, RefreshCw, DollarSign } from "lucide-react";
+import { MessageSquare, Mail, Calendar, User, Search, RefreshCw, DollarSign, CalendarPlus, Clock, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ContactSubmission {
   id: string;
@@ -47,6 +59,14 @@ const AdminContacts = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [editingAmount, setEditingAmount] = useState<string | null>(null);
   const [tempAmount, setTempAmount] = useState<string>("");
+  
+  // Meeting scheduling state
+  const [meetingDialogOpen, setMeetingDialogOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<ContactSubmission | null>(null);
+  const [meetingDate, setMeetingDate] = useState<Date | undefined>();
+  const [meetingTime, setMeetingTime] = useState("");
+  const [meetingNotes, setMeetingNotes] = useState("");
+  const [isSendingInvite, setIsSendingInvite] = useState(false);
 
   const fetchContacts = async () => {
     setIsLoading(true);
@@ -106,6 +126,69 @@ const AdminContacts = () => {
     } catch (error) {
       console.error("Error updating amount:", error);
       toast.error("Failed to update amount");
+    }
+  };
+
+  const openMeetingDialog = (contact: ContactSubmission) => {
+    setSelectedContact(contact);
+    setMeetingDate(undefined);
+    setMeetingTime("");
+    setMeetingNotes("");
+    setMeetingDialogOpen(true);
+  };
+
+  const handleScheduleMeeting = async () => {
+    if (!selectedContact || !meetingDate || !meetingTime) {
+      toast.error("Please select date and time");
+      return;
+    }
+
+    setIsSendingInvite(true);
+    try {
+      // First save to meetings table
+      const { error: dbError } = await supabase
+        .from("meetings")
+        .insert({
+          visitor_name: selectedContact.name,
+          visitor_email: selectedContact.email,
+          visitor_phone: selectedContact.phone,
+          meeting_date: format(meetingDate, "yyyy-MM-dd"),
+          meeting_time: meetingTime,
+          notes: meetingNotes || null,
+          status: "pending",
+        });
+
+      if (dbError) {
+        console.error("DB Error:", dbError);
+        throw new Error("Failed to save meeting");
+      }
+
+      // Send email invitation
+      const { data, error } = await supabase.functions.invoke("send-meeting-invite", {
+        body: {
+          recipientEmail: selectedContact.email,
+          recipientName: selectedContact.name,
+          meetingDate: format(meetingDate, "yyyy-MM-dd"),
+          meetingTime: meetingTime,
+          notes: meetingNotes,
+        },
+      });
+
+      if (error) {
+        console.error("Email Error:", error);
+        toast.warning("Meeting saved but email failed to send");
+      } else if (data?.success) {
+        toast.success("Meeting scheduled & invitation sent!");
+      } else {
+        toast.warning("Meeting saved but email may not have sent");
+      }
+
+      setMeetingDialogOpen(false);
+    } catch (error) {
+      console.error("Error scheduling meeting:", error);
+      toast.error("Failed to schedule meeting");
+    } finally {
+      setIsSendingInvite(false);
     }
   };
 
@@ -232,7 +315,7 @@ const AdminContacts = () => {
                       <p className="text-foreground whitespace-pre-wrap">{contact.message}</p>
                     </div>
 
-                    {/* Status and Amount Row */}
+                    {/* Status, Amount, and Meeting Row */}
                     <div className="flex flex-wrap items-center gap-4">
                       {/* Status Selector */}
                       <div className="flex items-center gap-2">
@@ -293,6 +376,17 @@ const AdminContacts = () => {
                           </button>
                         )}
                       </div>
+
+                      {/* Schedule Meeting Button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openMeetingDialog(contact)}
+                        className="ml-auto"
+                      >
+                        <CalendarPlus className="w-4 h-4 mr-2" />
+                        Schedule Meeting
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -307,6 +401,116 @@ const AdminContacts = () => {
             Showing {filteredContacts.length} of {contacts.length} contacts
           </p>
         )}
+
+        {/* Meeting Scheduling Dialog */}
+        <Dialog open={meetingDialogOpen} onOpenChange={setMeetingDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarPlus className="w-5 h-5 text-primary" />
+                Schedule Meeting
+              </DialogTitle>
+              <DialogDescription>
+                {selectedContact && (
+                  <>Set a meeting date for <strong>{selectedContact.name}</strong>. An invitation email will be sent to {selectedContact.email}.</>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              {/* Date Picker */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Meeting Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !meetingDate && "text-muted-foreground"
+                      )}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {meetingDate ? format(meetingDate, "PPP") : "Select a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={meetingDate}
+                      onSelect={setMeetingDate}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Time Picker */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Meeting Time</label>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <Select value={meetingTime} onValueChange={setMeetingTime}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => i + 9).map((hour) => (
+                        <>
+                          <SelectItem key={`${hour}:00`} value={`${hour}:00`}>
+                            {hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 ${hour === 12 ? 'PM' : 'AM'}`}
+                          </SelectItem>
+                          <SelectItem key={`${hour}:30`} value={`${hour}:30`}>
+                            {hour > 12 ? `${hour - 12}:30 PM` : `${hour}:30 ${hour === 12 ? 'PM' : 'AM'}`}
+                          </SelectItem>
+                        </>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Notes (Optional)</label>
+                <Textarea
+                  value={meetingNotes}
+                  onChange={(e) => setMeetingNotes(e.target.value)}
+                  placeholder="Add any notes for this meeting..."
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setMeetingDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleScheduleMeeting} 
+                disabled={!meetingDate || !meetingTime || isSendingInvite}
+              >
+                {isSendingInvite ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full mr-2"
+                    />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Schedule & Send Invite
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

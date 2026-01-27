@@ -14,6 +14,7 @@ import {
   FolderKanban,
   Users,
   Bell,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +29,7 @@ const navItems = [
   { icon: MessageSquare, label: "Contacts", path: "/admin/contacts" },
   { icon: MessageCircle, label: "Chats", path: "/admin/chats" },
   { icon: CalendarDays, label: "Meetings", path: "/admin/meetings" },
+  { icon: Package, label: "Client Services", path: "/admin/client-services" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
   { icon: Bell, label: "Notifications", path: "/admin/notifications" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },

@@ -6,7 +6,7 @@ export const organizationSchema = {
   name: "UR Media",
   url: "https://urmedia.tech",
   logo: "https://urmedia.tech/og-image.png",
-  description: "UR Media provides expert digital marketing, branding, and creative solutions to grow your business online.",
+  description: "Professional web development agency specializing in React, Next.js, and Node.js. We build fast, scalable, and modern web applications.",
   sameAs: ["https://twitter.com/urmedia"],
   contactPoint: {
     "@type": "ContactPoint",
@@ -34,14 +34,14 @@ export const professionalServiceSchema = {
   name: "UR Media",
   image: "https://urmedia.tech/og-image.png",
   url: "https://urmedia.tech",
-  description: "Expert digital marketing, branding, and creative solutions agency",
+  description: "Professional web development agency building custom web applications, e-commerce solutions, and scalable digital products",
   priceRange: "$$",
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "5",
     reviewCount: "150",
   },
-  serviceType: ["Video Editing", "Motion Graphics", "Social Media Content", "Digital Marketing", "Web Design", "Branding"],
+  serviceType: ["Web Development", "React Development", "Next.js Development", "E-commerce Solutions", "Full-Stack Development", "Custom Web Applications"],
 };
 
 export const createServiceSchema = (service: {

@@ -19,9 +19,9 @@ const Index = () => {
   return (
     <main className="min-h-screen bg-background">
       <SEOHead
-        title="UR Media | Digital Solutions & Creative Services"
-        description="UR Media provides expert digital marketing, branding, and creative solutions to grow your business online. Visit urmedia.tech to explore our services."
-        keywords="digital marketing, branding, creative services, video editing, motion graphics, social media content, web design, digital agency, content creation, brand videos"
+        title="UR Media | Professional Web Development Agency"
+        description="UR Media is a professional web development agency specializing in React, Next.js, and Node.js. We build fast, scalable, and modern web applications for businesses."
+        keywords="web development, web design, React development, Next.js, Node.js, full-stack development, e-commerce solutions, custom web applications, responsive websites, web agency Bangladesh"
         canonical="https://urmedia.tech"
         ogImage="https://urmedia.tech/og-image.png"
         jsonLd={[organizationSchema, websiteSchema, professionalServiceSchema]}

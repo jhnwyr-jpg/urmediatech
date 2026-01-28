@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Ticket, CheckCircle, XCircle, User, Mail, Phone, Calendar, Loader2, Gift, Users } from "lucide-react";
+import { Search, Ticket, CheckCircle, XCircle, User, Mail, Phone, Calendar, Loader2, Gift, Users, Clock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, differenceInDays, isPast } from "date-fns";
 
 interface Subscriber {
   id: string;
@@ -18,9 +18,23 @@ interface Subscriber {
   coupon_code: string | null;
   coupon_used: boolean | null;
   coupon_used_at: string | null;
+  coupon_expires_at: string | null;
   subscribed_at: string;
   is_active: boolean;
 }
+
+// Helper to check if coupon is expired
+const isCouponExpired = (expiresAt: string | null): boolean => {
+  if (!expiresAt) return false;
+  return isPast(new Date(expiresAt));
+};
+
+// Get remaining days
+const getRemainingDays = (expiresAt: string | null): number | null => {
+  if (!expiresAt) return null;
+  const days = differenceInDays(new Date(expiresAt), new Date());
+  return days < 0 ? 0 : days;
+};
 
 const Coupons = () => {
   const [searchCode, setSearchCode] = useState("");
@@ -69,9 +83,14 @@ const Coupons = () => {
         setVerifiedSubscriber(data as Subscriber);
         setVerificationError("এই coupon code আগেই ব্যবহার হয়ে গেছে!");
         toast.warning("Coupon already used!");
+      } else if (isCouponExpired(data.coupon_expires_at)) {
+        setVerifiedSubscriber(data as Subscriber);
+        setVerificationError("এই coupon code expire হয়ে গেছে!");
+        toast.error("Coupon expired!");
       } else {
         setVerifiedSubscriber(data as Subscriber);
-        toast.success("✅ Valid coupon! 3% ছাড় প্রযোজ্য");
+        const remaining = getRemainingDays(data.coupon_expires_at);
+        toast.success(`✅ Valid coupon! 3% ছাড় প্রযোজ্য${remaining !== null ? ` (${remaining} দিন বাকি)` : ""}`);
       }
     } catch (error: any) {
       console.error("Error verifying coupon:", error);
@@ -105,8 +124,9 @@ const Coupons = () => {
 
   const stats = {
     total: subscribers?.length || 0,
-    unused: subscribers?.filter((s) => !s.coupon_used).length || 0,
+    unused: subscribers?.filter((s) => !s.coupon_used && !isCouponExpired(s.coupon_expires_at)).length || 0,
     used: subscribers?.filter((s) => s.coupon_used).length || 0,
+    expired: subscribers?.filter((s) => !s.coupon_used && isCouponExpired(s.coupon_expires_at)).length || 0,
   };
 
   return (
@@ -123,7 +143,7 @@ const Coupons = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
@@ -140,8 +160,8 @@ const Coupons = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-green-500/10">
-                  <Gift className="h-6 w-6 text-green-500" />
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <Gift className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.unused}</p>
@@ -153,12 +173,25 @@ const Coupons = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-orange-500/10">
-                  <CheckCircle className="h-6 w-6 text-orange-500" />
+                <div className="p-3 rounded-lg bg-secondary">
+                  <CheckCircle className="h-6 w-6 text-secondary-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.used}</p>
                   <p className="text-sm text-muted-foreground">Used Coupons</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-destructive/10">
+                  <Clock className="h-6 w-6 text-destructive" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.expired}</p>
+                  <p className="text-sm text-muted-foreground">Expired</p>
                 </div>
               </div>
             </CardContent>
@@ -207,20 +240,31 @@ const Coupons = () => {
 
               {verifiedSubscriber && (
                 <div className={`p-4 rounded-lg border ${
-                  verifiedSubscriber.coupon_used 
-                    ? "bg-orange-500/10 border-orange-500/20" 
-                    : "bg-green-500/10 border-green-500/20"
+                  verifiedSubscriber.coupon_used || isCouponExpired(verifiedSubscriber.coupon_expires_at)
+                    ? "bg-muted border-border" 
+                    : "bg-primary/5 border-primary/20"
                 }`}>
                   <div className="flex items-center gap-2 mb-3">
                     {verifiedSubscriber.coupon_used ? (
                       <>
-                        <XCircle className="h-5 w-5 text-orange-500" />
-                        <span className="font-medium text-orange-600">Coupon আগে ব্যবহার হয়েছে</span>
+                        <XCircle className="h-5 w-5 text-muted-foreground" />
+                        <span className="font-medium text-muted-foreground">Coupon আগে ব্যবহার হয়েছে</span>
+                      </>
+                    ) : isCouponExpired(verifiedSubscriber.coupon_expires_at) ? (
+                      <>
+                        <AlertTriangle className="h-5 w-5 text-destructive" />
+                        <span className="font-medium text-destructive">Coupon Expire হয়ে গেছে!</span>
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="font-medium text-green-600">Valid Coupon! ✅ 3% ছাড় দিন</span>
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                        <span className="font-medium text-primary">Valid Coupon! ✅ 3% ছাড় দিন</span>
+                        {getRemainingDays(verifiedSubscriber.coupon_expires_at) !== null && (
+                          <Badge variant="outline" className="ml-2">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {getRemainingDays(verifiedSubscriber.coupon_expires_at)} দিন বাকি
+                          </Badge>
+                        )}
                       </>
                     )}
                   </div>
@@ -248,15 +292,21 @@ const Coupons = () => {
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>Subscribed: {format(new Date(verifiedSubscriber.subscribed_at), "dd MMM yyyy, hh:mm a")}</span>
                     </div>
+                    {verifiedSubscriber.coupon_expires_at && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>Expires: {format(new Date(verifiedSubscriber.coupon_expires_at), "dd MMM yyyy")}</span>
+                      </div>
+                    )}
                     {verifiedSubscriber.coupon_used && verifiedSubscriber.coupon_used_at && (
-                      <div className="flex items-center gap-2 text-orange-600">
+                      <div className="flex items-center gap-2 text-muted-foreground">
                         <CheckCircle className="h-4 w-4" />
                         <span>Used: {format(new Date(verifiedSubscriber.coupon_used_at), "dd MMM yyyy, hh:mm a")}</span>
                       </div>
                     )}
                   </div>
 
-                  {!verifiedSubscriber.coupon_used && (
+                  {!verifiedSubscriber.coupon_used && !isCouponExpired(verifiedSubscriber.coupon_expires_at) && (
                     <Button
                       onClick={() => handleMarkAsUsed(verifiedSubscriber.id)}
                       className="w-full mt-4"
@@ -302,9 +352,27 @@ const Coupons = () => {
                           {sub.name || sub.email || sub.phone || "Unknown"}
                         </div>
                       </div>
-                      <Badge variant={sub.coupon_used ? "secondary" : "default"}>
-                        {sub.coupon_used ? "Used" : "Active"}
-                      </Badge>
+                      {(() => {
+                        const expired = isCouponExpired(sub.coupon_expires_at);
+                        const remaining = getRemainingDays(sub.coupon_expires_at);
+                        
+                        if (sub.coupon_used) {
+                          return <Badge variant="secondary">Used</Badge>;
+                        }
+                        if (expired) {
+                          return <Badge variant="destructive">Expired</Badge>;
+                        }
+                        return (
+                          <div className="flex items-center gap-2">
+                            <Badge variant="default">Active</Badge>
+                            {remaining !== null && remaining <= 7 && (
+                              <Badge variant="outline" className="text-xs">
+                                {remaining}d
+                              </Badge>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>

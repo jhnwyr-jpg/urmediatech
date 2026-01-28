@@ -71,6 +71,10 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
 
       // Generate unique coupon code
       const couponCode = generateCouponCode(email, phone);
+      
+      // Set expiry to 30 days from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
 
       const { error } = await supabase.from("notification_subscribers").insert({
         email: email.trim(),
@@ -79,6 +83,7 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
         onesignal_player_id: playerId || null,
         device_info: deviceInfo,
         coupon_code: couponCode,
+        coupon_expires_at: expiresAt.toISOString(),
       });
 
       if (error) throw error;
@@ -189,6 +194,8 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Order করার সময় এই code দিয়ে 3% ছাড় পাবেন
+                    <br />
+                    <span className="text-primary font-medium">৩০ দিন পর্যন্ত valid</span>
                   </p>
                 </div>
 

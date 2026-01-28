@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, Ticket, CheckCircle, XCircle, User, Mail, Phone, Calendar, Loader2, Gift, Users, Clock, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Ticket, CheckCircle, XCircle, User, Mail, Phone, Calendar, Loader2, Gift, Users, Clock, AlertTriangle, Percent, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, differenceInDays, isPast } from "date-fns";
 
 interface Subscriber {
@@ -41,6 +41,30 @@ const Coupons = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifiedSubscriber, setVerifiedSubscriber] = useState<Subscriber | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [discountPercent, setDiscountPercent] = useState("3");
+  const [isSavingDiscount, setIsSavingDiscount] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Fetch discount percentage from site_settings
+  const { data: discountSetting } = useQuery({
+    queryKey: ["site-settings", "coupon_discount_percent"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "coupon_discount_percent")
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.value || "3";
+    },
+  });
+
+  useEffect(() => {
+    if (discountSetting) {
+      setDiscountPercent(discountSetting);
+    }
+  }, [discountSetting]);
 
   // Fetch all subscribers with coupons
   const { data: subscribers, isLoading, refetch } = useQuery({
@@ -56,6 +80,35 @@ const Coupons = () => {
       return data as Subscriber[];
     },
   });
+
+  const handleSaveDiscount = async () => {
+    const percent = parseFloat(discountPercent);
+    if (isNaN(percent) || percent < 0 || percent > 100) {
+      toast.error("সঠিক percentage দিন (0-100)");
+      return;
+    }
+
+    setIsSavingDiscount(true);
+    try {
+      // Upsert the setting
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert(
+          { key: "coupon_discount_percent", value: discountPercent },
+          { onConflict: "key" }
+        );
+
+      if (error) throw error;
+
+      toast.success(`Discount ${discountPercent}% সেট করা হয়েছে!`);
+      queryClient.invalidateQueries({ queryKey: ["site-settings", "coupon_discount_percent"] });
+    } catch (error: any) {
+      console.error("Error saving discount:", error);
+      toast.error("সমস্যা হয়েছে");
+    } finally {
+      setIsSavingDiscount(false);
+    }
+  };
 
   const handleVerifyCoupon = async () => {
     if (!searchCode.trim()) {
@@ -90,7 +143,7 @@ const Coupons = () => {
       } else {
         setVerifiedSubscriber(data as Subscriber);
         const remaining = getRemainingDays(data.coupon_expires_at);
-        toast.success(`✅ Valid coupon! 3% ছাড় প্রযোজ্য${remaining !== null ? ` (${remaining} দিন বাকি)` : ""}`);
+        toast.success(`✅ Valid coupon! ${discountPercent}% ছাড় প্রযোজ্য${remaining !== null ? ` (${remaining} দিন বাকি)` : ""}`);
       }
     } catch (error: any) {
       console.error("Error verifying coupon:", error);
@@ -138,9 +191,45 @@ const Coupons = () => {
             Coupon Verification
           </h1>
           <p className="text-muted-foreground mt-1">
-            Subscriber দের coupon code verify করুন এবং 3% ছাড় দিন
+            Subscriber দের coupon code verify করুন এবং {discountPercent}% ছাড় দিন
           </p>
         </div>
+
+        {/* Discount Setting */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Percent className="h-5 w-5" />
+              Coupon Discount সেট করুন
+            </CardTitle>
+            <CardDescription>
+              এই percentage টি subscriber popup এ দেখাবে
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-1 max-w-xs">
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={discountPercent}
+                  onChange={(e) => setDiscountPercent(e.target.value)}
+                  className="w-24 text-lg font-bold text-center"
+                />
+                <span className="text-2xl font-bold text-muted-foreground">%</span>
+              </div>
+              <Button onClick={handleSaveDiscount} disabled={isSavingDiscount}>
+                {isSavingDiscount ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                Save করুন
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">
@@ -258,7 +347,7 @@ const Coupons = () => {
                     ) : (
                       <>
                         <CheckCircle className="h-5 w-5 text-primary" />
-                        <span className="font-medium text-primary">Valid Coupon! ✅ 3% ছাড় দিন</span>
+                        <span className="font-medium text-primary">Valid Coupon! ✅ {discountPercent}% ছাড় দিন</span>
                         {getRemainingDays(verifiedSubscriber.coupon_expires_at) !== null && (
                           <Badge variant="outline" className="ml-2">
                             <Clock className="h-3 w-3 mr-1" />

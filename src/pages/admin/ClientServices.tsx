@@ -10,6 +10,10 @@ import {
   User,
   X,
   Save,
+  Mail,
+  Users,
+  Check,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +55,7 @@ interface Profile {
   full_name: string | null;
   email: string | null;
   phone: string | null;
+  created_at: string | null;
 }
 
 interface ClientService {
@@ -82,45 +88,67 @@ const emptyService: Omit<ClientService, "id" | "created_at"> = {
 
 const ClientServicesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [clients, setClients] = useState<Profile[]>([]);
+  const [allClients, setAllClients] = useState<Profile[]>([]);
+  const [filteredClients, setFilteredClients] = useState<Profile[]>([]);
   const [selectedClient, setSelectedClient] = useState<Profile | null>(null);
   const [services, setServices] = useState<ClientService[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<ClientService | null>(null);
   const [serviceToDelete, setServiceToDelete] = useState<ClientService | null>(null);
   const [formData, setFormData] = useState(emptyService);
+  const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailContent, setEmailContent] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const { toast } = useToast();
 
-  // Search clients by email
-  const searchClients = async () => {
-    if (!searchQuery.trim()) {
-      setClients([]);
-      return;
-    }
+  // Fetch all clients on mount
+  useEffect(() => {
+    fetchAllClients();
+  }, []);
 
-    setIsSearching(true);
+  // Filter clients based on search
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredClients(allClients);
+    } else {
+      const query = searchQuery.toLowerCase();
+      setFilteredClients(
+        allClients.filter(
+          (client) =>
+            client.email?.toLowerCase().includes(query) ||
+            client.full_name?.toLowerCase().includes(query) ||
+            client.phone?.includes(query)
+        )
+      );
+    }
+  }, [searchQuery, allClients]);
+
+  // Fetch all clients
+  const fetchAllClients = async () => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, user_id, full_name, email, phone")
-        .or(`email.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`)
+        .select("id, user_id, full_name, email, phone, created_at")
         .eq("is_client", true)
-        .limit(10);
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setClients(data || []);
+      setAllClients(data || []);
+      setFilteredClients(data || []);
     } catch (error) {
-      console.error("Error searching clients:", error);
+      console.error("Error fetching clients:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to search clients",
+        description: "Failed to fetch clients",
       });
     } finally {
-      setIsSearching(false);
+      setIsLoading(false);
     }
   };
 
@@ -151,9 +179,100 @@ const ClientServicesPage = () => {
   // Handle client selection
   const handleSelectClient = (client: Profile) => {
     setSelectedClient(client);
-    setClients([]);
-    setSearchQuery("");
     fetchClientServices(client.user_id);
+  };
+
+  // Toggle client selection for bulk email
+  const toggleClientSelection = (userId: string) => {
+    setSelectedClientIds((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  // Select all clients
+  const selectAllClients = () => {
+    if (selectedClientIds.length === filteredClients.length) {
+      setSelectedClientIds([]);
+    } else {
+      setSelectedClientIds(filteredClients.map((c) => c.user_id));
+    }
+  };
+
+  // Send bulk email
+  const handleSendBulkEmail = async () => {
+    if (selectedClientIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select at least one client",
+      });
+      return;
+    }
+
+    if (!emailSubject.trim() || !emailContent.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Subject and content are required",
+      });
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const recipients = allClients
+        .filter((c) => selectedClientIds.includes(c.user_id) && c.email)
+        .map((c) => ({
+          email: c.email!,
+          name: c.full_name || undefined,
+        }));
+
+      const { data, error } = await supabase.functions.invoke("send-bulk-email", {
+        body: {
+          recipients,
+          subject: emailSubject,
+          htmlContent: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">UR Media</h1>
+              </div>
+              <div style="padding: 30px; background: #f9fafb;">
+                <p>Hi {{name}},</p>
+                ${emailContent.replace(/\n/g, "<br>")}
+                <br><br>
+                <p>Best regards,<br>UR Media Team</p>
+              </div>
+              <div style="background: #1f2937; padding: 15px; text-align: center; color: #9ca3af; font-size: 12px;">
+                © ${new Date().getFullYear()} UR Media. All rights reserved.
+              </div>
+            </div>
+          `,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Email Sent!",
+        description: `Successfully sent to ${data.totalSent} clients${data.totalFailed > 0 ? `, ${data.totalFailed} failed` : ""}`,
+      });
+
+      setIsEmailDialogOpen(false);
+      setEmailSubject("");
+      setEmailContent("");
+      setSelectedClientIds([]);
+    } catch (error: any) {
+      console.error("Error sending bulk email:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to send emails",
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   // Open add service dialog
@@ -196,7 +315,6 @@ const ClientServicesPage = () => {
     setIsLoading(true);
     try {
       if (editingService) {
-        // Update existing service
         const { error } = await supabase
           .from("client_services")
           .update({
@@ -215,7 +333,6 @@ const ClientServicesPage = () => {
         if (error) throw error;
         toast({ title: "Success", description: "Service updated successfully" });
       } else {
-        // Create new service
         const { error } = await supabase.from("client_services").insert({
           client_id: formData.client_id,
           service_name: formData.service_name,
@@ -318,269 +435,331 @@ const ClientServicesPage = () => {
               Client Services
             </h1>
             <p className="text-muted-foreground mt-1">
-              Manage client services, pricing, and payments
+              Manage client services, pricing, and send bulk emails
             </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchAllClients} disabled={isLoading}>
+              <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+            </Button>
+            <Button
+              onClick={() => setIsEmailDialogOpen(true)}
+              disabled={selectedClientIds.length === 0}
+              className="gap-2"
+            >
+              <Mail size={18} />
+              Send Email ({selectedClientIds.length})
+            </Button>
           </div>
         </div>
 
-        {/* Search Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search size={20} />
-              Search Client
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <Users className="text-primary" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total Clients</p>
+                  <p className="text-xl font-bold">{allClients.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-blue-500/10">
+                  <Check className="text-blue-500" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Selected</p>
+                  <p className="text-xl font-bold">{selectedClientIds.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-green-500/10">
+                  <Mail className="text-green-500" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">With Email</p>
+                  <p className="text-xl font-bold">{allClients.filter(c => c.email).length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-yellow-500/10">
+                  <Package className="text-yellow-500" size={20} />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Filtered</p>
+                  <p className="text-xl font-bold">{filteredClients.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Client List */}
+          <Card className="h-fit">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Users size={20} />
+                  Clients
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={selectAllClients}
+                >
+                  {selectedClientIds.length === filteredClients.length ? "Deselect All" : "Select All"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* Search */}
+              <div className="mb-4">
                 <Input
-                  placeholder="Search by email or name..."
+                  placeholder="Search by email, name, or phone..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && searchClients()}
-                  className="pr-10"
+                  className="w-full"
                 />
-                {isSearching && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                  </div>
-                )}
               </div>
-              <Button onClick={searchClients} disabled={isSearching}>
-                <Search size={18} className="mr-2" />
-                Search
-              </Button>
-            </div>
 
-            {/* Search Results */}
-            {clients.length > 0 && (
-              <div className="mt-4 space-y-2">
-                {clients.map((client) => (
-                  <button
-                    key={client.id}
-                    onClick={() => handleSelectClient(client)}
-                    className="w-full flex items-center gap-3 p-3 bg-muted/50 hover:bg-muted rounded-xl transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User size={20} className="text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {client.full_name || "Unnamed Client"}
-                      </p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {client.email}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Selected Client */}
-        {selectedClient && (
-          <>
-            {/* Client Info Card */}
-            <Card className="mb-6">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User size={24} className="text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">
-                        {selectedClient.full_name || "Unnamed Client"}
-                      </h3>
-                      <p className="text-muted-foreground">{selectedClient.email}</p>
-                      {selectedClient.phone && (
-                        <p className="text-sm text-muted-foreground">
-                          {selectedClient.phone}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleAddService}>
-                      <Plus size={18} className="mr-2" />
-                      Add Service
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSelectedClient(null);
-                        setServices([]);
-                      }}
-                    >
-                      <X size={18} />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-primary/10">
-                      <Package className="text-primary" size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Total Services</p>
-                      <p className="text-xl font-bold">{totalServices}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-blue-500/10">
-                      <DollarSign className="text-blue-500" size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Total Revenue</p>
-                      <p className="text-xl font-bold">৳{totalRevenue.toLocaleString()}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-green-500/10">
-                      <DollarSign className="text-green-500" size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Paid Amount</p>
-                      <p className="text-xl font-bold">৳{totalPaid.toLocaleString()}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-yellow-500/10">
-                      <DollarSign className="text-yellow-500" size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Due Amount</p>
-                      <p className="text-xl font-bold">৳{totalDue.toLocaleString()}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Services Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Services</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
+              {/* Client List */}
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                {isLoading && allClients.length === 0 ? (
                   <div className="flex justify-center py-8">
                     <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                   </div>
-                ) : services.length === 0 ? (
+                ) : filteredClients.length === 0 ? (
                   <div className="text-center py-12">
-                    <Package className="mx-auto text-muted-foreground mb-4" size={48} />
-                    <p className="text-muted-foreground">No services found for this client</p>
-                    <Button className="mt-4" onClick={handleAddService}>
-                      <Plus size={18} className="mr-2" />
-                      Add First Service
-                    </Button>
+                    <Users className="mx-auto text-muted-foreground mb-4" size={48} />
+                    <p className="text-muted-foreground">No clients found</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Service
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Status
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Price
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Paid
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Due
-                          </th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {services.map((service) => (
-                          <tr key={service.id} className="border-b border-border/50">
-                            <td className="py-4 px-4">
-                              <div>
-                                <p className="font-medium">{service.service_name}</p>
-                                {service.service_description && (
-                                  <p className="text-sm text-muted-foreground line-clamp-1">
-                                    {service.service_description}
-                                  </p>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex gap-2 flex-wrap">
-                                {getStatusBadge(service.status)}
-                                {getPaymentBadge(service.payment_status)}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 font-medium">
-                              ৳{service.price.toLocaleString()}
-                            </td>
-                            <td className="py-4 px-4 text-green-500">
-                              ৳{service.paid_amount.toLocaleString()}
-                            </td>
-                            <td className="py-4 px-4 text-yellow-500">
-                              ৳{(service.price - service.paid_amount).toLocaleString()}
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex justify-end gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleEditService(service)}
-                                >
-                                  <Edit size={16} />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() => {
-                                    setServiceToDelete(service);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
-                                >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  filteredClients.map((client) => (
+                    <div
+                      key={client.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer ${
+                        selectedClient?.id === client.id
+                          ? "bg-primary/10 border border-primary/30"
+                          : "bg-muted/50 hover:bg-muted"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={selectedClientIds.includes(client.user_id)}
+                        onCheckedChange={() => toggleClientSelection(client.user_id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div
+                        className="flex-1 flex items-center gap-3 min-w-0"
+                        onClick={() => handleSelectClient(client)}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <User size={20} className="text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">
+                            {client.full_name || "Unnamed Client"}
+                          </p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {client.email || "No email"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Selected Client Services */}
+          <Card className="h-fit">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Package size={20} />
+                  {selectedClient ? `${selectedClient.full_name || "Client"}'s Services` : "Select a Client"}
+                </CardTitle>
+                {selectedClient && (
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleAddService}>
+                      <Plus size={16} className="mr-1" />
+                      Add Service
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => {
+                      setSelectedClient(null);
+                      setServices([]);
+                    }}>
+                      <X size={16} />
+                    </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </>
-        )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!selectedClient ? (
+                <div className="text-center py-12">
+                  <User className="mx-auto text-muted-foreground mb-4" size={48} />
+                  <p className="text-muted-foreground">Click on a client to view their services</p>
+                </div>
+              ) : (
+                <>
+                  {/* Client Info */}
+                  <div className="p-4 bg-muted/50 rounded-xl mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User size={24} className="text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{selectedClient.full_name || "Unnamed"}</h3>
+                        <p className="text-sm text-muted-foreground">{selectedClient.email}</p>
+                        {selectedClient.phone && (
+                          <p className="text-xs text-muted-foreground">{selectedClient.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="p-3 bg-muted/30 rounded-lg text-center">
+                      <p className="text-xs text-muted-foreground">Total</p>
+                      <p className="font-bold text-primary">৳{totalRevenue.toLocaleString()}</p>
+                    </div>
+                    <div className="p-3 bg-muted/30 rounded-lg text-center">
+                      <p className="text-xs text-muted-foreground">Due</p>
+                      <p className="font-bold text-yellow-500">৳{totalDue.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* Services List */}
+                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                    {services.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Package className="mx-auto text-muted-foreground mb-2" size={32} />
+                        <p className="text-sm text-muted-foreground">No services yet</p>
+                      </div>
+                    ) : (
+                      services.map((service) => (
+                        <div key={service.id} className="p-3 bg-muted/30 rounded-xl">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <p className="font-medium">{service.service_name}</p>
+                              <p className="text-sm text-muted-foreground line-clamp-1">
+                                {service.service_description}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="ghost" onClick={() => handleEditService(service)}>
+                                <Edit size={14} />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="text-destructive"
+                                onClick={() => {
+                                  setServiceToDelete(service);
+                                  setIsDeleteDialogOpen(true);
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {getStatusBadge(service.status)}
+                            {getPaymentBadge(service.payment_status)}
+                            <span className="text-sm font-medium ml-auto">
+                              ৳{service.price.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bulk Email Dialog */}
+        <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Mail size={20} />
+                Send Bulk Email
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Sending to <strong>{selectedClientIds.length}</strong> selected clients
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email_subject">Subject *</Label>
+                <Input
+                  id="email_subject"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Email subject..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email_content">Message *</Label>
+                <Textarea
+                  id="email_content"
+                  value={emailContent}
+                  onChange={(e) => setEmailContent(e.target.value)}
+                  placeholder="Write your message here... Use {{name}} for personalization."
+                  rows={6}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Tip: Use {"{{name}}"} to personalize with client's name
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSendBulkEmail} disabled={isSendingEmail}>
+                  {isSendingEmail ? (
+                    <>
+                      <RefreshCw size={18} className="mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail size={18} className="mr-2" />
+                      Send Email
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Add/Edit Service Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

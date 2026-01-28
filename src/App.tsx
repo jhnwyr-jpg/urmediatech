@@ -28,6 +28,7 @@ import AdminChats from "./pages/admin/Chats";
 import AdminUsers from "./pages/admin/Users";
 import AdminNotifications from "./pages/admin/Notifications";
 import AdminClientServices from "./pages/admin/ClientServices";
+import AdminCoupons from "./pages/admin/Coupons";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +62,7 @@ const App = () => (
               <Route path="/admin/projects" element={<AdminProjects />} />
               <Route path="/admin/notifications" element={<AdminNotifications />} />
               <Route path="/admin/client-services" element={<AdminClientServices />} />
-              <Route path="/admin/notifications" element={<AdminNotifications />} />
+              <Route path="/admin/coupons" element={<AdminCoupons />} />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />

@@ -29,6 +29,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminNotifications from "./pages/admin/Notifications";
 import AdminClientServices from "./pages/admin/ClientServices";
 import AdminCoupons from "./pages/admin/Coupons";
+import AdminSubscribers from "./pages/admin/Subscribers";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/admin/notifications" element={<AdminNotifications />} />
               <Route path="/admin/client-services" element={<AdminClientServices />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
+              <Route path="/admin/subscribers" element={<AdminSubscribers />} />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />

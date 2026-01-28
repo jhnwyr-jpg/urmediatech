@@ -164,7 +164,7 @@ const AIChatbotSettings = () => {
             className="space-y-3 p-4 rounded-xl border border-primary/20 bg-primary/5"
           >
             <Label htmlFor="apiKey" className="text-sm font-medium">
-              API Key (Lovable AI Gateway)
+              API Key (OpenAI / Google Gemini)
             </Label>
             <div className="relative">
               <Input
@@ -172,7 +172,7 @@ const AIChatbotSettings = () => {
                 type={showApiKey ? "text" : "password"}
                 value={settings.customApiKey}
                 onChange={(e) => setSettings({ ...settings, customApiKey: e.target.value })}
-                placeholder="Enter your API key..."
+                placeholder="sk-... (OpenAI) অথবা AIza... (Gemini)"
                 className="pr-10"
               />
               <button
@@ -183,19 +183,33 @@ const AIChatbotSettings = () => {
                 {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            
+            {/* Key type indicator */}
+            {settings.customApiKey && (
+              <div className="flex items-center gap-2 text-xs">
+                {settings.customApiKey.startsWith("sk-") ? (
+                  <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-600">✓ OpenAI Key Detected</span>
+                ) : settings.customApiKey.startsWith("AIza") ? (
+                  <span className="px-2 py-1 rounded-full bg-blue-500/20 text-blue-600">✓ Google Gemini Key Detected</span>
+                ) : (
+                  <span className="px-2 py-1 rounded-full bg-amber-500/20 text-amber-600">⚠ Unknown Key Format</span>
+                )}
+              </div>
+            )}
+            
             <p className="text-xs text-muted-foreground">
-              This key will be stored securely and used for AI responses.
+              আপনার নিজের API key দিন। OpenAI key "sk-" দিয়ে শুরু হয়, Gemini key "AIza" দিয়ে শুরু হয়।
             </p>
           </motion.div>
         )}
 
         {/* Info Box */}
         <div className="p-4 rounded-xl bg-secondary/50 border border-border/50">
-          <h4 className="font-medium text-sm text-foreground mb-2">ℹ️ How it works:</h4>
+          <h4 className="font-medium text-sm text-foreground mb-2">ℹ️ Supported API Keys:</h4>
           <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• <strong>Default:</strong> Uses Lovable AI Gateway (LOVABLE_API_KEY from secrets)</li>
-            <li>• <strong>Custom Key:</strong> Uses your own API key stored in database</li>
-            <li>• Supports: OpenAI, Google Gemini via Lovable Gateway</li>
+            <li>• <strong>OpenAI:</strong> sk-... (GPT-4o-mini model ব্যবহার হবে)</li>
+            <li>• <strong>Google Gemini:</strong> AIza... (Gemini 2.0 Flash model ব্যবহার হবে)</li>
+            <li>• <strong>Custom key OFF থাকলে:</strong> Default Lovable AI ব্যবহার হবে</li>
           </ul>
         </div>
 

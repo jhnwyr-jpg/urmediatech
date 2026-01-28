@@ -36,6 +36,32 @@ Available Services (from database):
 
 Current Date: {{CURRENT_DATE}}`;
 
+// Detect API key type and get the appropriate endpoint
+function getApiConfig(apiKey: string): { url: string; model: string; keyType: string } {
+  if (apiKey.startsWith("sk-")) {
+    // OpenAI API key
+    return {
+      url: "https://api.openai.com/v1/chat/completions",
+      model: "gpt-4o-mini",
+      keyType: "openai"
+    };
+  } else if (apiKey.startsWith("AIza")) {
+    // Google Gemini API key
+    return {
+      url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      model: "gemini-2.0-flash",
+      keyType: "gemini"
+    };
+  } else {
+    // Default to Lovable Gateway
+    return {
+      url: "https://ai.gateway.lovable.dev/v1/chat/completions",
+      model: "google/gemini-3-flash-preview",
+      keyType: "lovable"
+    };
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -51,6 +77,7 @@ serve(async (req) => {
 
     // Check for custom API key in database settings
     let apiKey = Deno.env.get("LOVABLE_API_KEY");
+    let useCustomKey = false;
     
     const { data: settingsData } = await supabase
       .from("site_settings")
@@ -73,11 +100,17 @@ serve(async (req) => {
     // Use custom API key if enabled and available
     if (settingsMap.ai_use_custom_key === "true" && settingsMap.ai_custom_api_key) {
       apiKey = settingsMap.ai_custom_api_key;
+      useCustomKey = true;
+      console.log("Using custom API key from admin settings");
     }
 
     if (!apiKey) {
       throw new Error("No API key configured. Please set LOVABLE_API_KEY or configure a custom key in admin settings.");
     }
+
+    // Get the appropriate API configuration based on key type
+    const apiConfig = getApiConfig(apiKey);
+    console.log(`Using ${apiConfig.keyType} API with model: ${apiConfig.model}`);
 
     // Fetch active services from database
     const { data: services, error: servicesError } = await supabase
@@ -107,26 +140,24 @@ serve(async (req) => {
       .replace("{{SERVICES}}", servicesText)
       .replace("{{CURRENT_DATE}}", currentDate);
 
-    // Check if user is booking a meeting
-    const lastUserMessage = messages[messages.length - 1]?.content?.toLowerCase() || "";
-    const bookingKeywords = ["book", "schedule", "meeting", "consultation", "appointment"];
-    const dateTimeRegex = /(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})|(\d{1,2}:\d{2})|(\d{1,2}\s*(am|pm))/i;
-    
-    // Parse meeting booking if detected
-    if (bookingKeywords.some(k => lastUserMessage.includes(k)) && dateTimeRegex.test(lastUserMessage)) {
-      // Extract and save meeting info (simplified - the AI will confirm)
-      console.log("Potential meeting booking detected");
+    // Build request headers
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Set authorization header based on API type
+    if (apiConfig.keyType === "gemini") {
+      headers["x-goog-api-key"] = apiKey;
+    } else {
+      headers["Authorization"] = `Bearer ${apiKey}`;
     }
 
-    // Call Lovable AI Gateway
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Call the appropriate AI API
+    const response = await fetch(apiConfig.url, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: apiConfig.model,
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,
@@ -136,9 +167,20 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`${apiConfig.keyType} API error:`, response.status, errorText);
+      
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
           status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 401 || response.status === 403) {
+        return new Response(JSON.stringify({ 
+          error: `Invalid API key. Please check your ${apiConfig.keyType === "openai" ? "OpenAI" : apiConfig.keyType === "gemini" ? "Google Gemini" : "Lovable"} API key in Admin Settings.` 
+        }), {
+          status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -148,9 +190,8 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      return new Response(JSON.stringify({ error: "AI service error" }), {
+      
+      return new Response(JSON.stringify({ error: "AI service error. Please check your API key." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

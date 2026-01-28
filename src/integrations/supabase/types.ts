@@ -231,6 +231,9 @@ export type Database = {
       }
       notification_subscribers: {
         Row: {
+          coupon_code: string | null
+          coupon_used: boolean | null
+          coupon_used_at: string | null
           created_at: string
           device_info: Json | null
           email: string | null
@@ -243,6 +246,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          coupon_code?: string | null
+          coupon_used?: boolean | null
+          coupon_used_at?: string | null
           created_at?: string
           device_info?: Json | null
           email?: string | null
@@ -255,6 +261,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          coupon_code?: string | null
+          coupon_used?: boolean | null
+          coupon_used_at?: string | null
           created_at?: string
           device_info?: Json | null
           email?: string | null

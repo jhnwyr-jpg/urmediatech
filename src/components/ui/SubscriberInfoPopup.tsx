@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Gift, Loader2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,30 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedCoupon, setGeneratedCoupon] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState("3");
+
+  // Fetch discount percentage from site_settings
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "coupon_discount_percent")
+          .maybeSingle();
+
+        if (!error && data?.value) {
+          setDiscountPercent(data.value);
+        }
+      } catch (error) {
+        console.error("Error fetching discount:", error);
+      }
+    };
+
+    if (isOpen) {
+      fetchDiscount();
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,8 +188,8 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
               </h2>
               <p className="text-white/90 text-sm">
                 {generatedCoupon 
-                  ? "এই code ব্যবহার করে 3% ছাড় পান!" 
-                  : <>আপনার জন্য বিশেষ <span className="font-bold text-yellow-300">3% ছাড়!</span></>
+                  ? `এই code ব্যবহার করে ${discountPercent}% ছাড় পান!` 
+                  : <>আপনার জন্য বিশেষ <span className="font-bold text-yellow-300">{discountPercent}% ছাড়!</span></>
                 }
               </p>
             </div>
@@ -193,7 +217,7 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Order করার সময় এই code দিয়ে 3% ছাড় পাবেন
+                    Order করার সময় এই code দিয়ে {discountPercent}% ছাড় পাবেন
                     <br />
                     <span className="text-primary font-medium">৩০ দিন পর্যন্ত valid</span>
                   </p>
@@ -211,7 +235,7 @@ const SubscriberInfoPopup = ({ isOpen, onClose, playerId }: SubscriberInfoPopupP
               // Form
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <p className="text-center text-muted-foreground text-sm mb-4">
-                  আপনার contact info দিন এবং <span className="font-semibold text-primary">unique coupon code</span> পান!
+                  আপনার contact info দিন এবং <span className="font-semibold text-primary">{discountPercent}% discount coupon</span> পান!
                 </p>
 
                 <div className="space-y-2">

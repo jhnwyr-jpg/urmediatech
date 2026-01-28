@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import "@/styles/onesignal-custom.css";
 
@@ -12,6 +12,26 @@ declare global {
 export const useOneSignal = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showSubscriberPopup, setShowSubscriberPopup] = useState(false);
+  const [playerId, setPlayerId] = useState<string | undefined>();
+
+  // Check if we should show the popup
+  const shouldShowPopup = useCallback(() => {
+    const alreadySubmitted = localStorage.getItem("subscriber_info_submitted");
+    const skipped = localStorage.getItem("subscriber_popup_skipped");
+    const lastSkipTime = localStorage.getItem("subscriber_popup_skip_time");
+    
+    // If already submitted, never show again
+    if (alreadySubmitted === "true") return false;
+    
+    // If skipped, check if 7 days have passed
+    if (skipped === "true" && lastSkipTime) {
+      const daysSinceSkip = (Date.now() - parseInt(lastSkipTime)) / (1000 * 60 * 60 * 24);
+      if (daysSinceSkip < 7) return false;
+    }
+    
+    return true;
+  }, []);
 
   useEffect(() => {
     const initOneSignal = async () => {
@@ -74,10 +94,36 @@ export const useOneSignal = () => {
             const permission = await OneSignal.Notifications.permission;
             setIsSubscribed(permission);
 
+            // Get player ID if subscribed
+            if (permission) {
+              try {
+                const userId = await OneSignal.User.PushSubscription.id;
+                setPlayerId(userId);
+              } catch (e) {
+                console.log("Could not get player ID");
+              }
+            }
+
             // Listen for subscription changes
-            OneSignal.Notifications.addEventListener("permissionChange", (granted: boolean) => {
+            OneSignal.Notifications.addEventListener("permissionChange", async (granted: boolean) => {
               setIsSubscribed(granted);
               console.log("OneSignal: Permission changed to", granted);
+              
+              // When user just subscribed, show popup after 5 seconds
+              if (granted && shouldShowPopup()) {
+                try {
+                  const userId = await OneSignal.User.PushSubscription.id;
+                  setPlayerId(userId);
+                } catch (e) {
+                  console.log("Could not get player ID");
+                }
+                
+                setTimeout(() => {
+                  if (shouldShowPopup()) {
+                    setShowSubscriberPopup(true);
+                  }
+                }, 5000); // 5 seconds delay after subscribing
+              }
             });
           }
 
@@ -95,7 +141,7 @@ export const useOneSignal = () => {
         window.OneSignal.Notifications?.removeEventListener?.("permissionChange");
       }
     };
-  }, []);
+  }, [shouldShowPopup]);
 
   // Manual prompt trigger function
   const showPrompt = async () => {
@@ -132,11 +178,20 @@ export const useOneSignal = () => {
     }
   };
 
+  // Close the popup
+  const closeSubscriberPopup = () => {
+    setShowSubscriberPopup(false);
+    localStorage.setItem("subscriber_popup_skip_time", Date.now().toString());
+  };
+
   return {
     isInitialized,
     isSubscribed,
     showPrompt,
     setExternalUserId,
     addTags,
+    showSubscriberPopup,
+    closeSubscriberPopup,
+    playerId,
   };
 };

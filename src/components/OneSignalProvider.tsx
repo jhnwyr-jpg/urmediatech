@@ -1,10 +1,17 @@
 import { useOneSignal } from "@/hooks/useOneSignal";
+import SubscriberInfoPopup from "@/components/ui/SubscriberInfoPopup";
 
 const OneSignalProvider = () => {
   // Initialize OneSignal on mount
-  useOneSignal();
+  const { showSubscriberPopup, closeSubscriberPopup, playerId } = useOneSignal();
   
-  return null; // This component only handles initialization
+  return (
+    <SubscriberInfoPopup
+      isOpen={showSubscriberPopup}
+      onClose={closeSubscriberPopup}
+      playerId={playerId}
+    />
+  );
 };
 
 export default OneSignalProvider;

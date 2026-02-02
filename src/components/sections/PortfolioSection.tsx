@@ -88,7 +88,7 @@ const PortfolioSection = () => {
         ];
 
   return (
-    <section id="portfolio" className="py-24 bg-muted/30 relative overflow-hidden">
+    <section id="projects" className="py-24 bg-muted/30 relative overflow-hidden">
       {/* Animated background elements */}
       <motion.div
         animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}

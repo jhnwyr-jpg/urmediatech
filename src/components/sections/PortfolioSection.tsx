@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Globe, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ExternalLink, Globe, Sparkles, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card3D, ScrollReveal } from "@/components/ui/AnimatedComponents";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -144,8 +145,8 @@ const PortfolioSection = () => {
 
         {/* Portfolio Grid */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {displayProjects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} t={t} />
+        {displayProjects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} t={t} language={language} />
           ))}
         </div>
       </div>
@@ -157,10 +158,12 @@ const ProjectCard = ({
   project,
   index,
   t,
+  language,
 }: {
   project: { id: string; title: string; category: string; description: string; demoUrl: string; gradient: string };
   index: number;
   t: (key: string) => string;
+  language: string;
 }) => {
   return (
     <ScrollReveal delay={index * 0.15} direction={index % 2 === 0 ? "left" : "right"}>
@@ -208,32 +211,34 @@ const ProjectCard = ({
             {project.description}
           </p>
 
-          {/* Demo button */}
-          <a
-            href={project.demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block relative z-10"
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="gradient" size="default" className="group/btn gap-2 relative overflow-hidden">
-                <motion.span
-                  className="absolute inset-0 bg-white/20"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.5 }}
-                />
-                <Globe className="w-4 h-4" />
-                {t("portfolio.viewDemo")}
-                <motion.div
-                  animate={{ x: [0, 3, 0], y: [0, -3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ExternalLink className="w-4 h-4 opacity-70" />
-                </motion.div>
-              </Button>
-            </motion.div>
-          </a>
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 relative z-10">
+            <Link to={`/projects/${project.id}`}>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button variant="gradient" size="default" className="group/btn gap-2 relative overflow-hidden">
+                  <motion.span
+                    className="absolute inset-0 bg-white/20 pointer-events-none"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.5 }}
+                  />
+                  <Eye className="w-4 h-4" />
+                  {t("portfolio.viewDemo")}
+                </Button>
+              </motion.div>
+            </Link>
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button variant="outline" size="icon" className="relative">
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </motion.div>
+            </a>
+          </div>
 
           {/* Subtle hint text */}
           <motion.p 
@@ -244,9 +249,9 @@ const ProjectCard = ({
             <motion.span 
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-green-500" 
+              className="w-1.5 h-1.5 rounded-full bg-green-500 pointer-events-none" 
             />
-            {t("portfolio.newTab")}
+            {language === "bn" ? "ক্লিক করে বিস্তারিত দেখুন" : "Click to view details"}
           </motion.p>
 
           {/* Decorative gradient corner */}

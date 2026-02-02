@@ -86,7 +86,7 @@ const ProjectDetail = () => {
           <h1 className="text-2xl font-bold text-foreground mb-4">
             {language === "bn" ? "প্রজেক্ট পাওয়া যায়নি" : "Project not found"}
           </h1>
-          <Link to="/#portfolio">
+          <Link to="/#projects">
             <Button variant="gradient">
               <ArrowLeft className="w-4 h-4 mr-2" />
               {language === "bn" ? "ফিরে যান" : "Go Back"}
@@ -120,7 +120,7 @@ const ProjectDetail = () => {
             className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
           >
             <div className="flex items-center gap-4">
-              <Link to="/#portfolio">
+              <Link to="/#projects">
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <ArrowLeft className="w-5 h-5" />
                 </Button>

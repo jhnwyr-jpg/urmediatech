@@ -12,6 +12,7 @@ import OneSignalProvider from "@/components/OneSignalProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ChatPage from "./pages/Chat";
+import ProjectDetail from "./pages/ProjectDetail";
 
 // Client Pages
 import ClientLogin from "./pages/client/Login";
@@ -43,9 +44,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Single Page Landing */}
+            {/* Single Page Landing */}
               <Route path="/" element={<Index />} />
               <Route path="/chat" element={<ChatPage />} />
+              <Route path="/projects/:id" element={<ProjectDetail />} />
               
               {/* Client Routes */}
               <Route path="/client/login" element={<ClientLogin />} />

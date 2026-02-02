@@ -109,6 +109,43 @@ export const useOneSignal = () => {
               setIsSubscribed(granted);
               console.log("OneSignal: Permission changed to", granted);
               
+              // Close the slidedown prompt after permission is granted or denied
+              const hideSlidedown = () => {
+                const slidedownContainer = document.querySelector('.onesignal-slidedown-container');
+                const slidedownDialog = document.querySelector('.onesignal-slidedown-dialog');
+                
+                if (slidedownContainer) {
+                  // Add hiding animation class
+                  slidedownContainer.classList.add('onesignal-slidedown-hiding');
+                  slidedownContainer.classList.add('permission-granted');
+                  
+                  // Force hide after animation
+                  setTimeout(() => {
+                    (slidedownContainer as HTMLElement).style.display = 'none';
+                    (slidedownContainer as HTMLElement).style.visibility = 'hidden';
+                    (slidedownContainer as HTMLElement).style.opacity = '0';
+                    // Remove from DOM completely
+                    slidedownContainer.remove();
+                  }, 300);
+                }
+                
+                if (slidedownDialog) {
+                  slidedownDialog.classList.add('onesignal-slidedown-hiding');
+                }
+              };
+              
+              // Hide immediately
+              hideSlidedown();
+              
+              // Also try OneSignal's API
+              try {
+                if (OneSignal.Slidedown?.close) {
+                  await OneSignal.Slidedown.close();
+                }
+              } catch (e) {
+                console.log("OneSignal Slidedown API close not available");
+              }
+              
               // When user just subscribed, show popup after 5 seconds
               if (granted && shouldShowPopup()) {
                 try {

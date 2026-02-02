@@ -174,7 +174,7 @@ const ProjectCard = ({
             initial={{ opacity: 0, scale: 0.8 }}
             whileHover={{ opacity: 0.1, scale: 1.2 }}
             transition={{ duration: 0.3 }}
-            className={`absolute inset-0 bg-gradient-to-br ${project.gradient} blur-xl`}
+            className={`absolute inset-0 bg-gradient-to-br ${project.gradient} blur-xl pointer-events-none`}
           />
 
           {/* Category badge */}
@@ -253,7 +253,7 @@ const ProjectCard = ({
           <motion.div 
             initial={{ opacity: 0.05 }}
             whileHover={{ opacity: 0.15, scale: 1.2 }}
-            className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${project.gradient} rounded-bl-full rounded-tr-2xl`}
+            className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${project.gradient} rounded-bl-full rounded-tr-2xl pointer-events-none`}
           />
         </motion.div>
       </Card3D>

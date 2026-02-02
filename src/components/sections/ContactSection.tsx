@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +29,43 @@ const ContactSection = () => {
   const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  // Dynamic contact info from database
+  const [contactInfo, setContactInfo] = useState({
+    email: "contact@urmedia.tech",
+    whatsapp: "+8801609252155",
+    location: "Dhaka, Bangladesh",
+  });
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const { data } = await supabase
+          .from("site_settings")
+          .select("key, value")
+          .in("key", ["contact_email", "whatsapp_number", "location_en", "location_bn"]);
+
+        if (data && data.length > 0) {
+          const settings: Record<string, string> = {};
+          data.forEach((item) => {
+            if (item.value) settings[item.key] = item.value;
+          });
+          
+          setContactInfo({
+            email: settings.contact_email || "contact@urmedia.tech",
+            whatsapp: settings.whatsapp_number || "+8801609252155",
+            location: language === "bn" 
+              ? (settings.location_bn || "ঢাকা, বাংলাদেশ")
+              : (settings.location_en || "Dhaka, Bangladesh"),
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      }
+    };
+
+    fetchContactInfo();
+  }, [language]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -141,12 +178,12 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t("contact.emailLabel")}</p>
-                  <p className="font-medium text-foreground">contact@urmedia.tech</p>
+                  <p className="font-medium text-foreground">{contactInfo.email}</p>
                 </div>
               </div>
               
               <a 
-                href="https://wa.me/8801609252155" 
+                href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 hover:bg-secondary/50 p-2 -ml-2 rounded-xl transition-colors"
@@ -158,7 +195,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">WhatsApp</p>
-                  <p className="font-medium text-foreground">+880 1609-252155</p>
+                  <p className="font-medium text-foreground">{contactInfo.whatsapp}</p>
                 </div>
               </a>
               
@@ -171,7 +208,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t("contact.locationLabel")}</p>
-                  <p className="font-medium text-foreground">{t("contact.location")}</p>
+                  <p className="font-medium text-foreground">{contactInfo.location}</p>
                 </div>
               </div>
             </div>

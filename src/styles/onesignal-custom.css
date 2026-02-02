@@ -311,3 +311,29 @@
     justify-content: center !important;
   }
 }
+
+/* Hide slidedown after permission granted */
+.onesignal-slidedown-container.permission-granted,
+.onesignal-slidedown-container[style*="display: none"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Animation for hiding */
+.onesignal-slidedown-hiding {
+  animation: slideUpHide 0.3s ease-out forwards !important;
+}
+
+@keyframes slideUpHide {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+    display: none;
+  }
+}

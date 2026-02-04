@@ -181,6 +181,128 @@ export type Database = {
         }
         Relationships: []
       }
+      conversion_events: {
+        Row: {
+          content_ids: string[] | null
+          content_name: string | null
+          created_at: string
+          currency: string | null
+          event_type: string
+          event_value: number | null
+          id: string
+          metadata: Json | null
+          sent_to_google: boolean | null
+          sent_to_meta: boolean | null
+          utm_visit_id: string | null
+        }
+        Insert: {
+          content_ids?: string[] | null
+          content_name?: string | null
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          event_value?: number | null
+          id?: string
+          metadata?: Json | null
+          sent_to_google?: boolean | null
+          sent_to_meta?: boolean | null
+          utm_visit_id?: string | null
+        }
+        Update: {
+          content_ids?: string[] | null
+          content_name?: string | null
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          event_value?: number | null
+          id?: string
+          metadata?: Json | null
+          sent_to_google?: boolean | null
+          sent_to_meta?: boolean | null
+          utm_visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversion_events_utm_visit_id_fkey"
+            columns: ["utm_visit_id"]
+            isOneToOne: false
+            referencedRelation: "utm_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversion_settings: {
+        Row: {
+          access_token: string | null
+          conversion_id: string | null
+          conversion_label: string | null
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          pixel_id: string | null
+          platform: string
+          server_side_enabled: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string | null
+          conversion_id?: string | null
+          conversion_label?: string | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          pixel_id?: string | null
+          platform: string
+          server_side_enabled?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string | null
+          conversion_id?: string | null
+          conversion_label?: string | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          pixel_id?: string | null
+          platform?: string
+          server_side_enabled?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_scripts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_enabled: boolean | null
+          script_content: string
+          script_name: string
+          script_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          script_content: string
+          script_name: string
+          script_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          script_content?: string
+          script_name?: string
+          script_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           created_at: string
@@ -601,6 +723,57 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      utm_visits: {
+        Row: {
+          conversion_value: number | null
+          converted: boolean | null
+          created_at: string
+          id: string
+          ip_hash: string | null
+          page_path: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          conversion_value?: number | null
+          converted?: boolean | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          conversion_value?: number | null
+          converted?: boolean | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

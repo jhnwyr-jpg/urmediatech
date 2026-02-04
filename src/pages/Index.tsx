@@ -12,6 +12,7 @@ import Footer from "@/components/layout/Footer";
 import AIChatBot from "@/components/ui/AIChatBot";
 import SupportChatWidget from "@/components/ui/SupportChatWidget";
 import TrackingPixels from "@/components/TrackingPixels";
+import DynamicScripts from "@/components/DynamicScripts";
 import SEOHead from "@/components/seo/SEOHead";
 import { organizationSchema, websiteSchema, professionalServiceSchema } from "@/lib/jsonLd";
 
@@ -27,6 +28,7 @@ const Index = () => {
         jsonLd={[organizationSchema, websiteSchema, professionalServiceSchema]}
       />
       <TrackingPixels currentPage="home" />
+      <DynamicScripts />
       <Navbar />
       <HeroSection />
       <FeaturesSection />

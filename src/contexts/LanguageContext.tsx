@@ -13,6 +13,7 @@ const translations = {
     // Navbar
     "nav.services": "সেবাসমূহ",
     "nav.projects": "প্রজেক্ট",
+    "nav.pricing": "প্যাকেজ",
     "nav.about": "আমাদের সম্পর্কে",
     "nav.contact": "যোগাযোগ করুন",
     "nav.signin": "সাইন ইন",
@@ -206,6 +207,7 @@ const translations = {
     // Navbar
     "nav.services": "Services",
     "nav.projects": "Projects",
+    "nav.pricing": "Pricing",
     "nav.about": "About",
     "nav.contact": "Contact Us",
     "nav.signin": "Sign In",

@@ -36,8 +36,8 @@ const PricingSection = () => {
     {
       icon: Crown,
       name: t("pricing.premiumName"),
-      price: "৪,৯৯৯",
-      priceEn: "4,999",
+      price: "৩,৯৯৯",
+      priceEn: "3,999",
       period: t("pricing.period"),
       badge: t("pricing.popular"),
       features: [

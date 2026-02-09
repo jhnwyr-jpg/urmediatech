@@ -22,7 +22,7 @@ const PricingSection = () => {
       name: t("pricing.starterName"),
       price: "১,৯৯৯",
       period: t("pricing.period"),
-      badge: t("pricing.popular"),
+      badge: null,
       featured: false,
       features: [
         { icon: Globe, text: t("pricing.starterF1") },
@@ -54,7 +54,7 @@ const PricingSection = () => {
       name: t("pricing.businessName"),
       price: "৪,৯৯৯",
       period: t("pricing.period"),
-      badge: t("pricing.businessBadge"),
+      badge: null,
       featured: true,
       features: [
         { icon: Palette, text: t("pricing.businessF1") },

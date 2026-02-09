@@ -23,7 +23,7 @@ const PricingSection = () => {
       price: "১,৯৯৯",
       period: t("pricing.period"),
       badge: t("pricing.popular"),
-      featured: true,
+      featured: false,
       features: [
         { icon: Globe, text: t("pricing.starterF1") },
         { icon: Server, text: t("pricing.starterF2") },
@@ -46,6 +46,27 @@ const PricingSection = () => {
         { icon: Shield, text: t("pricing.premiumF4") },
         { icon: Headphones, text: t("pricing.premiumF5") },
         { icon: Palette, text: t("pricing.premiumF6") },
+      ],
+      buttonText: t("pricing.orderBtn"),
+    },
+    {
+      icon: Sparkles,
+      name: t("pricing.businessName"),
+      price: "৪,৯৯৯",
+      period: t("pricing.period"),
+      badge: t("pricing.businessBadge"),
+      featured: true,
+      features: [
+        { icon: Palette, text: t("pricing.businessF1") },
+        { icon: Zap, text: t("pricing.businessF2") },
+        { icon: Globe, text: t("pricing.businessF3") },
+        { icon: Headphones, text: t("pricing.businessF4") },
+        { icon: Code, text: t("pricing.businessF5") },
+        { icon: Shield, text: t("pricing.businessF6") },
+        { icon: Shield, text: t("pricing.businessF7") },
+        { icon: Globe, text: t("pricing.businessF8") },
+        { icon: Server, text: t("pricing.businessF9") },
+        { icon: Crown, text: t("pricing.businessF10") },
       ],
       buttonText: t("pricing.orderBtn"),
     },
@@ -115,7 +136,7 @@ const PricingSection = () => {
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-10 max-w-4xl mx-auto items-start">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <PricingCard
               key={plan.name}
@@ -171,13 +192,13 @@ const PricingCard = ({ plan, index, isInView, onOrder }: PricingCardProps) => {
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`relative group rounded-3xl overflow-hidden ${
+      className={`relative group rounded-3xl overflow-hidden h-full ${
         plan.featured ? "md:-mt-4" : ""
       }`}
     >
       {/* Card glass background */}
       <div
-        className={`relative p-8 md:p-10 transition-all duration-500 ${
+        className={`relative p-8 md:p-10 transition-all duration-500 h-full flex flex-col ${
           plan.featured
             ? "border-2 border-primary/30"
             : "border border-border/50 hover:border-primary/20"
@@ -285,7 +306,7 @@ const PricingCard = ({ plan, index, isInView, onOrder }: PricingCardProps) => {
         }`} />
 
         {/* Features */}
-        <ul className="space-y-4 mb-10">
+        <ul className="space-y-4 mb-10 flex-1">
           {plan.features.map((feature, i) => (
             <motion.li
               key={i}
@@ -309,7 +330,7 @@ const PricingCard = ({ plan, index, isInView, onOrder }: PricingCardProps) => {
         {/* CTA Button */}
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
-            id={`btn-pricing-${index === 0 ? "starter" : "premium"}`}
+            id={`btn-pricing-${index === 0 ? "starter" : index === 1 ? "premium" : "business"}`}
             variant={plan.featured ? "gradient" : "outline"}
             size="lg"
             className={`w-full rounded-xl py-6 text-base font-semibold group/btn ${

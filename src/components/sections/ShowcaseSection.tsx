@@ -15,7 +15,7 @@ const ShowcaseSection = () => {
   return (
     <>
       {/* Perspective Grid Section - Reduced height */}
-      <section className="relative h-[80px] perspective-grid bg-background overflow-hidden">
+      <section className="relative h-[40px] perspective-grid bg-background overflow-hidden">
         {/* Decorative lines going up with animation */}
         {[
           { left: "25%", height: "160px", delay: 0 },

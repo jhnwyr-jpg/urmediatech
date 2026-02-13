@@ -17,6 +17,7 @@ import {
   Package,
   Ticket,
   UserCheck,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,6 +36,7 @@ const navItems = [
   { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
   { icon: Bell, label: "Notifications", path: "/admin/notifications" },
   { icon: UserCheck, label: "Subscribers", path: "/admin/subscribers" },
+  { icon: CreditCard, label: "Pricing", path: "/admin/pricing" },
   { icon: Ticket, label: "Coupons", path: "/admin/coupons" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: Users, label: "Users", path: "/admin/users" },

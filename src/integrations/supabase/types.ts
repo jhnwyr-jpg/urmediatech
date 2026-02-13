@@ -477,6 +477,92 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_features: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          plan_id: string
+          sort_order: number
+          text_bn: string
+          text_en: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          plan_id: string
+          sort_order?: number
+          text_bn: string
+          text_en: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          plan_id?: string
+          sort_order?: number
+          text_bn?: string
+          text_en?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_features_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_plans: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          name_bn: string
+          name_en: string
+          period_bn: string
+          period_en: string
+          plan_key: string
+          price: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          name_bn: string
+          name_en: string
+          period_bn?: string
+          period_en?: string
+          plan_key: string
+          price: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          name_bn?: string
+          name_en?: string
+          period_bn?: string
+          period_en?: string
+          plan_key?: string
+          price?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null

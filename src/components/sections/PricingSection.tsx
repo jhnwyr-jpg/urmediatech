@@ -73,7 +73,7 @@ const PricingSection = () => {
   ];
 
   return (
-    <section id="pricing" ref={ref} className="py-28 relative overflow-hidden">
+    <section id="pricing" ref={ref} className="py-16 relative overflow-hidden">
       {/* Rich background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]" />

@@ -33,9 +33,15 @@
     '.urb-notif:hover{background:#f7f5ff}',
     '.urb-notif.unread{background:#f0ecff}',
     '.urb-notif-title{font-size:14px;font-weight:600;color:#1a1a1a;margin:0 0 4px}',
-    '.urb-notif-msg{font-size:13px;color:#666;margin:0 0 6px;line-height:1.4}',
+    '.urb-notif-msg{font-size:13px;color:#666;margin:0 0 6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
+    '.urb-notif-msg.expanded{display:block;-webkit-line-clamp:unset}',
     '.urb-notif-time{font-size:11px;color:#999}',
     '.urb-notif-img{width:100%;border-radius:8px;margin-top:8px;max-height:120px;object-fit:cover}',
+    '.urb-notif-detail{display:none;margin-top:8px;padding-top:8px;border-top:1px solid #eee}',
+    '.urb-notif-detail.open{display:block}',
+    '.urb-notif-detail-msg{font-size:13px;color:#444;line-height:1.6;margin:0 0 8px;white-space:pre-wrap}',
+    '.urb-notif-link{display:inline-block;font-size:12px;color:#7B5FFF;text-decoration:none;font-weight:600;margin-top:4px}',
+    '.urb-notif-link:hover{text-decoration:underline}',
     '.urb-empty{padding:40px 20px;text-align:center;color:#999;font-size:14px}',
     '@media(max-width:420px){.urb-panel{right:12px;left:12px;width:auto;bottom:80px}}'
   ].join('\n');
@@ -138,22 +144,31 @@
       var date = new Date(n.created_at).toLocaleDateString();
       var unread = !isRead(n.id);
       var img = n.image_url ? '<img class="urb-notif-img" src="' + escapeAttr(n.image_url) + '" alt="" onerror="this.style.display=\'none\'">' : '';
-      return '<div class="urb-notif ' + (unread ? 'unread' : '') + '" data-id="' + n.id + '"' + (n.url ? ' data-url="' + escapeAttr(n.url) + '"' : '') + '>'
+      var link = n.url ? '<a class="urb-notif-link" href="' + escapeAttr(n.url) + '" target="_blank" rel="noopener">🔗 বিস্তারিত দেখুন</a>' : '';
+      return '<div class="urb-notif ' + (unread ? 'unread' : '') + '" data-id="' + n.id + '">'
         + '<p class="urb-notif-title">' + escapeHtml(n.title) + '</p>'
         + '<p class="urb-notif-msg">' + escapeHtml(n.message) + '</p>'
-        + img
         + '<span class="urb-notif-time">' + date + '</span>'
+        + '<div class="urb-notif-detail" data-detail="' + n.id + '">'
+        + '<p class="urb-notif-detail-msg">' + escapeHtml(n.message) + '</p>'
+        + img
+        + link
+        + '</div>'
         + '</div>';
     }).join('');
 
     list.querySelectorAll('.urb-notif').forEach(function(el) {
-      el.addEventListener('click', function() {
+      el.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A') return; // let links work normally
         var id = el.getAttribute('data-id');
-        var url = el.getAttribute('data-url');
         markAsRead(id);
         el.classList.remove('unread');
         updateBadge();
-        if (url) window.open(url, '_blank');
+        // Toggle detail section
+        var detail = el.querySelector('.urb-notif-detail');
+        if (detail) {
+          detail.classList.toggle('open');
+        }
       });
     });
   }

@@ -104,7 +104,7 @@ const Navbar = () => {
               loading="eager"
               decoding="async"
             />
-            <span className="font-bold text-lg text-foreground">
+            <span className="font-bold text-lg text-foreground whitespace-nowrap">
               UR <span className="text-primary">Media</span>
             </span>
           </Link>
@@ -189,7 +189,7 @@ const Navbar = () => {
               loading="eager"
               decoding="async"
             />
-            <span className="font-bold text-lg text-foreground">
+            <span className="font-bold text-lg text-foreground whitespace-nowrap">
               UR <span className="text-primary">Media</span>
             </span>
           </Link>

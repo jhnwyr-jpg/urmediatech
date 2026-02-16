@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      broadcast_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          message: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           admin_seen: boolean | null

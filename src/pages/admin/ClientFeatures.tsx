@@ -66,7 +66,7 @@ const ClientFeatures = () => {
   const [copied, setCopied] = useState(false);
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const siteOrigin = "https://urmediatech.lovable.app";
+  const siteOrigin = "https://urmedia.tech";
   useEffect(() => {
     fetchClients();
   }, []);

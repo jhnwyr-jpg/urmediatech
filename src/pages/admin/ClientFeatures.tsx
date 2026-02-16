@@ -178,6 +178,38 @@ const ClientFeatures = () => {
           <p className="text-muted-foreground">Manage which features each client website can access</p>
         </div>
 
+        {/* Universal Embed Code */}
+        <Card className="p-5 border-primary/20 bg-primary/5">
+          <div className="flex items-center gap-2 mb-3">
+            <Code className="h-5 w-5 text-primary" />
+            <h3 className="font-bold text-foreground">Universal Embed Code</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            এই কোডটি যেকোনো client এর website এ <code>&lt;body&gt;</code> এর ভিতরে paste করুন। Site automatically আপনার admin panel এ register হবে। Client এর কাছে কিছুই দেখাবে না।
+          </p>
+          <div className="relative">
+            <pre className="bg-background rounded-lg p-4 text-xs overflow-x-auto whitespace-pre-wrap break-all font-mono text-foreground border">
+{`<script src="${window.location.origin}/client-control.js"
+  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">
+</script>`}
+            </pre>
+            <Button
+              size="sm"
+              variant="outline"
+              className="absolute top-2 right-2"
+              onClick={() => {
+                const code = `<script src="${window.location.origin}/client-control.js"\n  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">\n</script>`;
+                navigator.clipboard.writeText(code);
+                setCopied(true);
+                toast.success("Code copied!");
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </Button>
+          </div>
+        </Card>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Client List - Left Panel */}
           <div className="lg:col-span-1">
@@ -314,40 +346,6 @@ const ClientFeatures = () => {
           </div>
         </div>
 
-        {/* Embed Code Section */}
-        {selectedClient && (
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Code className="h-5 w-5 text-primary" />
-              <h3 className="font-bold text-foreground">Embed Code</h3>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              এই কোডটি client এর website এ যোগ করুন। এটা automatically সব feature status দেখাবে এবং আপনার control panel থেকে manage হবে।
-            </p>
-            <div className="relative">
-              <pre className="bg-muted rounded-lg p-4 text-xs overflow-x-auto whitespace-pre-wrap break-all font-mono text-foreground">
-{`<script src="${window.location.origin}/client-control.js"
-  data-api-key="${selectedClient.api_key}"
-  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">
-</script>`}
-              </pre>
-              <Button
-                size="sm"
-                variant="outline"
-                className="absolute top-2 right-2"
-                onClick={() => {
-                  const code = `<script src="${window.location.origin}/client-control.js"\n  data-api-key="${selectedClient.api_key}"\n  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">\n</script>`;
-                  navigator.clipboard.writeText(code);
-                  setCopied(true);
-                  toast.success("Code copied!");
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-              >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              </Button>
-            </div>
-          </Card>
-        )}
       </div>
     </AdminLayout>
   );

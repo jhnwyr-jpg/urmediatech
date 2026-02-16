@@ -163,6 +163,36 @@ export type Database = {
         }
         Relationships: []
       }
+      client_feature_controls: {
+        Row: {
+          client_id: string
+          created_at: string
+          feature_key: string
+          feature_name: string
+          id: string
+          is_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          feature_key: string
+          feature_name: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          feature_key?: string
+          feature_name?: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       client_notifications: {
         Row: {
           client_id: string

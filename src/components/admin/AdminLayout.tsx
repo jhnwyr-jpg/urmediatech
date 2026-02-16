@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import BroadcastWidget from "@/components/BroadcastWidget";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard,
@@ -179,6 +180,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         {/* Page content */}
         <div className="p-6 lg:p-8">{children}</div>
       </main>
+      <BroadcastWidget />
     </div>
   );
 };

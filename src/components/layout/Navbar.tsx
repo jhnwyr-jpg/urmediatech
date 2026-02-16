@@ -95,18 +95,16 @@ const Navbar = () => {
             className="flex items-center gap-2 px-4 relative z-10"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <div className="w-9 h-9 rounded-xl bg-foreground/90 flex items-center justify-center">
-              <img 
-                src={logo} 
-                alt="UR Media Logo" 
-                className="w-5 h-5 invert"
-                width={20}
-                height={20}
-                loading="eager"
-                decoding="async"
-              />
-            </div>
-            <span className="font-semibold text-lg text-foreground">
+            <img 
+              src={logo} 
+              alt="UR Media Logo" 
+              className="w-8 h-8"
+              width={32}
+              height={32}
+              loading="eager"
+              decoding="async"
+            />
+            <span className="font-bold text-lg text-foreground">
               UR <span className="text-primary">Media</span>
             </span>
           </Link>
@@ -182,18 +180,16 @@ const Navbar = () => {
             className="flex items-center gap-2 relative z-10"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <div className="w-9 h-9 rounded-xl bg-foreground/90 flex items-center justify-center">
-              <img 
-                src={logo} 
-                alt="UR Media Logo" 
-                className="w-5 h-5 invert"
-                width={20}
-                height={20}
-                loading="eager"
-                decoding="async"
-              />
-            </div>
-            <span className="font-semibold text-lg text-foreground">
+            <img 
+              src={logo} 
+              alt="UR Media Logo" 
+              className="w-8 h-8"
+              width={32}
+              height={32}
+              loading="eager"
+              decoding="async"
+            />
+            <span className="font-bold text-lg text-foreground">
               UR <span className="text-primary">Media</span>
             </span>
           </Link>

@@ -100,6 +100,39 @@ export type Database = {
           },
         ]
       }
+      client_api_keys: {
+        Row: {
+          api_key: string
+          client_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          site_name: string
+          site_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          client_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          site_name: string
+          site_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          site_name?: string
+          site_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       client_notifications: {
         Row: {
           client_id: string

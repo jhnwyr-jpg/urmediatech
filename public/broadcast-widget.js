@@ -165,7 +165,9 @@
       var date = new Date(n.created_at).toLocaleDateString();
       var unread = !isRead(n.id);
       var img = n.image_url ? '<img class="urb-notif-img" src="' + escapeAttr(n.image_url) + '" alt="" onerror="this.style.display=\'none\'">' : '';
-      var link = n.url ? '<a class="urb-notif-link" href="' + escapeAttr(n.url) + '" target="_blank" rel="noopener">🔗 বিস্তারিত দেখুন</a>' : '';
+      var rawUrl = n.url && n.url.trim() ? n.url.trim() : '';
+      if (rawUrl && !/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
+      var link = rawUrl ? '<a class="urb-notif-link" href="' + escapeAttr(rawUrl) + '" target="_blank" rel="noopener">🔗 বিস্তারিত দেখুন</a>' : '';
       return '<div class="urb-notif ' + (unread ? 'unread' : '') + '" data-id="' + n.id + '">'
         + '<p class="urb-notif-title">' + escapeHtml(n.title) + '</p>'
         + '<p class="urb-notif-msg">' + escapeHtml(n.message) + '</p>'

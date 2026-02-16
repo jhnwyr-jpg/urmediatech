@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.support-chat-init]
 verify_jwt = false
+
+[functions.client-notifications-api]
+verify_jwt = false

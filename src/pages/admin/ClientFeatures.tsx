@@ -66,6 +66,7 @@ const ClientFeatures = () => {
   const [copied, setCopied] = useState(false);
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const siteOrigin = "https://urmedia.tech";
   useEffect(() => {
     fetchClients();
   }, []);
@@ -189,7 +190,7 @@ const ClientFeatures = () => {
           </p>
           <div className="relative">
             <pre className="bg-background rounded-lg p-4 text-xs overflow-x-auto whitespace-pre-wrap break-all font-mono text-foreground border">
-{`<script src="${window.location.origin}/client-control.js"
+{`<script src="${siteOrigin}/client-control.js"
   data-endpoint="${supabaseUrl}/functions/v1/feature-controls">
 </script>`}
             </pre>
@@ -198,7 +199,7 @@ const ClientFeatures = () => {
               variant="outline"
               className="absolute top-2 right-2"
               onClick={() => {
-                const code = `<script src="${window.location.origin}/client-control.js"\n  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">\n</script>`;
+                const code = `<script src="${siteOrigin}/client-control.js"\n  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">\n</script>`;
                 navigator.clipboard.writeText(code);
                 setCopied(true);
                 toast.success("Code copied!");

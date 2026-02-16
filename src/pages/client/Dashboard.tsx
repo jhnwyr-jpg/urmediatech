@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logo from "@/assets/logo.ico";
+import NotificationBell from "@/components/ui/NotificationBell";
 
 interface ClientService {
   id: string;
@@ -285,9 +286,12 @@ const ClientDashboard = () => {
               UR <span className="text-primary">Media</span>
             </span>
           </Link>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut size={18} />
-          </Button>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut size={18} />
+            </Button>
+          </div>
         </div>
       </header>
 

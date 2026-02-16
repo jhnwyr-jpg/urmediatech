@@ -43,79 +43,45 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="fixed top-0 left-0 right-0 z-50 px-4 pt-4"
     >
-      <nav className="max-w-4xl mx-auto">
+      <nav className="max-w-6xl mx-auto">
         {/* Desktop Navbar - Apple Liquid Glass Style */}
         <motion.div 
           className="hidden md:flex items-center justify-between gap-2 px-2 py-2 rounded-full relative overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)",
+            background: "rgba(255, 255, 255, 0.85)",
             backdropFilter: "blur(20px) saturate(180%)",
             WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(255,255,255,0.1)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)",
           }}
         >
-          {/* Animated liquid gradient overlay */}
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none"
-            style={{
-              background: "linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.1) 25%, rgba(6,182,212,0.1) 50%, rgba(139,92,246,0.1) 75%, transparent 100%)",
-            }}
-            animate={{
-              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-          
-          {/* Shimmer effect */}
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none opacity-30"
-            style={{
-              background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)",
-              backgroundSize: "200% 100%",
-            }}
-            animate={{
-              backgroundPosition: ["-100% 0%", "200% 0%"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatDelay: 2,
-              ease: "easeInOut",
-            }}
-          />
-
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center gap-2 px-4 relative z-10"
+            className="flex items-center gap-2 px-4 relative z-10 group"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <img 
-              src={logo} 
-              alt="UR Media - Professional Video Editing Agency Logo" 
-              className="w-8 h-8"
-              width={32}
-              height={32}
-              loading="eager"
-              decoding="async"
-            />
-            <span className="font-bold text-lg text-foreground">
-              UR <span className="text-primary">Media</span>
-            </span>
+            <div className="bg-white p-1 rounded-lg shadow-sm border border-border/50 group-hover:scale-110 transition-transform">
+              <img 
+                src={logo} 
+                alt="UR Media" 
+                className="w-8 h-8 object-contain"
+                width={32}
+                height={32}
+              />
+            </div>
+            <div className="flex flex-col -space-y-1">
+              <span className="font-extrabold text-base tracking-tight text-foreground">UR</span>
+              <span className="font-bold text-base tracking-tight text-primary">Media</span>
+            </div>
           </Link>
 
-          {/* Center Navigation */}
-          <div className="flex items-center gap-1 relative z-10">
+          <div className="flex items-center gap-4 relative z-10 px-4">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => scrollToSection(link.href)}
-                className="px-4 py-2 transition-all duration-300 text-sm font-medium rounded-full hover:bg-white/10 text-muted-foreground hover:text-foreground"
+                className="px-4 py-2 transition-all duration-300 text-sm font-semibold rounded-full hover:bg-black/5 text-muted-foreground hover:text-foreground"
               >
                 {link.name}
               </button>
@@ -123,21 +89,21 @@ const Navbar = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex items-center gap-2 relative z-10">
+          <div className="flex items-center gap-3 relative z-10 pr-2">
             <LanguageToggle />
             <Button 
               variant="outline" 
               size="sm" 
-              className="rounded-full px-4 border-primary/30 hover:bg-primary/10"
+              className="rounded-full px-6 border-primary/30 hover:bg-primary/5 text-primary h-11 transition-all"
               onClick={() => navigate("/client/login")}
             >
-              <User size={16} className="mr-1.5" />
-              {t("nav.clientLogin")}
+              <User size={18} className="mr-2" />
+              <span className="font-semibold">{t("nav.clientLogin")}</span>
             </Button>
             <Button 
               variant="gradient" 
               size="sm" 
-              className="rounded-full px-5 shadow-lg shadow-primary/25"
+              className="rounded-full px-7 h-11 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all font-semibold"
               onClick={scrollToContact}
             >
               {t("nav.contact")}
@@ -149,49 +115,32 @@ const Navbar = () => {
         <motion.div 
           className="md:hidden flex items-center justify-between px-4 py-3 rounded-full relative overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)",
+            background: "rgba(255, 255, 255, 0.9)",
             backdropFilter: "blur(20px) saturate(180%)",
             WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2)",
+            border: "1px solid rgba(0, 0, 0, 0.05)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
           }}
         >
-          {/* Shimmer effect */}
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none opacity-30"
-            style={{
-              background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)",
-              backgroundSize: "200% 100%",
-            }}
-            animate={{
-              backgroundPosition: ["-100% 0%", "200% 0%"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatDelay: 2,
-              ease: "easeInOut",
-            }}
-          />
-
           {/* Logo */}
           <Link 
             to="/"
             className="flex items-center gap-2 relative z-10"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            <img 
-              src={logo} 
-              alt="UR Media - Professional Video Editing Agency Logo" 
-              className="w-8 h-8"
-              width={32}
-              height={32}
-              loading="eager"
-              decoding="async"
-            />
-            <span className="font-bold text-lg text-foreground">
-              UR <span className="text-primary">Media</span>
-            </span>
+            <div className="bg-white p-1 rounded-lg shadow-sm border border-border/50">
+              <img 
+                src={logo} 
+                alt="UR Media" 
+                className="w-7 h-7 object-contain"
+                width={28}
+                height={28}
+              />
+            </div>
+            <div className="flex flex-col -space-y-1">
+              <span className="font-extrabold text-sm tracking-tight text-foreground">UR</span>
+              <span className="font-bold text-sm tracking-tight text-primary">Media</span>
+            </div>
           </Link>
 
           <div className="flex items-center gap-2 relative z-10">

@@ -100,6 +100,33 @@ export type Database = {
           },
         ]
       }
+      client_notifications: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+        }
+        Relationships: []
+      }
       client_services: {
         Row: {
           client_id: string

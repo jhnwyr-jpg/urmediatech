@@ -12,7 +12,6 @@ import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 import AIChatBot from "@/components/ui/AIChatBot";
 import SupportChatWidget from "@/components/ui/SupportChatWidget";
-import BroadcastWidget from "@/components/BroadcastWidget";
 import TrackingPixels from "@/components/TrackingPixels";
 import DynamicScripts from "@/components/DynamicScripts";
 import SEOHead from "@/components/seo/SEOHead";
@@ -45,7 +44,6 @@ const Index = () => {
       <Footer />
       <AIChatBot />
       <SupportChatWidget />
-      <BroadcastWidget />
     </main>
   );
 };

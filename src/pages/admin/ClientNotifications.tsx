@@ -163,11 +163,12 @@ const ClientNotifications = () => {
 
   const embedCode = (() => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const siteOrigin = "https://urmedia.tech";
     return `<!-- UR Media Notification Widget -->
 <script>
 (function(){
   var s=document.createElement('script');
-  s.src='${window.location.origin}/broadcast-widget.js';
+  s.src='${siteOrigin}/broadcast-widget.js';
   s.setAttribute('data-endpoint','${supabaseUrl}/functions/v1/broadcast-notifications');
   document.body.appendChild(s);
 })();

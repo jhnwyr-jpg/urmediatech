@@ -6,7 +6,11 @@ const BroadcastWidget = () => {
   useEffect(() => {
     if (!SUPABASE_URL) return;
 
+    // Prevent duplicate script loading
+    if (document.getElementById('urb-broadcast-script')) return;
+
     const script = document.createElement("script");
+    script.id = 'urb-broadcast-script';
     script.src = `${window.location.origin}/broadcast-widget.js`;
     script.setAttribute(
       "data-endpoint",
@@ -15,11 +19,8 @@ const BroadcastWidget = () => {
     script.async = true;
     document.body.appendChild(script);
 
-    return () => {
-      script.remove();
-      // Clean up widget elements
-      document.querySelectorAll(".urb-bell-btn, .urb-panel").forEach((el) => el.remove());
-    };
+    // No cleanup - widget should persist across navigations
+    // The script itself handles duplicate prevention via window.__URB_INITIALIZED
   }, []);
 
   return null;

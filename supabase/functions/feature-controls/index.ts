@@ -27,6 +27,8 @@ const ALL_FEATURES = [
 function getClientScript(endpoint: string): string {
   return `(function(){
 'use strict';
+if(window.__URC_INITIALIZED)return;
+window.__URC_INITIALIZED=true;
 var E='${endpoint}';
 var SK='urc_api_key';
 var siteUrl=window.location.origin;
@@ -34,9 +36,16 @@ var siteName=document.title||siteUrl;
 var apiKey=null;
 var notifications=[];
 var isOpen=false;
+var isFetching=false;
 
 function gs(){try{return localStorage.getItem(SK)}catch(e){return null}}
 function ss(k){try{localStorage.setItem(SK,k)}catch(e){}}
+
+// ===== TOASTED TRACKING =====
+var TK='urb_toasted_ids';
+function getToasted(){try{return JSON.parse(localStorage.getItem(TK)||'[]')}catch(e){return[]}}
+function setToasted(id){var t=getToasted();if(t.indexOf(id)===-1)t.push(id);if(t.length>200)t=t.slice(-200);localStorage.setItem(TK,JSON.stringify(t))}
+function wasToasted(id){return getToasted().indexOf(id)!==-1}
 
 // ===== AUTO-REGISTER =====
 function init(){
@@ -44,7 +53,7 @@ function init(){
   if(apiKey){checkStatus()}else{register()}
   initBroadcastUI();
   fetchBroadcast();
-  setInterval(fetchBroadcast,20000);
+  setInterval(fetchBroadcast,30000);
   setInterval(function(){var k=gs();if(k)checkStatus()},300000);
 }
 function getPageInfo(){
@@ -84,16 +93,22 @@ function initBroadcastUI(){
 }
 
 function fetchBroadcast(){
+  if(isFetching)return;
+  isFetching=true;
   fetch(E+'?action=broadcast_list').then(function(r){return r.json()}).then(function(d){
-    var oldUn=notifications.filter(function(n){return!isRead(n.id)}).length;
     notifications=d.notifications||[];
-    var newUn=notifications.filter(function(n){return!isRead(n.id)}).length;
     updateBadge();
     if(isOpen)renderList();
-    if(newUn>oldUn&&notifications.length>0){
-      for(var i=0;i<notifications.length;i++){if(!isRead(notifications[i].id)){playSound();showToast(notifications[i]);break}}
+    // Toast only for never-toasted notifications
+    for(var i=0;i<notifications.length;i++){
+      if(!isRead(notifications[i].id)&&!wasToasted(notifications[i].id)){
+        setToasted(notifications[i].id);
+        playSound();
+        showToast(notifications[i]);
+        break;
+      }
     }
-  }).catch(function(){});
+  }).catch(function(){}).finally(function(){isFetching=false});
 }
 
 function updateBadge(){var c=notifications.filter(function(n){return!isRead(n.id)}).length;window._urbBadge.textContent=c>9?'9+':c;window._urbBadge.style.display=c>0?'flex':'none'}

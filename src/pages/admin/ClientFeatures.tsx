@@ -66,7 +66,7 @@ const ClientFeatures = () => {
   const [copied, setCopied] = useState(false);
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const siteOrigin = "https://urmedia.tech";
+  const embedUrl = `${supabaseUrl}/functions/v1/feature-controls`;
   useEffect(() => {
     fetchClients();
   }, []);
@@ -186,20 +186,18 @@ const ClientFeatures = () => {
             <h3 className="font-bold text-foreground">Universal Embed Code</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-3">
-            এই কোডটি যেকোনো client এর website এ <code>&lt;body&gt;</code> এর ভিতরে paste করুন। Site automatically আপনার admin panel এ register হবে। Client এর কাছে কিছুই দেখাবে না।
+            এই কোডটি যেকোনো client এর website এ <code>&lt;body&gt;</code> এর ভিতরে paste করুন। Site automatically আপনার admin panel এ register হবে। Client এর কাছে কিছুই দেখাবে না। <strong>এই URL কখনো বদলাবে না।</strong>
           </p>
           <div className="relative">
             <pre className="bg-background rounded-lg p-4 text-xs overflow-x-auto whitespace-pre-wrap break-all font-mono text-foreground border">
-{`<script src="${siteOrigin}/client-control.js"
-  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">
-</script>`}
+{`<script src="${embedUrl}"></script>`}
             </pre>
             <Button
               size="sm"
               variant="outline"
               className="absolute top-2 right-2"
               onClick={() => {
-                const code = `<script src="${siteOrigin}/client-control.js"\n  data-endpoint="${supabaseUrl}/functions/v1/feature-controls">\n</script>`;
+                const code = `<script src="${embedUrl}"></script>`;
                 navigator.clipboard.writeText(code);
                 setCopied(true);
                 toast.success("Code copied!");

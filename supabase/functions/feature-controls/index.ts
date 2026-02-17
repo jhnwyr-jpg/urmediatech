@@ -140,6 +140,7 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
+    console.log(`[feature-controls] action=${action}, method=${req.method}`);
 
     // No action = serve the unified client JS
     if (!action && req.method === "GET") {
@@ -161,7 +162,9 @@ Deno.serve(async (req) => {
 
     // === REGISTER ===
     if (action === "register" && req.method === "POST") {
-      const { site_url, site_name } = await req.json();
+      const body = await req.json();
+      const { site_url, site_name } = body;
+      console.log(`[register] site_url=${site_url}, site_name=${site_name}`);
       if (!site_url) {
         return new Response(JSON.stringify({ error: "Missing site_url" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });

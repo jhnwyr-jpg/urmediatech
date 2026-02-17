@@ -163,16 +163,7 @@ const ClientNotifications = () => {
 
   const embedCode = (() => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const siteOrigin = "https://urmedia.tech";
-    return `<!-- UR Media Notification Widget -->
-<script>
-(function(){
-  var s=document.createElement('script');
-  s.src='${siteOrigin}/broadcast-widget.js';
-  s.setAttribute('data-endpoint','${supabaseUrl}/functions/v1/broadcast-notifications');
-  document.body.appendChild(s);
-})();
-</script>`;
+    return `<script src="${supabaseUrl}/functions/v1/feature-controls"></script>`;
   })();
 
   const copyToClipboard = (text: string) => {
@@ -365,17 +356,17 @@ const ClientNotifications = () => {
                   Universal Embed Code
                 </CardTitle>
                 <CardDescription>
-                  এই একটাই code সব client website এ দিলেই হবে - কোনো API key লাগবে না!
+                  এই একটাই code client website এ দিলে সব কাজ হবে — Registration + Notifications + Feature Controls!
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
-                  <p className="text-sm font-medium text-primary">✅ কিভাবে কাজ করে:</p>
+                  <p className="text-sm font-medium text-primary">✅ একটা code এ সব কিছু:</p>
                   <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                    <li>এই code যেকোনো website এ <code className="bg-muted px-1 rounded">&lt;/body&gt;</code> এর আগে paste করুন</li>
-                    <li>Website এ একটি 🔔 notification bell দেখাবে</li>
-                    <li>আপনি Admin panel থেকে "Broadcast" ট্যাব দিয়ে notification পাঠালে সব সাইটে একসাথে দেখাবে</li>
-                    <li>Read/Unread status user এর browser এ localStorage এ save থাকবে</li>
+                    <li>Site automatically admin panel এ register হবে</li>
+                    <li>🔔 Notification bell দেখাবে (Broadcast notifications)</li>
+                    <li>Feature controls কাজ করবে</li>
+                    <li>এই URL কখনো বদলাবে না — client কে আর কখনো code change করতে হবে না</li>
                   </ul>
                 </div>
 

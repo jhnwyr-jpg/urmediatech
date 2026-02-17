@@ -1,10 +1,14 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 const BroadcastWidget = () => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+
   useEffect(() => {
-    if (!SUPABASE_URL) return;
+    if (!SUPABASE_URL || !isAdmin) return;
 
     // Prevent duplicate script loading
     if (document.getElementById('urb-broadcast-script')) return;
@@ -19,9 +23,24 @@ const BroadcastWidget = () => {
     script.async = true;
     document.body.appendChild(script);
 
-    // No cleanup - widget should persist across navigations
-    // The script itself handles duplicate prevention via window.__URB_INITIALIZED
-  }, []);
+    return () => {
+      // Cleanup when leaving admin
+      const existingScript = document.getElementById('urb-broadcast-script');
+      if (existingScript) existingScript.remove();
+
+      // Remove bell button and panel from DOM
+      document.querySelectorAll('.urb-bell-btn, .urb-panel').forEach(el => el.remove());
+
+      // Reset initialization flag so it can re-init when returning to admin
+      (window as any).__URB_INITIALIZED = false;
+
+      // Clear polling interval
+      if ((window as any).__URB_INTERVAL) {
+        clearInterval((window as any).__URB_INTERVAL);
+        (window as any).__URB_INTERVAL = null;
+      }
+    };
+  }, [isAdmin]);
 
   return null;
 };

@@ -143,7 +143,8 @@ Deno.serve(async (req) => {
 
     // No action = serve the unified client JS
     if (!action && req.method === "GET") {
-      const baseUrl = url.origin + url.pathname;
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const baseUrl = `${supabaseUrl}/functions/v1/feature-controls`;
       return new Response(getClientScript(baseUrl), {
         headers: {
           ...corsHeaders,

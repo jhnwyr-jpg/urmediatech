@@ -82,6 +82,7 @@ const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; 
             type: "spring",
             stiffness: 280,
             damping: 18,
+            delay: i * 0.08,
           }}
           className="inline-block"
         >

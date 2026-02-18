@@ -63,8 +63,8 @@ function checkStatus(){
 }
 
 function loadBroadcastWidget(){
-  if(window.__URB_INITIALIZED)return;
-  window.__URB_INITIALIZED=true;
+  if(window.__URB_BROADCAST_LOADED)return;
+  window.__URB_BROADCAST_LOADED=true;
   var notifications=[];var isOpen=false;var POLL=30000;
   var RK='urb_read_ids';var TK='urb_toasted_ids';
   function gri(){try{return JSON.parse(localStorage.getItem(RK)||'[]')}catch(e){return[]}}

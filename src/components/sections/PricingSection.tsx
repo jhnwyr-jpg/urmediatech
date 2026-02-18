@@ -7,49 +7,87 @@ import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = { Zap, Crown, Globe, Server, Code, Headphones, Palette, Shield, Sparkles, Check, ArrowRight };
 
-const AnimatedPrice = ({ value, isInView, isFeatured }: { value: string; isInView: boolean; isFeatured: boolean }) => {
-  const numericValue = parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
-  const [displayValue, setDisplayValue] = useState(0);
+const bnDigits = "০১২৩৪৫৬৭৮৯";
+const toBnDigit = (d: number) => bnDigits[d] || d;
+
+const parseBnPrice = (val: string): number => {
+  const latin = val.replace(/[০-৯]/g, (ch) => String(bnDigits.indexOf(ch)));
+  return parseInt(latin.replace(/[^\d]/g, ""), 10) || 0;
+};
+
+const formatBn = (n: number): string => {
+  // Format with Bangla comma style (Indian grouping) and Bangla digits
+  const str = n.toLocaleString("en-IN"); // gives 1,900 / 2,900 etc
+  return str.replace(/\d/g, (d) => toBnDigit(Number(d)) as string);
+};
+
+/** Single digit roller — each digit rolls down from top */
+const RollingDigit = ({ digit, delay }: { digit: string; delay: number }) => {
+  return (
+    <motion.span
+      key={digit}
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 200, 
+        damping: 20, 
+        delay 
+      }}
+      className="inline-block"
+    >
+      {digit}
+    </motion.span>
+  );
+};
+
+const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; isInView: boolean; isFeatured: boolean; index: number }) => {
+  const numericValue = parseBnPrice(value);
+  const [count, setCount] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (!isInView) return;
-    
+
     let startTime: number;
-    const duration = 1800;
+    const duration = 1600;
     const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutQuart(progress);
-      
-      setDisplayValue(Math.floor(easedProgress * numericValue));
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setDisplayValue(numericValue);
-      }
-    };
+    const baseDelay = index * 200;
 
     const timeout = setTimeout(() => {
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        setCount(Math.floor(easedProgress * numericValue));
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setCount(numericValue);
+          setDone(true);
+        }
+      };
       requestAnimationFrame(animate);
-    }, 300);
+    }, 400 + baseDelay);
 
     return () => clearTimeout(timeout);
-  }, [isInView, numericValue]);
+  }, [isInView, numericValue, index]);
 
-  const formatted = displayValue.toLocaleString("bn-BD");
+  const formatted = formatBn(count);
+  const chars = `৳${formatted}`.split("");
 
   return (
     <motion.span
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className={`text-5xl md:text-6xl font-extrabold ${isFeatured ? "gradient-text" : "text-foreground"}`}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.4, delay: 0.1 + index * 0.15 }}
+      className={`text-5xl md:text-6xl font-extrabold inline-flex overflow-hidden ${isFeatured ? "gradient-text" : "text-foreground"}`}
     >
-      ৳{formatted}
+      {chars.map((ch, i) => (
+        <RollingDigit key={`${i}-${ch}`} digit={ch} delay={done ? 0 : i * 0.06} />
+      ))}
     </motion.span>
   );
 };
@@ -225,7 +263,7 @@ const PricingCard = ({ plan, index, isInView, onOrder, language }: { plan: PlanD
           </motion.div>
           <h3 className="text-xl font-bold text-foreground mb-3">{language === "bn" ? plan.name_bn : plan.name_en}</h3>
           <div className="flex items-baseline justify-center gap-1">
-            <AnimatedPrice value={plan.price} isInView={cardInView} isFeatured={plan.is_featured} />
+            <AnimatedPrice value={plan.price} isInView={cardInView} isFeatured={plan.is_featured} index={index} />
           </div>
           <span className="text-muted-foreground text-sm mt-1 block">/{language === "bn" ? plan.period_bn : plan.period_en}</span>
         </div>

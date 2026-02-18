@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { logError } from "@/lib/logger";
 import { Search, Ticket, CheckCircle, XCircle, User, Mail, Phone, Calendar, Loader2, Gift, Users, Clock, AlertTriangle, Percent, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -103,7 +104,7 @@ const Coupons = () => {
       toast.success(`Discount ${discountPercent}% সেট করা হয়েছে!`);
       queryClient.invalidateQueries({ queryKey: ["site-settings", "coupon_discount_percent"] });
     } catch (error: any) {
-      console.error("Error saving discount:", error);
+      logError("Error saving discount:", error);
       toast.error("সমস্যা হয়েছে");
     } finally {
       setIsSavingDiscount(false);
@@ -146,7 +147,7 @@ const Coupons = () => {
         toast.success(`✅ Valid coupon! ${discountPercent}% ছাড় প্রযোজ্য${remaining !== null ? ` (${remaining} দিন বাকি)` : ""}`);
       }
     } catch (error: any) {
-      console.error("Error verifying coupon:", error);
+      logError("Error verifying coupon:", error);
       toast.error("Verification এ সমস্যা হয়েছে");
     } finally {
       setIsVerifying(false);
@@ -170,7 +171,7 @@ const Coupons = () => {
       setSearchCode("");
       refetch();
     } catch (error: any) {
-      console.error("Error marking coupon as used:", error);
+      logError("Error marking coupon as used:", error);
       toast.error("সমস্যা হয়েছে");
     }
   };

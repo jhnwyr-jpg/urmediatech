@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import { MessageSquare, Mail, Calendar, User, Search, RefreshCw, DollarSign, CalendarPlus, Clock, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,7 +80,7 @@ const AdminContacts = () => {
       if (error) throw error;
       setContacts(data || []);
     } catch (error) {
-      console.error("Error fetching contacts:", error);
+      logError("Error fetching contacts:", error);
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +104,7 @@ const AdminContacts = () => {
       );
       toast.success("Status updated successfully");
     } catch (error) {
-      console.error("Error updating status:", error);
+      logError("Error updating status:", error);
       toast.error("Failed to update status");
     }
   };
@@ -124,7 +125,7 @@ const AdminContacts = () => {
       setEditingAmount(null);
       toast.success("Amount updated successfully");
     } catch (error) {
-      console.error("Error updating amount:", error);
+      logError("Error updating amount:", error);
       toast.error("Failed to update amount");
     }
   };
@@ -159,7 +160,7 @@ const AdminContacts = () => {
         });
 
       if (dbError) {
-        console.error("DB Error:", dbError);
+        logError("DB Error:", dbError);
         throw new Error("Failed to save meeting");
       }
 
@@ -175,7 +176,7 @@ const AdminContacts = () => {
       });
 
       if (error) {
-        console.error("Email Error:", error);
+        logError("Email Error:", error);
         toast.warning("Meeting saved but email failed to send");
       } else if (data?.success) {
         toast.success("Meeting scheduled & invitation sent!");
@@ -185,7 +186,7 @@ const AdminContacts = () => {
 
       setMeetingDialogOpen(false);
     } catch (error) {
-      console.error("Error scheduling meeting:", error);
+      logError("Error scheduling meeting:", error);
       toast.error("Failed to schedule meeting");
     } finally {
       setIsSendingInvite(false);

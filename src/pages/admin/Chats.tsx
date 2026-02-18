@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import { CalendarPlus, MessageCircle, RefreshCw, Send, User, Check, CheckCheck } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -64,7 +65,7 @@ const AdminChats = () => {
       setConversations((data as Conversation[]) ?? []);
       setSelectedId((prev) => prev ?? (data?.[0]?.id ?? null));
     } catch (e) {
-      console.error("Fetch conversations error:", e);
+      logError("Fetch conversations error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to load chats." });
     } finally {
       setIsLoading(false);
@@ -128,7 +129,7 @@ const AdminChats = () => {
     markAdminSeen();
     
     fetchMessages(selectedId).catch((e) => {
-      console.error("Fetch messages error:", e);
+      logError("Fetch messages error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to load messages." });
     });
 
@@ -230,7 +231,7 @@ const AdminChats = () => {
       if (error) throw error;
       setReply("");
     } catch (e) {
-      console.error("Send reply error:", e);
+      logError("Send reply error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to send reply." });
     } finally {
       setIsSending(false);
@@ -259,7 +260,7 @@ const AdminChats = () => {
       setMeetingTime("");
       toast({ title: "Meeting created", description: "Saved in Meetings." });
     } catch (e) {
-      console.error("Create meeting error:", e);
+      logError("Create meeting error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to create meeting." });
     }
   };

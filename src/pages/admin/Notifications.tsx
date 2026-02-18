@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logError } from "@/lib/logger";
 import { Bell, Send, Image, Link, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +51,7 @@ const Notifications = () => {
         throw new Error(data?.error || 'Failed to send notification');
       }
     } catch (error: any) {
-      console.error('Error sending notification:', error);
+      logError('Error sending notification:', error);
       toast.error(error.message || "Notification পাঠাতে সমস্যা হয়েছে");
     } finally {
       setIsSending(false);

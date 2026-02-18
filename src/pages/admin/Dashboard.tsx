@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import { MessageSquare, TrendingUp, DollarSign, CheckCircle, Clock, PlayCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
           pendingCount: pendingContacts.length,
         });
       } catch (error) {
-        console.error("Error fetching stats:", error);
+        logError("Error fetching stats:", error);
       } finally {
         setIsLoading(false);
       }

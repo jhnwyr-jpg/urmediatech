@@ -43,33 +43,28 @@ const RollingDigit = ({ digit, delay }: { digit: string; delay: number }) => {
 
 const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; isInView: boolean; isFeatured: boolean; index: number }) => {
   const numericValue = parseBnPrice(value);
-  // Start from ~5 steps before the final value, not from 0
   const stepsBack = 5;
   const startValue = Math.max(0, numericValue - stepsBack);
   const [count, setCount] = useState(startValue);
-  const [started, setStarted] = useState(false);
+  const hasRun = useRef(false);
 
   useEffect(() => {
-    if (!isInView || started) return;
-    setStarted(true);
+    if (!isInView || hasRun.current) return;
+    hasRun.current = true;
 
-    const baseDelay = index * 250;
-    const stepDuration = 180; // ms per step
+    const baseDelay = index * 200;
+    const stepDuration = 160;
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
-    const timeout = setTimeout(() => {
-      let current = startValue;
-      const tick = () => {
-        current++;
-        setCount(current);
-        if (current < numericValue) {
-          setTimeout(tick, stepDuration);
-        }
-      };
-      tick();
-    }, 400 + baseDelay);
+    for (let step = 1; step <= stepsBack; step++) {
+      const t = setTimeout(() => {
+        setCount(startValue + step);
+      }, baseDelay + step * stepDuration);
+      timers.push(t);
+    }
 
-    return () => clearTimeout(timeout);
-  }, [isInView, numericValue, index, started, startValue]);
+    return () => timers.forEach(clearTimeout);
+  }, [isInView, numericValue, index, startValue, stepsBack]);
 
   const formatted = formatBn(count);
   const chars = `৳${formatted}`.split("");
@@ -81,12 +76,12 @@ const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; 
       {chars.map((ch, i) => (
         <motion.span
           key={`${i}-${ch}`}
-          initial={{ opacity: 0.6, y: -20 }}
+          initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
             type: "spring",
-            stiffness: 300,
-            damping: 20,
+            stiffness: 280,
+            damping: 18,
           }}
           className="inline-block"
         >

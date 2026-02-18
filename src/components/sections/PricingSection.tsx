@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useSpring, useTransform, useMotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Check, Crown, Zap, Globe, Server, Code, Headphones, Palette, Shield, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,53 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = { Zap, Crown, Globe, Server, Code, Headphones, Palette, Shield, Sparkles, Check, ArrowRight };
+
+const AnimatedPrice = ({ value, isInView, isFeatured }: { value: string; isInView: boolean; isFeatured: boolean }) => {
+  const numericValue = parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    
+    let startTime: number;
+    const duration = 1800;
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutQuart(progress);
+      
+      setDisplayValue(Math.floor(easedProgress * numericValue));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(numericValue);
+      }
+    };
+
+    const timeout = setTimeout(() => {
+      requestAnimationFrame(animate);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [isInView, numericValue]);
+
+  const formatted = displayValue.toLocaleString("bn-BD");
+
+  return (
+    <motion.span
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className={`text-5xl md:text-6xl font-extrabold ${isFeatured ? "gradient-text" : "text-foreground"}`}
+    >
+      ৳{formatted}
+    </motion.span>
+  );
+};
 
 interface PlanData {
   id: string;
@@ -120,12 +167,15 @@ const PricingSection = () => {
 };
 
 const PricingCard = ({ plan, index, isInView, onOrder, language }: { plan: PlanData; index: number; isInView: boolean; onOrder: () => void; language: string }) => {
+  const cardRef = useRef(null);
+  const cardInView = useInView(cardRef, { once: true, margin: "-50px" });
   const [isHovered, setIsHovered] = useState(false);
   const { t } = useLanguage();
   const PlanIcon = iconMap[plan.icon] || Zap;
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 60 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
       transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -175,7 +225,7 @@ const PricingCard = ({ plan, index, isInView, onOrder, language }: { plan: PlanD
           </motion.div>
           <h3 className="text-xl font-bold text-foreground mb-3">{language === "bn" ? plan.name_bn : plan.name_en}</h3>
           <div className="flex items-baseline justify-center gap-1">
-            <span className={`text-5xl md:text-6xl font-extrabold ${plan.is_featured ? "gradient-text" : "text-foreground"}`}>৳{plan.price}</span>
+            <AnimatedPrice value={plan.price} isInView={cardInView} isFeatured={plan.is_featured} />
           </div>
           <span className="text-muted-foreground text-sm mt-1 block">/{language === "bn" ? plan.period_bn : plan.period_en}</span>
         </div>

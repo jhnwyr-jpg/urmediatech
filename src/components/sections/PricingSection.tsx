@@ -185,7 +185,7 @@ const PricingSection = () => {
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
           {plans.map((plan, index) => (
-            <PricingCard key={plan.id} plan={plan} index={index} isInView={isInView} onOrder={scrollToContact} language={language} />
+            <PricingCard key={plan.id} plan={plan} index={index} isInView={isInView} onOrder={scrollToContact} language={language} cardDelay={index * 0.35} />
           ))}
         </div>
 
@@ -204,7 +204,7 @@ const PricingSection = () => {
   );
 };
 
-const PricingCard = ({ plan, index, isInView, onOrder, language }: { plan: PlanData; index: number; isInView: boolean; onOrder: () => void; language: string }) => {
+const PricingCard = ({ plan, index, isInView, onOrder, language, cardDelay = 0 }: { plan: PlanData; index: number; isInView: boolean; onOrder: () => void; language: string; cardDelay?: number }) => {
   const cardRef = useRef(null);
   const cardInView = useInView(cardRef, { once: true, margin: "-50px" });
   const [isHovered, setIsHovered] = useState(false);
@@ -216,7 +216,7 @@ const PricingCard = ({ plan, index, isInView, onOrder, language }: { plan: PlanD
       ref={cardRef}
       initial={{ opacity: 0, y: 60 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
+      transition={{ duration: 0.6, delay: cardDelay, ease: "easeOut" }}
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}

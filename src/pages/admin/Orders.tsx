@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import { ShoppingCart, Calendar, Search, RefreshCw, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,7 +41,7 @@ const AdminOrders = () => {
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      logError("Error fetching orders:", error);
     } finally {
       setIsLoading(false);
     }

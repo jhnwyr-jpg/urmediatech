@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -125,7 +126,7 @@ const AdminUsers = () => {
 
       setUsers(usersWithRoles);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      logError("Error fetching users:", error);
       toast.error("Failed to load users");
     } finally {
       setIsLoading(false);
@@ -187,7 +188,7 @@ const AdminUsers = () => {
       setIsAddDialogOpen(false);
       fetchUsers();
     } catch (error) {
-      console.error("Error adding user:", error);
+      logError("Error adding user:", error);
       toast.error("Failed to update user role");
     } finally {
       setIsSubmitting(false);
@@ -216,7 +217,7 @@ const AdminUsers = () => {
       toast.success("Role updated successfully");
       fetchUsers();
     } catch (error) {
-      console.error("Error updating role:", error);
+      logError("Error updating role:", error);
       toast.error("Failed to update role");
     }
   };
@@ -235,7 +236,7 @@ const AdminUsers = () => {
       toast.success("Role removed successfully");
       fetchUsers();
     } catch (error) {
-      console.error("Error removing role:", error);
+      logError("Error removing role:", error);
       toast.error("Failed to remove role");
     }
   };
@@ -288,7 +289,7 @@ const AdminUsers = () => {
         throw new Error(data?.error || "Failed to send invitation");
       }
     } catch (error: any) {
-      console.error("Error sending invitation:", error);
+      logError("Error sending invitation:", error);
       toast.error(error.message || "Failed to send invitation email");
     } finally {
       setIsSendingInvite(false);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -141,7 +142,7 @@ const ClientServicesPage = () => {
       setAllClients(data || []);
       setFilteredClients(data || []);
     } catch (error) {
-      console.error("Error fetching clients:", error);
+      logError("Error fetching clients:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -165,7 +166,7 @@ const ClientServicesPage = () => {
       if (error) throw error;
       setServices(data || []);
     } catch (error) {
-      console.error("Error fetching services:", error);
+      logError("Error fetching services:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -264,7 +265,7 @@ const ClientServicesPage = () => {
       setEmailContent("");
       setSelectedClientIds([]);
     } catch (error: any) {
-      console.error("Error sending bulk email:", error);
+      logError("Error sending bulk email:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -355,7 +356,7 @@ const ClientServicesPage = () => {
         fetchClientServices(selectedClient.user_id);
       }
     } catch (error) {
-      console.error("Error saving service:", error);
+      logError("Error saving service:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -385,7 +386,7 @@ const ClientServicesPage = () => {
         fetchClientServices(selectedClient.user_id);
       }
     } catch (error) {
-      console.error("Error deleting service:", error);
+      logError("Error deleting service:", error);
       toast({
         variant: "destructive",
         title: "Error",

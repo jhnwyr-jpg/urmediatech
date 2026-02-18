@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 import { motion } from "framer-motion";
 import { Edit2, ExternalLink, FolderKanban, Plus, RefreshCw, Trash2 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -83,7 +84,7 @@ const AdminProjects = () => {
       if (error) throw error;
       setProjects((data as Project[]) ?? []);
     } catch (e) {
-      console.error("Fetch projects error:", e);
+      logError("Fetch projects error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to load projects." });
     } finally {
       setIsLoading(false);
@@ -163,7 +164,7 @@ const AdminProjects = () => {
       setDialogOpen(false);
       fetchProjects();
     } catch (e) {
-      console.error("Save project error:", e);
+      logError("Save project error:", e);
       toast({ variant: "destructive", title: "Error", description: "Failed to save project." });
     } finally {
       setIsSaving(false);

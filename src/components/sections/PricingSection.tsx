@@ -43,52 +43,57 @@ const RollingDigit = ({ digit, delay }: { digit: string; delay: number }) => {
 
 const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; isInView: boolean; isFeatured: boolean; index: number }) => {
   const numericValue = parseBnPrice(value);
-  const [count, setCount] = useState(0);
-  const [done, setDone] = useState(false);
+  // Start from ~5 steps before the final value, not from 0
+  const stepsBack = 5;
+  const startValue = Math.max(0, numericValue - stepsBack);
+  const [count, setCount] = useState(startValue);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || started) return;
+    setStarted(true);
 
-    let startTime: number;
-    const duration = 1600;
-    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
-
-    const baseDelay = index * 200;
+    const baseDelay = index * 250;
+    const stepDuration = 180; // ms per step
 
     const timeout = setTimeout(() => {
-      const animate = (currentTime: number) => {
-        if (!startTime) startTime = currentTime;
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutQuart(progress);
-        setCount(Math.floor(easedProgress * numericValue));
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setCount(numericValue);
-          setDone(true);
+      let current = startValue;
+      const tick = () => {
+        current++;
+        setCount(current);
+        if (current < numericValue) {
+          setTimeout(tick, stepDuration);
         }
       };
-      requestAnimationFrame(animate);
+      tick();
     }, 400 + baseDelay);
 
     return () => clearTimeout(timeout);
-  }, [isInView, numericValue, index]);
+  }, [isInView, numericValue, index, started, startValue]);
 
   const formatted = formatBn(count);
   const chars = `৳${formatted}`.split("");
 
   return (
-    <motion.span
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-      transition={{ duration: 0.4, delay: 0.1 + index * 0.15 }}
+    <span
       className={`text-5xl md:text-6xl font-extrabold inline-flex overflow-hidden ${isFeatured ? "gradient-text" : "text-foreground"}`}
     >
       {chars.map((ch, i) => (
-        <RollingDigit key={`${i}-${ch}`} digit={ch} delay={done ? 0 : i * 0.06} />
+        <motion.span
+          key={`${i}-${ch}`}
+          initial={{ opacity: 0.6, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20,
+          }}
+          className="inline-block"
+        >
+          {ch}
+        </motion.span>
       ))}
-    </motion.span>
+    </span>
   );
 };
 

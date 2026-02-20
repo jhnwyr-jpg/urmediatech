@@ -3,6 +3,8 @@ import { Sparkles, ArrowRight, Play, Star, TrendingUp, Users, DollarSign, BarCha
 import { Button } from "@/components/ui/button";
 import FloatingElements from "@/components/ui/FloatingElements";
 import { MagneticButton, AnimatedText } from "@/components/ui/AnimatedComponents";
+import { SplineScene } from "@/components/ui/splite";
+import { Spotlight } from "@/components/ui/spotlight";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -436,7 +438,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Premium Dashboard Preview - Floating Card */}
+      {/* Interactive 3D Spline Scene with Spotlight */}
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
@@ -453,128 +455,53 @@ const HeroSection = () => {
         >
           {/* Card glow effect */}
           <motion.div
-            className="absolute -inset-4 bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-cyan-500/20 rounded-3xl blur-2xl will-change-[opacity]"
+            className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/15 to-accent/20 rounded-3xl blur-2xl will-change-[opacity]"
             animate={{ opacity: [0.25, 0.4, 0.25] }}
             transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
           />
           
-          {/* Dashboard Card */}
-          <div className="relative bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl overflow-hidden">
+          {/* 3D Scene Card */}
+          <div className="relative bg-card/90 dark:bg-background backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl overflow-hidden min-h-[400px] md:min-h-[500px]">
+            <Spotlight
+              className="from-primary/20 via-primary/10 to-transparent"
+              size={350}
+            />
+            
             {/* Shimmer effect */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent will-change-transform"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent will-change-transform pointer-events-none z-10"
               animate={{ x: ["-100%", "100%"] }}
               transition={{ duration: 4, repeat: Infinity, repeatDelay: 3, ease: "linear" }}
             />
-            
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center will-change-transform"
+
+            <div className="flex flex-col md:flex-row h-full min-h-[400px] md:min-h-[500px]">
+              {/* Left content */}
+              <div className="flex-1 p-8 md:p-12 relative z-10 flex flex-col justify-center">
+                <motion.h2
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="text-3xl md:text-5xl font-bold text-foreground mb-4"
                 >
-                  <Zap className="w-4 h-4 text-primary-foreground" />
-                </motion.div>
-                <div>
-                  <h3 className="font-semibold text-foreground text-sm">{t("hero.dashboard")}</h3>
-                  <p className="text-xs text-muted-foreground">{t("hero.welcome")}</p>
-                </div>
+                  {t("hero.title2")}{" "}
+                  <span className="gradient-text">3D</span>
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9, duration: 0.5 }}
+                  className="text-muted-foreground text-base md:text-lg max-w-md"
+                >
+                  {t("hero.subtitle")}
+                </motion.p>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{t("hero.last7days")}</span>
-                <motion.button 
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-3 py-1.5 rounded-lg bg-secondary text-xs font-medium"
-                >
-                  {t("hero.export")}
-                </motion.button>
-              </div>
-            </div>
-            
-            {/* Stats Grid */}
-            <div className="grid grid-cols-4 gap-4 p-6">
-              {[
-                { label: t("hero.revenue"), value: "$24,500", change: "+12.5%", icon: DollarSign, color: "from-green-500 to-emerald-600" },
-                { label: t("hero.visitors"), value: "12,450", change: "+8.2%", icon: Users, color: "from-blue-500 to-cyan-600" },
-                { label: t("hero.conversion"), value: "3.2%", change: "+2.1%", icon: TrendingUp, color: "from-violet-500 to-purple-600" },
-                { label: t("hero.analytics"), value: "89%", change: "+5.4%", icon: BarChart3, color: "from-orange-500 to-amber-600" },
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 + i * 0.08, duration: 0.3, ease: "easeOut" }}
-                  whileHover={{ y: -4, scale: 1.01 }}
-                  className="bg-muted/50 rounded-xl p-4 relative overflow-hidden group cursor-pointer will-change-transform"
-                >
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 0.1 }}
-                    className={`absolute inset-0 bg-gradient-to-br ${stat.color}`}
-                  />
-                  <div className="flex items-center justify-between mb-2">
-                    <motion.div 
-                      whileHover={{ rotate: 12 }}
-                      className={`w-8 h-8 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}
-                    >
-                      <stat.icon className="w-4 h-4 text-white" />
-                    </motion.div>
-                    <span className="text-xs text-green-500 font-medium flex items-center gap-0.5">
-                      <ArrowUpRight className="w-3 h-3" />
-                      {stat.change}
-                    </span>
-                  </div>
-                  <motion.p 
-                    className="text-xl font-bold text-foreground"
-                    animate={{ opacity: [0.85, 1, 0.85] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.3, ease: "linear" }}
-                  >
-                    {stat.value}
-                  </motion.p>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                </motion.div>
-              ))}
-            </div>
-            
-            {/* Activity Section */}
-            <div className="px-6 pb-6">
-              <div className="bg-muted/30 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-medium text-foreground">{t("hero.recentActivity")}</h4>
-                  <motion.div
-                    animate={{ scale: [1, 1.15, 1] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                    className="w-2 h-2 rounded-full bg-green-500"
-                  />
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { action: t("hero.activity1"), time: "2m ago", color: "bg-blue-500" },
-                    { action: t("hero.activity2"), time: "5m ago", color: "bg-green-500" },
-                    { action: t("hero.activity3"), time: "12m ago", color: "bg-violet-500" },
-                    { action: t("hero.activity4"), time: "25m ago", color: "bg-amber-500" },
-                  ].map((activity, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -15 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1 + i * 0.08, duration: 0.3, ease: "easeOut" }}
-                      whileHover={{ x: 4 }}
-                      className="flex items-center gap-3 cursor-pointer will-change-transform"
-                    >
-                      <motion.div 
-                        animate={{ scale: [1, 1.15, 1] }}
-                        transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.4, ease: "linear" }}
-                        className={`w-2 h-2 rounded-full ${activity.color}`} 
-                      />
-                      <span className="text-sm text-foreground flex-1">{activity.action}</span>
-                      <span className="text-xs text-muted-foreground">{activity.time}</span>
-                    </motion.div>
-                  ))}
-                </div>
+
+              {/* Right content - 3D Spline */}
+              <div className="flex-1 relative min-h-[250px] md:min-h-full">
+                <SplineScene 
+                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                  className="w-full h-full"
+                />
               </div>
             </div>
           </div>

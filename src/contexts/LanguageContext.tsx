@@ -145,10 +145,10 @@ const translations = {
     "contact.errorDesc": "মেসেজ পাঠাতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
     
     // Pricing
-    "pricing.label": "প্যাকেজ সমূহ",
-    "pricing.title": "আপনার বিজনেসের জন্য",
-    "pricing.titleHighlight": "পারফেক্ট প্ল্যান",
-    "pricing.subtitle": "আপনার বাজেট এবং প্রয়োজন অনুযায়ী সেরা প্যাকেজ বেছে নিন। সবকিছু ইনক্লুডেড।",
+    "pricing.label": "আমাদের সার্ভিস",
+    "pricing.title": "আপনার বিজনেস গ্রো করুন",
+    "pricing.titleHighlight": "প্রফেশনাল ওয়েবসাইট দিয়ে",
+    "pricing.subtitle": "কনভার্সন ফোকাসড ল্যান্ডিং পেজ ও ওয়েবসাইট যা আপনার সেলস বাড়াবে। আজই শুরু করুন।",
     "pricing.period": "ওয়ান-টাইম",
     "pricing.starterName": "স্টার্টার প্যাকেজ",
     "pricing.starterF1": "ফ্রি .shop ডোমেইন",
@@ -350,10 +350,10 @@ const translations = {
     "contact.errorDesc": "Failed to send message. Please try again.",
     
     // Pricing
-    "pricing.label": "Pricing Plans",
-    "pricing.title": "The Perfect Plan for",
-    "pricing.titleHighlight": "Your Business",
-    "pricing.subtitle": "Choose the best package for your budget and needs. Everything included.",
+    "pricing.label": "Our Services",
+    "pricing.title": "Grow Your Business With",
+    "pricing.titleHighlight": "High-Converting Websites",
+    "pricing.subtitle": "Conversion-focused landing pages & websites that drive sales. Start today.",
     "pricing.period": "One-time",
     "pricing.starterName": "Starter Package",
     "pricing.starterF1": "Free .shop Domain",

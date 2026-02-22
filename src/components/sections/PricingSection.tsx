@@ -70,7 +70,7 @@ const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; 
 
   return (
     <span
-      className={`text-5xl md:text-6xl font-extrabold inline-flex overflow-hidden ${isFeatured ? "gradient-text" : "text-foreground"}`}
+      className={`text-5xl md:text-6xl font-extrabold inline-flex ${isFeatured ? "gradient-text" : "text-foreground"}`}
     >
       {chars.map((ch, i) => (
         <motion.span

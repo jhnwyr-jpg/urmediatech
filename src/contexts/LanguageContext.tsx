@@ -20,11 +20,11 @@ const translations = {
     "nav.clientLogin": "ক্লায়েন্ট লগইন",
     
     // Hero
-    "hero.badge": "প্রফেশনাল ওয়েব ডেভেলপমেন্ট এজেন্সি",
-    "hero.title1": "আপনার স্বপ্নের ওয়েবসাইট",
-    "hero.title2": "বানাই",
-    "hero.title3": "আমরা",
-    "hero.subtitle": "ল্যান্ডিং পেজ, ই-কমার্স, বিজনেস ওয়েবসাইট থেকে শুরু করে কাস্টম ওয়েব অ্যাপ্লিকেশন - সব ধরনের ওয়েব সলিউশন আমরা তৈরি করি।",
+    "hero.badge": "ডিজিটাল সলিউশন পার্টনার",
+    "hero.title1": "ডিজিটাল সলিউশন দিয়ে",
+    "hero.title2": "বিজনেস",
+    "hero.title3": "গ্রো করুন",
+    "hero.subtitle": "ল্যান্ডিং পেজ, ই-কমার্স, কাস্টম ওয়েব অ্যাপ — আপনার বিজনেসের জন্য পারফেক্ট ডিজিটাল সলিউশন ডেলিভার করি আমরা।",
     "hero.demo": "ডেমো দেখুন",
     "hero.contact": "যোগাযোগ করুন",
     "hero.projects": "প্রজেক্ট",
@@ -225,11 +225,11 @@ const translations = {
     "nav.clientLogin": "Client Login",
     
     // Hero
-    "hero.badge": "Professional Web Development Agency",
-    "hero.title1": "We Build Your",
-    "hero.title2": "Dream",
-    "hero.title3": "Website",
-    "hero.subtitle": "From landing pages and e-commerce to custom web applications - we deliver complete web solutions for your business.",
+    "hero.badge": "Your Digital Solution Partner",
+    "hero.title1": "Grow Your Business",
+    "hero.title2": "With",
+    "hero.title3": "Digital Solutions",
+    "hero.subtitle": "Landing pages, e-commerce, custom web apps — we deliver the perfect digital solution to scale your business.",
     "hero.demo": "View Demo",
     "hero.contact": "Contact Us",
     "hero.projects": "Projects",

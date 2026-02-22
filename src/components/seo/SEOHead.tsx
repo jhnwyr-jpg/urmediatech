@@ -31,19 +31,19 @@ const SEOHead = ({
       {/* Open Graph / Facebook / WhatsApp / LinkedIn */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:title" content="UR Media - Professional Web Development Agency" />
-      <meta property="og:description" content="We build fast, scalable, and modern web applications using React, Next.js & Node.js. Transform your business with custom web solutions." />
+      <meta property="og:title" content="UrMedia – High-Converting Landing Pages & Websites" />
+      <meta property="og:description" content="We design conversion-focused landing pages and websites that turn visitors into customers. Modern, fast & SEO-optimized." />
       <meta property="og:image" content={ogImage} />
-      <meta property="og:image:alt" content="UR Media - Professional Web Development Agency" />
-      <meta property="og:site_name" content="UR Media" />
+      <meta property="og:image:alt" content="UrMedia – Digital Agency for Landing Pages & Websites" />
+      <meta property="og:site_name" content="UrMedia" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={canonical} />
-      <meta name="twitter:title" content="UR Media | Web Development Agency" />
-      <meta name="twitter:description" content="Professional web development services - React, Next.js, Node.js. Build your dream website with us." />
+      <meta name="twitter:title" content="UrMedia – Landing Pages That Convert" />
+      <meta name="twitter:description" content="Get a high-converting landing page or website built by experts. Fast delivery, modern design, real results." />
       <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:image:alt" content="UR Media - Professional Web Development Agency" />
+      <meta name="twitter:image:alt" content="UrMedia – Digital Agency for Landing Pages & Websites" />
 
       {/* JSON-LD Structured Data */}
       {jsonLd && (

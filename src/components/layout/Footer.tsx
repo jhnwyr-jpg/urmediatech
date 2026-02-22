@@ -33,9 +33,10 @@ const Footer = () => {
       { name: t("nav.contact"), sectionId: "contact" },
     ],
     services: [
-      { name: "Video Editing", sectionId: "services" },
-      { name: "Motion Graphics", sectionId: "services" },
-      { name: "Social Media", sectionId: "services" },
+      { name: "Landing Page", sectionId: "pricing" },
+      { name: "E-commerce Website", sectionId: "pricing" },
+      { name: "Business Website", sectionId: "pricing" },
+      { name: "Web Application", sectionId: "pricing" },
     ],
   };
 

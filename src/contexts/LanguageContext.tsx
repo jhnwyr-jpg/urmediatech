@@ -147,7 +147,7 @@ const translations = {
     // Pricing
     "pricing.label": "আমাদের সার্ভিস",
     "pricing.title": "আপনার বিজনেস গ্রো করুন",
-    "pricing.titleHighlight": "প্রফেশনাল ওয়েবসাইট দিয়ে",
+    "pricing.titleHighlight": "প্রফেশনাল ল্যান্ডিং পেজ দিয়ে",
     "pricing.subtitle": "কনভার্সন ফোকাসড ল্যান্ডিং পেজ ও ওয়েবসাইট যা আপনার সেলস বাড়াবে। আজই শুরু করুন।",
     "pricing.period": "ওয়ান-টাইম",
     "pricing.starterName": "স্টার্টার প্যাকেজ",

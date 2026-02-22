@@ -468,7 +468,7 @@ const HeroSection = () => {
             />
             
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+            <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <motion.div
                   animate={{ rotate: [0, 360] }}
@@ -495,7 +495,7 @@ const HeroSection = () => {
             </div>
             
             {/* Stats Grid */}
-            <div className="grid grid-cols-4 gap-4 p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 md:p-6">
               {[
                 { label: t("hero.revenue"), value: "$24,500", change: "+12.5%", icon: DollarSign, color: "from-green-500 to-emerald-600" },
                 { label: t("hero.visitors"), value: "12,450", change: "+8.2%", icon: Users, color: "from-blue-500 to-cyan-600" },
@@ -540,7 +540,7 @@ const HeroSection = () => {
             </div>
             
             {/* Activity Section */}
-            <div className="px-6 pb-6">
+            <div className="px-4 md:px-6 pb-4 md:pb-6">
               <div className="bg-muted/30 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-sm font-medium text-foreground">{t("hero.recentActivity")}</h4>

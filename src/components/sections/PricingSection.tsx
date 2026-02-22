@@ -26,12 +26,11 @@ const RollingDigit = ({ digit, delay }: { digit: string; delay: number }) => {
   return (
     <motion.span
       key={digit}
-      initial={{ opacity: 0, y: -30 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -20, filter: "blur(4px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ 
-        type: "spring", 
-        stiffness: 200, 
-        damping: 20, 
+        duration: 0.5, 
+        ease: [0.25, 0.46, 0.45, 0.94],
         delay 
       }}
       className="inline-block"
@@ -76,13 +75,12 @@ const AnimatedPrice = ({ value, isInView, isFeatured, index }: { value: string; 
       {chars.map((ch, i) => (
         <motion.span
           key={`${i}-${ch}`}
-          initial={{ opacity: 0, y: -24 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: -20, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{
-            type: "spring",
-            stiffness: 280,
-            damping: 18,
-            delay: i * 0.08,
+            duration: 0.45,
+            ease: [0.25, 0.46, 0.45, 0.94],
+            delay: i * 0.06,
           }}
           className="inline-block"
         >
@@ -215,10 +213,10 @@ const PricingCard = ({ plan, index, isInView, onOrder, language, cardDelay = 0 }
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-      transition={{ duration: 0.6, delay: cardDelay, ease: "easeOut" }}
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.95 }}
+      transition={{ duration: 0.7, delay: cardDelay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      whileHover={{ y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       className={`relative group rounded-3xl overflow-hidden h-full ${plan.is_featured ? "md:-mt-4" : ""}`}

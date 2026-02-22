@@ -468,31 +468,41 @@ const HeroSection = () => {
             />
             
             {/* Header */}
-            <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-border/50">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center will-change-transform"
-                >
-                  <Zap className="w-4 h-4 text-primary-foreground" />
-                </motion.div>
-                <div>
-                  <h3 className="font-semibold text-foreground text-sm">{t("hero.dashboard")}</h3>
-                  <p className="text-xs text-muted-foreground">{t("hero.welcome")}</p>
+              {/* Safari-style browser chrome */}
+              <div className="flex items-center px-4 md:px-6 py-3 md:py-4 border-b border-border/50">
+                {/* Traffic light dots */}
+                <div className="flex items-center gap-1.5 mr-4">
+                  <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28C840]" />
+                </div>
+                
+                <div className="flex items-center justify-between flex-1">
+                  <div className="flex items-center gap-3">
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                      className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center will-change-transform"
+                    >
+                      <Zap className="w-4 h-4 text-primary-foreground" />
+                    </motion.div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">{t("hero.dashboard")}</h3>
+                      <p className="text-xs text-muted-foreground">{t("hero.welcome")}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground hidden sm:inline">{t("hero.last7days")}</span>
+                    <motion.button 
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="px-3 py-1.5 rounded-lg bg-secondary text-xs font-medium"
+                    >
+                      {t("hero.export")}
+                    </motion.button>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{t("hero.last7days")}</span>
-                <motion.button 
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-3 py-1.5 rounded-lg bg-secondary text-xs font-medium"
-                >
-                  {t("hero.export")}
-                </motion.button>
-              </div>
-            </div>
             
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 md:p-6">

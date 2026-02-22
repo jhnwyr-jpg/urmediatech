@@ -3,10 +3,10 @@
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "UR Media",
+  name: "UrMedia",
   url: "https://urmedia.tech",
   logo: "https://urmedia.tech/og-image.png",
-  description: "Professional web development agency specializing in React, Next.js, and Node.js. We build fast, scalable, and modern web applications.",
+  description: "Digital agency specializing in high-converting landing pages, business websites & digital media solutions.",
   sameAs: ["https://twitter.com/urmedia"],
   contactPoint: {
     "@type": "ContactPoint",
@@ -19,7 +19,7 @@ export const organizationSchema = {
 export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "UR Media",
+  name: "UrMedia",
   url: "https://urmedia.tech",
   potentialAction: {
     "@type": "SearchAction",
@@ -31,17 +31,17 @@ export const websiteSchema = {
 export const professionalServiceSchema = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
-  name: "UR Media",
+  name: "UrMedia",
   image: "https://urmedia.tech/og-image.png",
   url: "https://urmedia.tech",
-  description: "Professional web development agency building custom web applications, e-commerce solutions, and scalable digital products",
+  description: "Digital agency building high-converting landing pages, business websites & e-commerce solutions that drive sales",
   priceRange: "$$",
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "5",
     reviewCount: "150",
   },
-  serviceType: ["Web Development", "React Development", "Next.js Development", "E-commerce Solutions", "Full-Stack Development", "Custom Web Applications"],
+  serviceType: ["Landing Page Design", "High-Converting Websites", "E-commerce Solutions", "Business Websites", "Digital Media Solutions", "Lead Generation Pages"],
 };
 
 export const createServiceSchema = (service: {

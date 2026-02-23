@@ -22,15 +22,13 @@ const AIChatBot = () => {
   const [sessionId] = useState(() => crypto.randomUUID());
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [adminSeen, setAdminSeen] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   // Focus input when chat opens
   useEffect(() => {
@@ -405,7 +403,7 @@ const AIChatBot = () => {
             {/* Messages */}
             {!isMinimized && (
               <>
-                <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+                <ScrollArea className="flex-1 p-4">
                   <div className="space-y-4">
                     {messages.map((message, index) => (
                       <motion.div
@@ -439,11 +437,26 @@ const AIChatBot = () => {
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                           <Bot className="w-4 h-4" />
                         </div>
-                        <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-2.5">
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                        <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1">
+                          <motion.span
+                            className="w-2 h-2 rounded-full bg-foreground/50"
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                          />
+                          <motion.span
+                            className="w-2 h-2 rounded-full bg-foreground/50"
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
+                          />
+                          <motion.span
+                            className="w-2 h-2 rounded-full bg-foreground/50"
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
+                          />
                         </div>
                       </motion.div>
                     )}
+                    <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 

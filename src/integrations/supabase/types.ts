@@ -869,6 +869,42 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          admin_reply: string | null
+          client_id: string
+          created_at: string
+          id: string
+          message: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          message: string
+          priority?: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          admin_reply?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          priority?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tracking_pixels: {
         Row: {
           created_at: string

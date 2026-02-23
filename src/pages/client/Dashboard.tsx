@@ -11,11 +11,32 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Ticket,
+  Plus,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -36,6 +57,17 @@ interface ClientService {
   created_at: string;
 }
 
+interface SupportTicket {
+  id: string;
+  subject: string;
+  message: string;
+  status: string;
+  priority: string;
+  admin_reply: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 interface Profile {
   full_name: string | null;
   email: string | null;
@@ -45,9 +77,15 @@ interface Profile {
 
 const ClientDashboard = () => {
   const [services, setServices] = useState<ClientService[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("services");
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketMessage, setTicketMessage] = useState("");
+  const [ticketPriority, setTicketPriority] = useState("medium");
+  const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -57,6 +95,7 @@ const ClientDashboard = () => {
       dashboard: "ড্যাশবোর্ড",
       myServices: "আমার সার্ভিসসমূহ",
       invoices: "ইনভয়েস",
+      tickets: "টিকেট",
       settings: "সেটিংস",
       logout: "লগআউট",
       backToHome: "হোমে যান",
@@ -89,11 +128,27 @@ const ClientDashboard = () => {
       invoiceHistory: "ইনভয়েস হিস্ট্রি",
       date: "তারিখ",
       amount: "পরিমাণ",
+      createTicket: "নতুন টিকেট",
+      subject: "বিষয়",
+      message: "বার্তা",
+      priority: "প্রায়োরিটি",
+      low: "কম",
+      medium: "মাঝারি",
+      high: "জরুরি",
+      submit: "জমা দিন",
+      noTickets: "কোনো টিকেট নেই",
+      noTicketsDesc: "আপনি এখনো কোনো সাপোর্ট টিকেট তৈরি করেননি।",
+      open: "ওপেন",
+      closed: "ক্লোজড",
+      inProgress: "প্রসেসিং",
+      adminReply: "অ্যাডমিন রিপ্লাই",
+      supportTickets: "সাপোর্ট টিকেট",
     },
     en: {
       dashboard: "Dashboard",
       myServices: "My Services",
       invoices: "Invoices",
+      tickets: "Tickets",
       settings: "Settings",
       logout: "Logout",
       backToHome: "Back to Home",
@@ -126,6 +181,21 @@ const ClientDashboard = () => {
       invoiceHistory: "Invoice History",
       date: "Date",
       amount: "Amount",
+      createTicket: "New Ticket",
+      subject: "Subject",
+      message: "Message",
+      priority: "Priority",
+      low: "Low",
+      medium: "Medium",
+      high: "High",
+      submit: "Submit",
+      noTickets: "No tickets yet",
+      noTicketsDesc: "You haven't created any support tickets yet.",
+      open: "Open",
+      closed: "Closed",
+      inProgress: "In Progress",
+      adminReply: "Admin Reply",
+      supportTickets: "Support Tickets",
     },
   };
 
@@ -164,10 +234,53 @@ const ClientDashboard = () => {
 
       if (error) throw error;
       setServices(servicesData || []);
+
+      // Fetch tickets
+      const { data: ticketsData } = await supabase
+        .from("support_tickets")
+        .select("*")
+        .eq("client_id", session.user.id)
+        .order("created_at", { ascending: false });
+
+      setTickets(ticketsData || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCreateTicket = async () => {
+    if (!ticketSubject.trim() || !ticketMessage.trim()) {
+      toast({ title: "বিষয় এবং বার্তা লিখুন", variant: "destructive" });
+      return;
+    }
+
+    setIsSubmittingTicket(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { error } = await supabase.from("support_tickets").insert({
+        client_id: session.user.id,
+        subject: ticketSubject,
+        message: ticketMessage,
+        priority: ticketPriority,
+      });
+
+      if (error) throw error;
+
+      toast({ title: "টিকেট তৈরি হয়েছে!" });
+      setTicketSubject("");
+      setTicketMessage("");
+      setTicketPriority("medium");
+      setIsTicketDialogOpen(false);
+      checkAuthAndFetchData();
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast({ title: "টিকেট তৈরি করতে সমস্যা হয়েছে", variant: "destructive" });
+    } finally {
+      setIsSubmittingTicket(false);
     }
   };
 
@@ -197,6 +310,26 @@ const ClientDashboard = () => {
     return <Badge className={className}>{label}</Badge>;
   };
 
+  const getTicketStatusBadge = (status: string) => {
+    const map: Record<string, { label: string; className: string }> = {
+      open: { label: texts.open, className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      in_progress: { label: texts.inProgress, className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+      closed: { label: texts.closed, className: "bg-green-500/20 text-green-400 border-green-500/30" },
+    };
+    const { label, className } = map[status] || map.open;
+    return <Badge className={`${className} border`}>{label}</Badge>;
+  };
+
+  const getPriorityBadge = (priority: string) => {
+    const map: Record<string, { label: string; className: string }> = {
+      low: { label: texts.low, className: "bg-gray-500/20 text-gray-400" },
+      medium: { label: texts.medium, className: "bg-yellow-500/20 text-yellow-400" },
+      high: { label: texts.high, className: "bg-red-500/20 text-red-400" },
+    };
+    const { label, className } = map[priority] || map.medium;
+    return <Badge className={className}>{label}</Badge>;
+  };
+
   const totalSpent = services.reduce((acc, s) => acc + s.paid_amount, 0);
   const activeCount = services.filter((s) => s.status === "active").length;
   const pendingPayments = services.reduce((acc, s) => acc + (s.price - s.paid_amount), 0);
@@ -213,7 +346,6 @@ const ClientDashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border p-6 hidden lg:block">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 mb-10">
           <img src={logo} alt="UR Media" className="w-8 h-8" />
           <span className="font-bold text-lg text-foreground">
@@ -221,7 +353,6 @@ const ClientDashboard = () => {
           </span>
         </Link>
 
-        {/* Navigation */}
         <nav className="space-y-2">
           <button
             onClick={() => setActiveTab("services")}
@@ -246,6 +377,22 @@ const ClientDashboard = () => {
             {texts.invoices}
           </button>
           <button
+            onClick={() => setActiveTab("tickets")}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+              activeTab === "tickets"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <Ticket size={20} />
+            {texts.tickets}
+            {tickets.filter(t => t.status === "open").length > 0 && (
+              <span className="ml-auto bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {tickets.filter(t => t.status === "open").length}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab("settings")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
               activeTab === "settings"
@@ -258,7 +405,6 @@ const ClientDashboard = () => {
           </button>
         </nav>
 
-        {/* Bottom Actions */}
         <div className="absolute bottom-6 left-6 right-6 space-y-2">
           <Link to="/">
             <Button variant="outline" className="w-full justify-start gap-2">
@@ -296,34 +442,48 @@ const ClientDashboard = () => {
       </header>
 
       {/* Mobile Tabs */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 px-4 py-2">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 px-2 py-2">
         <div className="flex justify-around">
           <button
             onClick={() => setActiveTab("services")}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
+            className={`flex flex-col items-center gap-1 px-3 py-2 ${
               activeTab === "services" ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <Package size={20} />
-            <span className="text-xs">{texts.myServices}</span>
+            <span className="text-[10px]">{texts.myServices}</span>
           </button>
           <button
             onClick={() => setActiveTab("invoices")}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
+            className={`flex flex-col items-center gap-1 px-3 py-2 ${
               activeTab === "invoices" ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <Receipt size={20} />
-            <span className="text-xs">{texts.invoices}</span>
+            <span className="text-[10px]">{texts.invoices}</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("tickets")}
+            className={`flex flex-col items-center gap-1 px-3 py-2 relative ${
+              activeTab === "tickets" ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Ticket size={20} />
+            <span className="text-[10px]">{texts.tickets}</span>
+            {tickets.filter(t => t.status === "open").length > 0 && (
+              <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+                {tickets.filter(t => t.status === "open").length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${
+            className={`flex flex-col items-center gap-1 px-3 py-2 ${
               activeTab === "settings" ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <Settings size={20} />
-            <span className="text-xs">{texts.settings}</span>
+            <span className="text-[10px]">{texts.settings}</span>
           </button>
         </div>
       </div>
@@ -420,21 +580,11 @@ const ClientDashboard = () => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-border">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            {texts.serviceName}
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            {texts.status}
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            {texts.price}
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            {texts.paid}
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                            {texts.due}
-                          </th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.serviceName}</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.status}</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.price}</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.paid}</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.due}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -444,9 +594,7 @@ const ClientDashboard = () => {
                               <div>
                                 <p className="font-medium">{service.service_name}</p>
                                 {service.service_description && (
-                                  <p className="text-sm text-muted-foreground">
-                                    {service.service_description}
-                                  </p>
+                                  <p className="text-sm text-muted-foreground">{service.service_description}</p>
                                 )}
                               </div>
                             </td>
@@ -456,15 +604,9 @@ const ClientDashboard = () => {
                                 {getPaymentBadge(service.payment_status)}
                               </div>
                             </td>
-                            <td className="py-4 px-4 font-medium">
-                              ৳{service.price.toLocaleString()}
-                            </td>
-                            <td className="py-4 px-4 text-green-500">
-                              ৳{service.paid_amount.toLocaleString()}
-                            </td>
-                            <td className="py-4 px-4 text-yellow-500">
-                              ৳{(service.price - service.paid_amount).toLocaleString()}
-                            </td>
+                            <td className="py-4 px-4 font-medium">৳{service.price.toLocaleString()}</td>
+                            <td className="py-4 px-4 text-green-500">৳{service.paid_amount.toLocaleString()}</td>
+                            <td className="py-4 px-4 text-yellow-500">৳{(service.price - service.paid_amount).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -516,6 +658,59 @@ const ClientDashboard = () => {
             </Card>
           )}
 
+          {activeTab === "tickets" && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>{texts.supportTickets}</CardTitle>
+                <Button className="gap-2" onClick={() => setIsTicketDialogOpen(true)}>
+                  <Plus size={16} />
+                  {texts.createTicket}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {tickets.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Ticket className="mx-auto text-muted-foreground mb-4" size={48} />
+                    <h3 className="text-lg font-semibold mb-2">{texts.noTickets}</h3>
+                    <p className="text-muted-foreground mb-4">{texts.noTicketsDesc}</p>
+                    <Button variant="gradient" onClick={() => setIsTicketDialogOpen(true)}>
+                      {texts.createTicket}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {tickets.map((ticket) => (
+                      <div
+                        key={ticket.id}
+                        className="p-4 bg-muted/30 rounded-xl space-y-3"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">{ticket.subject}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{ticket.message}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 ml-4">
+                            {getPriorityBadge(ticket.priority)}
+                            {getTicketStatusBadge(ticket.status)}
+                          </div>
+                        </div>
+                        {ticket.admin_reply && (
+                          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                            <p className="text-xs font-medium text-primary mb-1">{texts.adminReply}</p>
+                            <p className="text-sm text-foreground">{ticket.admin_reply}</p>
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(ticket.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {activeTab === "settings" && (
             <Card>
               <CardHeader>
@@ -545,6 +740,68 @@ const ClientDashboard = () => {
           )}
         </motion.div>
       </main>
+
+      {/* Create Ticket Dialog */}
+      <Dialog open={isTicketDialogOpen} onOpenChange={setIsTicketDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{texts.createTicket}</DialogTitle>
+            <DialogDescription>
+              {language === "bn" ? "আপনার সমস্যা বর্ণনা করুন" : "Describe your issue"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>{texts.subject}</Label>
+              <Input
+                placeholder={language === "bn" ? "টিকেটের বিষয়..." : "Ticket subject..."}
+                value={ticketSubject}
+                onChange={(e) => setTicketSubject(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{texts.message}</Label>
+              <Textarea
+                placeholder={language === "bn" ? "আপনার সমস্যা বিস্তারিত লিখুন..." : "Describe your issue in detail..."}
+                value={ticketMessage}
+                onChange={(e) => setTicketMessage(e.target.value)}
+                rows={4}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{texts.priority}</Label>
+              <Select value={ticketPriority} onValueChange={setTicketPriority}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">{texts.low}</SelectItem>
+                  <SelectItem value="medium">{texts.medium}</SelectItem>
+                  <SelectItem value="high">{texts.high}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsTicketDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateTicket} disabled={isSubmittingTicket} className="gap-2">
+              {isSubmittingTicket ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {language === "bn" ? "জমা হচ্ছে..." : "Submitting..."}
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  {texts.submit}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

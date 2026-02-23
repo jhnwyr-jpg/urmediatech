@@ -12,6 +12,9 @@ import {
   Crown,
   Send,
   Loader2,
+  Package,
+  Plus,
+  X,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -56,8 +59,17 @@ interface UserWithRole {
   email: string | null;
   full_name: string | null;
   is_admin: boolean | null;
+  is_client: boolean | null;
   created_at: string | null;
   role: "admin" | "moderator" | "user" | null;
+  assignedServices: { id: string; service_name: string; status: string; payment_status: string }[];
+}
+
+interface Service {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
 }
 
 const roleConfig = {
@@ -81,6 +93,7 @@ const roleConfig = {
 const AdminUsers = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -92,10 +105,19 @@ const AdminUsers = () => {
   const [inviteRole, setInviteRole] = useState<"admin" | "moderator" | "user">("user");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
+  // Service assignment state
+  const [serviceDialogUser, setServiceDialogUser] = useState<UserWithRole | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState("");
+  const [isAssigningService, setIsAssigningService] = useState(false);
+
+  const fetchServices = async () => {
+    const { data } = await supabase.from("services").select("id, name, category, price");
+    setServices(data || []);
+  };
+
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      // Get all profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
@@ -103,24 +125,38 @@ const AdminUsers = () => {
 
       if (profilesError) throw profilesError;
 
-      // Get all user roles
       const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
         .select("*");
 
       if (rolesError) throw rolesError;
 
-      // Combine profiles with roles
+      // Fetch all client services
+      const { data: clientServices } = await supabase
+        .from("client_services")
+        .select("id, client_id, service_name, status, payment_status");
+
       const usersWithRoles: UserWithRole[] = (profiles || []).map((profile) => {
         const userRole = roles?.find((r) => r.user_id === profile.user_id);
+        const userServices = (clientServices || [])
+          .filter((cs) => cs.client_id === profile.user_id)
+          .map((cs) => ({
+            id: cs.id,
+            service_name: cs.service_name,
+            status: cs.status,
+            payment_status: cs.payment_status,
+          }));
+
         return {
           id: profile.id,
           user_id: profile.user_id,
           email: profile.email,
           full_name: profile.full_name,
           is_admin: profile.is_admin,
+          is_client: profile.is_client,
           created_at: profile.created_at,
           role: userRole?.role as "admin" | "moderator" | "user" | null,
+          assignedServices: userServices,
         };
       });
 
@@ -135,7 +171,51 @@ const AdminUsers = () => {
 
   useEffect(() => {
     fetchUsers();
+    fetchServices();
   }, []);
+
+  const handleAssignService = async () => {
+    if (!serviceDialogUser || !selectedServiceId) return;
+
+    setIsAssigningService(true);
+    try {
+      const service = services.find((s) => s.id === selectedServiceId);
+      if (!service) return;
+
+      const { error } = await supabase.from("client_services").insert({
+        client_id: serviceDialogUser.user_id,
+        service_name: service.name,
+        service_description: service.category,
+        price: service.price,
+        status: "active",
+        payment_status: "unpaid",
+      });
+
+      if (error) throw error;
+
+      toast.success(`${service.name} assigned to ${serviceDialogUser.email}`);
+      setSelectedServiceId("");
+      setServiceDialogUser(null);
+      fetchUsers();
+    } catch (error) {
+      logError("Error assigning service:", error);
+      toast.error("Failed to assign service");
+    } finally {
+      setIsAssigningService(false);
+    }
+  };
+
+  const handleRemoveService = async (serviceId: string) => {
+    try {
+      const { error } = await supabase.from("client_services").delete().eq("id", serviceId);
+      if (error) throw error;
+      toast.success("Service removed");
+      fetchUsers();
+    } catch (error) {
+      logError("Error removing service:", error);
+      toast.error("Failed to remove service");
+    }
+  };
 
   const handleAddUser = async () => {
     if (!newUserEmail.trim()) {
@@ -145,7 +225,6 @@ const AdminUsers = () => {
 
     setIsSubmitting(true);
     try {
-      // Check if user already exists
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("user_id")
@@ -153,14 +232,11 @@ const AdminUsers = () => {
         .single();
 
       if (existingProfile) {
-        // User exists, update their role
-        // First delete existing role if any
         await supabase
           .from("user_roles")
           .delete()
           .eq("user_id", existingProfile.user_id);
 
-        // Insert new role
         const { error: roleError } = await supabase.from("user_roles").insert({
           user_id: existingProfile.user_id,
           role: newUserRole,
@@ -168,7 +244,6 @@ const AdminUsers = () => {
 
         if (roleError) throw roleError;
 
-        // If making admin, update profiles table too
         if (newUserRole === "admin") {
           await supabase
             .from("profiles")
@@ -197,10 +272,8 @@ const AdminUsers = () => {
 
   const handleUpdateRole = async (userId: string, newRole: "admin" | "moderator" | "user") => {
     try {
-      // Delete existing role
       await supabase.from("user_roles").delete().eq("user_id", userId);
 
-      // Insert new role
       const { error } = await supabase.from("user_roles").insert({
         user_id: userId,
         role: newRole,
@@ -208,7 +281,6 @@ const AdminUsers = () => {
 
       if (error) throw error;
 
-      // Update is_admin in profiles
       await supabase
         .from("profiles")
         .update({ is_admin: newRole === "admin" })
@@ -224,10 +296,8 @@ const AdminUsers = () => {
 
   const handleRemoveRole = async (userId: string) => {
     try {
-      // Delete role
       await supabase.from("user_roles").delete().eq("user_id", userId);
 
-      // Remove admin status
       await supabase
         .from("profiles")
         .update({ is_admin: false })
@@ -241,23 +311,12 @@ const AdminUsers = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const adminCount = users.filter((u) => u.role === "admin" || u.is_admin).length;
-  const moderatorCount = users.filter((u) => u.role === "moderator").length;
-  const userCount = users.filter((u) => u.role === "user" || !u.role).length;
-
   const handleSendInvite = async () => {
     if (!inviteEmail.trim()) {
       toast.error("Email is required");
       return;
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(inviteEmail)) {
       toast.error("Please enter a valid email address");
@@ -296,6 +355,17 @@ const AdminUsers = () => {
     }
   };
 
+  const filteredUsers = users.filter(
+    (user) =>
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const adminCount = users.filter((u) => u.role === "admin" || u.is_admin).length;
+  const moderatorCount = users.filter((u) => u.role === "moderator").length;
+  const userCount = users.filter((u) => u.role === "user" || !u.role).length;
+  const clientCount = users.filter((u) => u.is_client).length;
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -304,7 +374,7 @@ const AdminUsers = () => {
           <div>
             <h1 className="text-3xl font-bold text-foreground">User Management</h1>
             <p className="text-muted-foreground mt-1">
-              Manage admin users and their roles
+              Manage users, roles & service assignments
             </p>
           </div>
           <div className="flex gap-2">
@@ -401,89 +471,89 @@ const AdminUsers = () => {
                 </Button>
               </DialogTrigger>
               <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add User Role</DialogTitle>
-                <DialogDescription>
-                  Enter the email of an existing user to assign them a role.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">User Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="user@example.com"
-                    value={newUserEmail}
-                    onChange={(e) => setNewUserEmail(e.target.value)}
-                  />
+                <DialogHeader>
+                  <DialogTitle>Add User Role</DialogTitle>
+                  <DialogDescription>
+                    Enter the email of an existing user to assign them a role.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">User Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="user@example.com"
+                      value={newUserEmail}
+                      onChange={(e) => setNewUserEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Select
+                      value={newUserRole}
+                      onValueChange={(value: "admin" | "moderator" | "user") =>
+                        setNewUserRole(value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">
+                          <div className="flex items-center gap-2">
+                            <Crown className="w-4 h-4 text-red-600" />
+                            Admin - Full Access
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="moderator">
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                            Moderator - Limited Access
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="user">
+                          <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-gray-600" />
+                            User - Basic Access
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Select
-                    value={newUserRole}
-                    onValueChange={(value: "admin" | "moderator" | "user") =>
-                      setNewUserRole(value)
-                    }
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAddDialogOpen(false)}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">
-                        <div className="flex items-center gap-2">
-                          <Crown className="w-4 h-4 text-red-600" />
-                          Admin - Full Access
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="moderator">
-                        <div className="flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4 text-blue-600" />
-                          Moderator - Limited Access
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="user">
-                        <div className="flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-gray-600" />
-                          User - Basic Access
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsAddDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleAddUser} disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save Role"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddUser} disabled={isSubmitting}>
+                    {isSubmitting ? "Saving..." : "Save Role"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <Card className="border-red-500/20">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-                    <Crown className="w-6 h-6 text-red-600" />
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                    <Crown className="w-5 h-5 text-red-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Admins</p>
-                    <p className="text-2xl font-bold text-foreground">{adminCount}</p>
+                    <p className="text-xs text-muted-foreground">Admins</p>
+                    <p className="text-xl font-bold text-foreground">{adminCount}</p>
                   </div>
                 </div>
               </CardContent>
@@ -496,14 +566,14 @@ const AdminUsers = () => {
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <Card className="border-blue-500/20">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-blue-600" />
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <ShieldCheck className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Moderators</p>
-                    <p className="text-2xl font-bold text-foreground">{moderatorCount}</p>
+                    <p className="text-xs text-muted-foreground">Moderators</p>
+                    <p className="text-xl font-bold text-foreground">{moderatorCount}</p>
                   </div>
                 </div>
               </CardContent>
@@ -516,14 +586,34 @@ const AdminUsers = () => {
             transition={{ duration: 0.3, delay: 0.2 }}
           >
             <Card className="border-gray-500/20">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gray-500/10 flex items-center justify-center">
-                    <Users className="w-6 h-6 text-gray-600" />
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Users</p>
-                    <p className="text-2xl font-bold text-foreground">{userCount}</p>
+                    <p className="text-xs text-muted-foreground">Users</p>
+                    <p className="text-xl font-bold text-foreground">{userCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
+            <Card className="border-green-500/20">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                    <Package className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Clients</p>
+                    <p className="text-xl font-bold text-foreground">{clientCount}</p>
                   </div>
                 </div>
               </CardContent>
@@ -576,87 +666,130 @@ const AdminUsers = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: index * 0.05 }}
-                      className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+                      className="p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors space-y-3"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-primary font-medium">
-                            {user.email?.charAt(0).toUpperCase() || "?"}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-foreground">
-                              {user.full_name || user.email || "Unknown"}
-                            </p>
-                            {isCurrentUser && (
-                              <Badge variant="outline" className="text-xs">
-                                You
-                              </Badge>
-                            )}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-primary font-medium">
+                              {user.email?.charAt(0).toUpperCase() || "?"}
+                            </span>
                           </div>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
-                            {user.email || "No email"}
-                          </p>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-foreground">
+                                {user.full_name || user.email || "Unknown"}
+                              </p>
+                              {isCurrentUser && (
+                                <Badge variant="outline" className="text-xs">
+                                  You
+                                </Badge>
+                              )}
+                              {user.is_client && (
+                                <Badge className="bg-green-500/10 text-green-600 border-green-500/20 border text-xs">
+                                  Client
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {user.email || "No email"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Badge className={`${config.color} border`}>
+                            <config.icon className="w-3 h-3 mr-1" />
+                            {config.label}
+                          </Badge>
+
+                          {!isCurrentUser && (
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={effectiveRole}
+                                onValueChange={(value: "admin" | "moderator" | "user") =>
+                                  handleUpdateRole(user.user_id, value)
+                                }
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                  <SelectItem value="moderator">Moderator</SelectItem>
+                                  <SelectItem value="user">User</SelectItem>
+                                </SelectContent>
+                              </Select>
+
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-destructive hover:bg-destructive/10"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove Role?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will remove the role from {user.email}. They will
+                                      no longer have admin or moderator access.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleRemoveRole(user.user_id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Remove
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <Badge className={`${config.color} border`}>
-                          <config.icon className="w-3 h-3 mr-1" />
-                          {config.label}
-                        </Badge>
-
-                        {!isCurrentUser && (
-                          <div className="flex items-center gap-2">
-                            <Select
-                              value={effectiveRole}
-                              onValueChange={(value: "admin" | "moderator" | "user") =>
-                                handleUpdateRole(user.user_id, value)
-                              }
+                      {/* Assigned Services Section */}
+                      <div className="flex items-center gap-2 flex-wrap pl-14">
+                        <Package className="w-3.5 h-3.5 text-muted-foreground" />
+                        {user.assignedServices.length > 0 ? (
+                          user.assignedServices.map((s) => (
+                            <Badge
+                              key={s.id}
+                              variant="outline"
+                              className="text-xs gap-1 bg-primary/5"
                             >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="moderator">Moderator</SelectItem>
-                                <SelectItem value="user">User</SelectItem>
-                              </SelectContent>
-                            </Select>
-
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-destructive hover:bg-destructive/10"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Remove Role?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This will remove the role from {user.email}. They will
-                                    no longer have admin or moderator access.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRemoveRole(user.user_id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    Remove
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
+                              {s.service_name}
+                              <span className={`ml-1 ${s.payment_status === "paid" ? "text-green-600" : "text-amber-600"}`}>
+                                ({s.payment_status})
+                              </span>
+                              <button
+                                onClick={() => handleRemoveService(s.id)}
+                                className="ml-1 hover:text-destructive"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No services assigned</span>
                         )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs gap-1"
+                          onClick={() => setServiceDialogUser(user)}
+                        >
+                          <Plus className="w-3 h-3" />
+                          Add Service
+                        </Button>
                       </div>
                     </motion.div>
                   );
@@ -665,6 +798,60 @@ const AdminUsers = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Assign Service Dialog */}
+        <Dialog open={!!serviceDialogUser} onOpenChange={(open) => !open && setServiceDialogUser(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Assign Service</DialogTitle>
+              <DialogDescription>
+                Assign a service to <strong>{serviceDialogUser?.full_name || serviceDialogUser?.email}</strong>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Select Service</Label>
+                <Select value={selectedServiceId} onValueChange={setSelectedServiceId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a service..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        <div className="flex items-center justify-between gap-4">
+                          <span>{s.name}</span>
+                          <span className="text-muted-foreground text-xs">৳{s.price}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setServiceDialogUser(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAssignService}
+                disabled={!selectedServiceId || isAssigningService}
+                className="gap-2"
+              >
+                {isAssigningService ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    <Package className="w-4 h-4" />
+                    Assign Service
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

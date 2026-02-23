@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Bot, User, Loader2, Minimize2 } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Minimize2, Phone } from "lucide-react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { ScrollArea } from "./scroll-area";
@@ -14,6 +14,7 @@ interface Message {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
 type ChatLang = "bn" | "en";
+type ChatStep = "setup" | "chatting";
 
 const AIChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +26,8 @@ const AIChatBot = () => {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [adminSeen, setAdminSeen] = useState(false);
   const [chatLang, setChatLang] = useState<ChatLang>("bn");
+  const [chatStep, setChatStep] = useState<ChatStep>("setup");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -235,15 +238,24 @@ const AIChatBot = () => {
     }
   };
 
+  const startChat = () => {
+    if (!phoneNumber.trim()) return;
+    setChatStep("chatting");
+    const welcomeMsg = chatLang === "bn"
+      ? "👋 আসসালামু আলাইকুম! URMedia Tech এ স্বাগতম।\n\nকোন ধরনের ওয়েবসাইট দরকার?\nবলুন, কীভাবে সাহায্য করতে পারি!"
+      : "👋 Hi! Welcome to URMedia Tech.\n\nWhat type of website do you need?\nJust tell me!";
+    setMessages([{ role: "assistant", content: welcomeMsg }]);
+    // Save phone to conversation
+    initConversation().then(convId => {
+      if (convId) {
+        supabase.from("chat_conversations").update({ visitor_phone: phoneNumber.trim() }).eq("id", convId);
+      }
+    });
+  };
+
   const openChat = () => {
     setIsOpen(true);
     setIsMinimized(false);
-    if (messages.length === 0) {
-      const welcomeMsg = chatLang === "bn"
-        ? "👋 আসসালামু আলাইকুম! URMedia Tech এ স্বাগতম।\n\nকোন ধরনের ওয়েবসাইট দরকার?\n\n• ল্যান্ডিং পেজ\n• ই-কমার্স\n• বিজনেস ওয়েবসাইট\n• পোর্টফোলিও\n• ব্লগ/নিউজ\n• কাস্টম ওয়েব অ্যাপ\n\nবলুন, কীভাবে সাহায্য করতে পারি!"
-        : "👋 Hi! Welcome to URMedia Tech.\n\nWhat type of website do you need?\n\n• Landing Page\n• E-commerce\n• Business Website\n• Portfolio\n• Blog/News\n• Custom Web App\n\nJust tell me what you need!";
-      setMessages([{ role: "assistant", content: welcomeMsg }]);
-    }
   };
 
   return (
@@ -404,34 +416,70 @@ const AIChatBot = () => {
               </div>
             </div>
 
-            {/* Language Selector */}
-            <div className="flex items-center justify-center px-4 py-2 border-b border-border bg-muted/30">
-              <div className="relative flex items-center rounded-full bg-background/60 backdrop-blur-xl p-1 border border-border/50 shadow-sm">
-                <motion.div
-                  className="absolute top-1 bottom-1 rounded-full bg-primary shadow-md"
-                  initial={false}
-                  animate={{ x: chatLang === "bn" ? 0 : "100%", width: "calc(50% - 4px)" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  style={{ left: 2 }}
-                />
-                <button
-                  onClick={() => { setChatLang("bn"); if (messages.length === 0) openChat(); }}
-                  className={`relative z-10 px-4 py-1 text-xs font-medium rounded-full transition-colors ${chatLang === "bn" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  বাংলা
-                </button>
-                <button
-                  onClick={() => { setChatLang("en"); if (messages.length === 0) openChat(); }}
-                  className={`relative z-10 px-4 py-1 text-xs font-medium rounded-full transition-colors ${chatLang === "en" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  English
-                </button>
+            {!isMinimized && chatStep === "setup" && (
+              <div className="flex-1 flex flex-col items-center justify-center p-6 gap-5">
+                <Bot className="w-12 h-12 text-primary opacity-60" />
+                <p className="text-sm text-muted-foreground text-center">
+                  {chatLang === "bn" ? "ভাষা নির্বাচন করুন ও নম্বর দিন" : "Select language & enter your number"}
+                </p>
+
+                {/* Language Toggle */}
+                <div className="relative flex items-center rounded-full bg-muted/60 backdrop-blur-xl p-1 border border-border/50 shadow-sm">
+                  <motion.div
+                    className="absolute top-1 bottom-1 rounded-full bg-primary shadow-md"
+                    initial={false}
+                    animate={{ x: chatLang === "bn" ? 0 : "100%", width: "calc(50% - 4px)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    style={{ left: 2 }}
+                  />
+                  <button
+                    onClick={() => setChatLang("bn")}
+                    className={`relative z-10 px-5 py-1.5 text-sm font-medium rounded-full transition-colors ${chatLang === "bn" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    বাংলা
+                  </button>
+                  <button
+                    onClick={() => setChatLang("en")}
+                    className={`relative z-10 px-5 py-1.5 text-sm font-medium rounded-full transition-colors ${chatLang === "en" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    English
+                  </button>
+                </div>
+
+                {/* Phone Number Input */}
+                <div className="w-full max-w-[260px] space-y-3">
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") startChat(); }}
+                      placeholder={chatLang === "bn" ? "আপনার ফোন নম্বর" : "Your phone number"}
+                      className="pl-9 rounded-full text-sm"
+                      type="tel"
+                    />
+                  </div>
+                  <Button
+                    onClick={startChat}
+                    disabled={!phoneNumber.trim()}
+                    className="w-full rounded-full"
+                  >
+                    {chatLang === "bn" ? "চ্যাট শুরু করুন" : "Start Chat"}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Messages */}
-            {!isMinimized && (
+            {!isMinimized && chatStep === "chatting" && (
               <>
+                {/* Small lang indicator */}
+                <div className="flex items-center justify-center px-4 py-1.5 border-b border-border bg-muted/30">
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    {chatLang === "bn" ? "বাংলা" : "English"}
+                  </span>
+                </div>
+
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-4">
                     {messages.map((message, index) => (
@@ -467,21 +515,9 @@ const AIChatBot = () => {
                           <Bot className="w-4 h-4" />
                         </div>
                         <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1">
-                          <motion.span
-                            className="w-2 h-2 rounded-full bg-foreground/50"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                          />
-                          <motion.span
-                            className="w-2 h-2 rounded-full bg-foreground/50"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
-                          />
-                          <motion.span
-                            className="w-2 h-2 rounded-full bg-foreground/50"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
-                          />
+                          <motion.span className="w-2 h-2 rounded-full bg-foreground/50" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
+                          <motion.span className="w-2 h-2 rounded-full bg-foreground/50" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }} />
+                          <motion.span className="w-2 h-2 rounded-full bg-foreground/50" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }} />
                         </div>
                       </motion.div>
                     )}
@@ -497,7 +533,7 @@ const AIChatBot = () => {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      placeholder="Type your message..."
+                      placeholder={chatLang === "bn" ? "মেসেজ লিখুন..." : "Type your message..."}
                       disabled={isLoading}
                       className="flex-1 rounded-full"
                     />

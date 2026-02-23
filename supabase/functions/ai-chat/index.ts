@@ -143,17 +143,11 @@ serve(async (req) => {
     // Build request headers
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
     };
 
-    // Set authorization header based on API type
-    if (apiConfig.keyType === "gemini") {
-      headers["x-goog-api-key"] = apiKey;
-    } else {
-      headers["Authorization"] = `Bearer ${apiKey}`;
-    }
-
-    // Call the appropriate AI API
-    const response = await fetch(apiConfig.url, {
+    // Call the AI API with fallback
+    let response = await fetch(apiConfig.url, {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -166,7 +160,46 @@ serve(async (req) => {
       }),
     });
 
-    if (!response.ok) {
+    // If custom key fails (rate limit, auth error), fallback to Lovable gateway
+    if (!response.ok && useCustomKey) {
+      const errorStatus = response.status;
+      const errorText = await response.text();
+      console.error(`Custom ${apiConfig.keyType} API error (${errorStatus}):`, errorText);
+      console.log("Falling back to Lovable Gateway...");
+
+      const fallbackKey = Deno.env.get("LOVABLE_API_KEY");
+      if (fallbackKey) {
+        const fallbackConfig = {
+          url: "https://ai.gateway.lovable.dev/v1/chat/completions",
+          model: "google/gemini-3-flash-preview",
+        };
+
+        response = await fetch(fallbackConfig.url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${fallbackKey}`,
+          },
+          body: JSON.stringify({
+            model: fallbackConfig.model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              ...messages,
+            ],
+            stream: true,
+          }),
+        });
+
+        if (!response.ok) {
+          const fallbackError = await response.text();
+          console.error("Lovable Gateway fallback also failed:", response.status, fallbackError);
+          return new Response(JSON.stringify({ error: "AI service temporarily unavailable. Please try again later." }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    } else if (!response.ok) {
       const errorText = await response.text();
       console.error(`${apiConfig.keyType} API error:`, response.status, errorText);
       
@@ -178,20 +211,14 @@ serve(async (req) => {
       }
       if (response.status === 401 || response.status === 403) {
         return new Response(JSON.stringify({ 
-          error: `Invalid API key. Please check your ${apiConfig.keyType === "openai" ? "OpenAI" : apiConfig.keyType === "gemini" ? "Google Gemini" : "Lovable"} API key in Admin Settings.` 
+          error: `Invalid API key. Please check your API key in Admin Settings.` 
         }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       
-      return new Response(JSON.stringify({ error: "AI service error. Please check your API key." }), {
+      return new Response(JSON.stringify({ error: "AI service error. Please try again." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

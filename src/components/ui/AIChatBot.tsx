@@ -13,6 +13,8 @@ interface Message {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
+type ChatLang = "bn" | "en";
+
 const AIChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -22,6 +24,7 @@ const AIChatBot = () => {
   const [sessionId] = useState(() => crypto.randomUUID());
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [adminSeen, setAdminSeen] = useState(false);
+  const [chatLang, setChatLang] = useState<ChatLang>("bn");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -131,6 +134,7 @@ const AIChatBot = () => {
         messages: userMessages,
         conversationId,
         sessionId,
+        language: chatLang,
       }),
     });
 
@@ -235,10 +239,10 @@ const AIChatBot = () => {
     setIsOpen(true);
     setIsMinimized(false);
     if (messages.length === 0) {
-      setMessages([{
-        role: "assistant",
-        content: "👋 Hi! Welcome to URMedia Tech. I'm your AI assistant, here to help you find the perfect web solution.\n\nWhat type of website are you looking for?\n\n• Landing Page\n• E-commerce Website\n• Business/Corporate Website\n• Portfolio Website\n• Blog/News Website\n• Custom Web Application\n\nJust tell me what you need!",
-      }]);
+      const welcomeMsg = chatLang === "bn"
+        ? "👋 আসসালামু আলাইকুম! URMedia Tech এ স্বাগতম।\n\nকোন ধরনের ওয়েবসাইট দরকার?\n\n• ল্যান্ডিং পেজ\n• ই-কমার্স\n• বিজনেস ওয়েবসাইট\n• পোর্টফোলিও\n• ব্লগ/নিউজ\n• কাস্টম ওয়েব অ্যাপ\n\nবলুন, কীভাবে সাহায্য করতে পারি!"
+        : "👋 Hi! Welcome to URMedia Tech.\n\nWhat type of website do you need?\n\n• Landing Page\n• E-commerce\n• Business Website\n• Portfolio\n• Blog/News\n• Custom Web App\n\nJust tell me what you need!";
+      setMessages([{ role: "assistant", content: welcomeMsg }]);
     }
   };
 
@@ -397,6 +401,31 @@ const AIChatBot = () => {
                 >
                   <X className="w-4 h-4" />
                 </Button>
+              </div>
+            </div>
+
+            {/* Language Selector */}
+            <div className="flex items-center justify-center px-4 py-2 border-b border-border bg-muted/30">
+              <div className="relative flex items-center rounded-full bg-background/60 backdrop-blur-xl p-1 border border-border/50 shadow-sm">
+                <motion.div
+                  className="absolute top-1 bottom-1 rounded-full bg-primary shadow-md"
+                  initial={false}
+                  animate={{ x: chatLang === "bn" ? 0 : "100%", width: "calc(50% - 4px)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  style={{ left: 2 }}
+                />
+                <button
+                  onClick={() => { setChatLang("bn"); if (messages.length === 0) openChat(); }}
+                  className={`relative z-10 px-4 py-1 text-xs font-medium rounded-full transition-colors ${chatLang === "bn" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  বাংলা
+                </button>
+                <button
+                  onClick={() => { setChatLang("en"); if (messages.length === 0) openChat(); }}
+                  className={`relative z-10 px-4 py-1 text-xs font-medium rounded-full transition-colors ${chatLang === "en" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  English
+                </button>
               </div>
             </div>
 

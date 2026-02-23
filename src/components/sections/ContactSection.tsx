@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { Send, CheckCircle2, AlertCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  phone: z.string().trim().max(30, "Phone must be less than 30 characters").optional().or(z.literal("")),
   message: z.string().trim().min(1, "Message is required").max(1000, "Message must be less than 1000 characters"),
 });
 
@@ -24,13 +25,14 @@ const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
-  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
   
-  // Dynamic contact info from database
   const [contactInfo, setContactInfo] = useState({
     email: "contact@urmedia.tech",
     whatsapp: "+8801609252155",
@@ -67,10 +69,43 @@ const ContactSection = () => {
     fetchContactInfo();
   }, [language]);
 
+  // Auto-save draft when user leaves without submitting
+  const saveDraft = useCallback(async () => {
+    const { name, email, phone } = formData;
+    if ((!name.trim() && !email.trim() && !phone.trim()) || draftSaved) return;
+    
+    try {
+      await supabase.from("contact_submissions").insert({
+        name: name.trim() || "Draft - No Name",
+        email: email.trim() || "draft@no-email.com",
+        phone: phone.trim() || null,
+        message: formData.message.trim() || "(ফর্ম পূরণ করেছেন কিন্তু সাবমিট করেননি)",
+        status: "draft",
+      });
+      setDraftSaved(true);
+    } catch (e) {
+      console.error("Draft save error:", e);
+    }
+  }, [formData, draftSaved]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => { saveDraft(); };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") saveDraft();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [saveDraft]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error on change
+    setDraftSaved(false);
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
@@ -80,7 +115,6 @@ const ContactSection = () => {
     e.preventDefault();
     setErrors({});
     
-    // Validate
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: typeof errors = {};
@@ -96,34 +130,29 @@ const ContactSection = () => {
     setIsSubmitting(true);
     
     try {
-      // Save to database
       const { error: dbError } = await supabase
         .from("contact_submissions")
         .insert({
           name: formData.name.trim(),
           email: formData.email.trim(),
+          phone: formData.phone.trim() || null,
           message: formData.message.trim(),
         });
 
-      if (dbError) {
-        console.error("DB Error:", dbError);
-      }
+      if (dbError) console.error("DB Error:", dbError);
 
-      // Also send to Google Sheets
-      const { error } = await supabase.functions.invoke("contact-to-sheets", {
+      await supabase.functions.invoke("contact-to-sheets", {
         body: {
           name: formData.name.trim(),
           email: formData.email.trim(),
+          phone: formData.phone.trim(),
           message: formData.message.trim(),
         },
       });
 
-      if (error) {
-        console.error("Sheets Error:", error);
-      }
-
       setIsSuccess(true);
-      setFormData({ name: "", email: "", message: "" });
+      setDraftSaved(true);
+      setFormData({ name: "", email: "", phone: "", message: "" });
       
       toast({
         title: t("contact.successTitle"),
@@ -144,7 +173,6 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="py-24 relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute bottom-0 left-0 w-72 h-72 gradient-bg opacity-10 blur-[100px] rounded-full" />
       <div className="absolute top-1/4 right-0 w-48 h-48 gradient-bg opacity-10 blur-[80px] rounded-full" />
       
@@ -168,7 +196,6 @@ const ContactSection = () => {
               {t("contact.subtitle")}
             </p>
 
-            {/* Contact info */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
@@ -257,6 +284,30 @@ const ContactSection = () => {
                 {errors.email && (
                   <p className="text-destructive text-sm mt-1 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" /> {errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                  {t("contact.phoneLabel")}
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder={t("contact.phonePlaceholder")}
+                    className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" /> {errors.phone}
                   </p>
                 )}
               </div>

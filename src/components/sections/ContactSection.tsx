@@ -361,13 +361,7 @@ const ContactSection = () => {
                       {language === "bn" ? "মিটিংয়ের তারিখ নির্বাচন করুন" : "Select a meeting date"}
                     </button>
                   ) : (
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="border border-border/50 rounded-xl overflow-hidden"
-                      >
+                    <div className="border border-border/50 rounded-xl overflow-visible">
                         <div className="flex items-center justify-between bg-secondary/50 px-4 py-2 border-b border-border/50">
                           <span className="text-sm font-medium text-foreground flex items-center gap-2">
                             <CalendarDays className="w-4 h-4 text-primary" />
@@ -410,8 +404,7 @@ const ContactSection = () => {
                             </div>
                           )}
                         </div>
-                      </motion.div>
-                    </AnimatePresence>
+                    </div>
                   )
                 ) : (
                   <div className="flex items-center justify-between bg-secondary/50 border border-border/50 rounded-lg px-4 py-3">

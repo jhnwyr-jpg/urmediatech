@@ -344,26 +344,6 @@ const ContactSection = () => {
                 )}
               </div>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                  {t("contact.messageLabel")}
-                </label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder={t("contact.messagePlaceholder")}
-                  rows={5}
-                  className={errors.message ? "border-destructive" : ""}
-                />
-                {errors.message && (
-                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {errors.message}
-                  </p>
-                )}
-              </div>
-
               {/* Meeting Date Picker */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
@@ -450,6 +430,26 @@ const ContactSection = () => {
                       {language === "bn" ? "এডিট" : "Edit"}
                     </button>
                   </div>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                  {t("contact.messageLabel")}
+                </label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder={t("contact.messagePlaceholder")}
+                  rows={5}
+                  className={errors.message ? "border-destructive" : ""}
+                />
+                {errors.message && (
+                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" /> {errors.message}
+                  </p>
                 )}
               </div>
 

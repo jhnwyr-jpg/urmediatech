@@ -1,13 +1,23 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Send, CheckCircle2, AlertCircle, Phone } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Phone, CalendarDays, Clock, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { format, isBefore, startOfDay, addDays } from "date-fns";
+import { cn } from "@/lib/utils";
+
+const TIME_SLOTS = [
+  "10:00 AM", "11:00 AM", "12:00 PM",
+  "1:00 PM", "2:00 PM", "3:00 PM",
+  "4:00 PM", "5:00 PM", "6:00 PM",
+  "7:00 PM", "8:00 PM", "9:00 PM",
+];
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
@@ -32,6 +42,12 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string>("");
+
+  const today = startOfDay(new Date());
+  const maxDate = addDays(today, 30);
   
   const [contactInfo, setContactInfo] = useState({
     email: "contact@urmedia.tech",
@@ -141,6 +157,19 @@ const ContactSection = () => {
 
       if (dbError) console.error("DB Error:", dbError);
 
+      // If meeting date selected, also create a meeting
+      if (selectedDate && selectedTime) {
+        await supabase.from("meetings").insert({
+          visitor_name: formData.name.trim(),
+          visitor_phone: formData.phone.trim() || null,
+          visitor_email: formData.email.trim() || null,
+          meeting_date: format(selectedDate, "yyyy-MM-dd"),
+          meeting_time: selectedTime,
+          service_type: "Discovery Call",
+          status: "pending",
+        });
+      }
+
       await supabase.functions.invoke("contact-to-sheets", {
         body: {
           name: formData.name.trim(),
@@ -153,6 +182,9 @@ const ContactSection = () => {
       setIsSuccess(true);
       setDraftSaved(true);
       setFormData({ name: "", email: "", phone: "", message: "" });
+      setSelectedDate(undefined);
+      setSelectedTime("");
+      setShowCalendar(false);
       
       toast({
         title: t("contact.successTitle"),
@@ -329,6 +361,95 @@ const ContactSection = () => {
                   <p className="text-destructive text-sm mt-1 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" /> {errors.message}
                   </p>
+                )}
+              </div>
+
+              {/* Meeting Date Picker */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {language === "bn" ? "মিটিং তারিখ (ঐচ্ছিক)" : "Meeting Date (Optional)"}
+                </label>
+
+                {!selectedDate || showCalendar ? (
+                  !showCalendar ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowCalendar(true)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 text-muted-foreground hover:border-primary/50 hover:bg-secondary/30 transition-all text-sm"
+                    >
+                      <CalendarDays className="w-4 h-4" />
+                      {language === "bn" ? "মিটিংয়ের তারিখ নির্বাচন করুন" : "Select a meeting date"}
+                    </button>
+                  ) : (
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="border border-border/50 rounded-xl overflow-hidden"
+                      >
+                        <div className="flex items-center justify-between bg-secondary/50 px-4 py-2 border-b border-border/50">
+                          <span className="text-sm font-medium text-foreground flex items-center gap-2">
+                            <CalendarDays className="w-4 h-4 text-primary" />
+                            {language === "bn" ? "তারিখ ও সময় সিলেক্ট করুন" : "Select date & time"}
+                          </span>
+                          <button type="button" onClick={() => { setShowCalendar(false); setSelectedDate(undefined); setSelectedTime(""); }} className="text-muted-foreground hover:text-foreground">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="p-4 space-y-4">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(date) => { setSelectedDate(date); setSelectedTime(""); }}
+                            disabled={(date) => isBefore(date, today) || date > maxDate || date.getDay() === 5}
+                            className="p-3 pointer-events-auto rounded-xl border border-border/50 mx-auto"
+                          />
+                          {selectedDate && (
+                            <div>
+                              <p className="text-sm font-medium text-foreground mb-2">
+                                {format(selectedDate, "EEE, MMM d")} — {language === "bn" ? "সময় সিলেক্ট করুন" : "Select time"}
+                              </p>
+                              <div className="grid grid-cols-3 gap-2">
+                                {TIME_SLOTS.map((time) => (
+                                  <button
+                                    key={time}
+                                    type="button"
+                                    onClick={() => { setSelectedTime(time); setShowCalendar(false); }}
+                                    className={cn(
+                                      "px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                                      selectedTime === time
+                                        ? "gradient-bg text-primary-foreground border-transparent"
+                                        : "border-border/50 text-foreground hover:border-primary/50 hover:bg-secondary/50"
+                                    )}
+                                  >
+                                    {time}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  )
+                ) : (
+                  <div className="flex items-center justify-between bg-secondary/50 border border-border/50 rounded-lg px-4 py-3">
+                    <div className="flex items-center gap-3 text-sm">
+                      <Clock className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-foreground">
+                        {format(selectedDate, "EEE, MMM d")} — {selectedTime}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowCalendar(true)}
+                      className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      {language === "bn" ? "এডিট" : "Edit"}
+                    </button>
+                  </div>
                 )}
               </div>
 

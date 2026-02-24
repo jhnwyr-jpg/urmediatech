@@ -7,7 +7,6 @@ import IntegrationsSection from "@/components/sections/IntegrationsSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import AboutSection from "@/components/sections/AboutSection";
 import ContactSection from "@/components/sections/ContactSection";
-import BookingSection from "@/components/sections/BookingSection";
 import PricingSection from "@/components/sections/PricingSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
@@ -41,7 +40,6 @@ const Index = () => {
       <TestimonialsSection />
       <AboutSection />
       <ContactSection />
-      <BookingSection />
       <CTASection />
       <Footer />
       <AIChatBot />

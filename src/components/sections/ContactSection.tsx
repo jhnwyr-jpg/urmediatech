@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Send, CheckCircle2, AlertCircle, Phone } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Phone, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { useLanguage } from "@/contexts/LanguageContext";
+import BookingCalendar from "./BookingCalendar";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
@@ -31,6 +32,7 @@ const ContactSection = () => {
   const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string; message?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showBooking, setShowBooking] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   
   const [contactInfo, setContactInfo] = useState({
@@ -152,7 +154,7 @@ const ContactSection = () => {
 
       setIsSuccess(true);
       setDraftSaved(true);
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      setShowBooking(true);
       
       toast({
         title: t("contact.successTitle"),
@@ -167,7 +169,6 @@ const ContactSection = () => {
       });
     } finally {
       setIsSubmitting(false);
-      setTimeout(() => setIsSuccess(false), 3000);
     }
   };
 
@@ -241,126 +242,136 @@ const ContactSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - Form */}
+          {/* Right - Form or Booking Calendar */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-card rounded-2xl p-8 border border-border/50 shadow-card"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {showBooking ? (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                  {t("contact.nameLabel")}
-                </label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder={t("contact.namePlaceholder")}
-                  className={errors.name ? "border-destructive" : ""}
-                />
-                {errors.name && (
-                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {errors.name}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                  {t("contact.emailFieldLabel")}
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={t("contact.emailPlaceholder")}
-                  className={errors.email ? "border-destructive" : ""}
-                />
-                {errors.email && (
-                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                  {t("contact.phoneLabel")}
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder={t("contact.phonePlaceholder")}
-                    className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
-                  />
+                <div className="mb-4 flex items-center gap-2 text-sm text-primary font-medium">
+                  <CalendarDays className="w-4 h-4" />
+                  {t("contact.bookMeetingPrompt")}
                 </div>
-                {errors.phone && (
-                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {errors.phone}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                  {t("contact.messageLabel")}
-                </label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder={t("contact.messagePlaceholder")}
-                  rows={5}
-                  className={errors.message ? "border-destructive" : ""}
+                <BookingCalendar
+                  visitorName={formData.name}
+                  visitorEmail={formData.email}
+                  visitorPhone={formData.phone}
                 />
-                {errors.message && (
-                  <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {errors.message}
-                  </p>
-                )}
               </div>
-
-              <Button
-                type="submit"
-                variant="gradient"
-                size="lg"
-                className="w-full"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+            ) : (
+              <div className="bg-card rounded-2xl p-8 border border-border/50 shadow-card">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.nameLabel")}
+                    </label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder={t("contact.namePlaceholder")}
+                      className={errors.name ? "border-destructive" : ""}
                     />
-                    {t("contact.sending")}
-                  </>
-                ) : isSuccess ? (
-                  <>
-                    <CheckCircle2 className="w-5 h-5" />
-                    {t("contact.sent")}
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    {t("contact.send")}
-                  </>
-                )}
-              </Button>
-            </form>
+                    {errors.name && (
+                      <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" /> {errors.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.emailFieldLabel")}
+                    </label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder={t("contact.emailPlaceholder")}
+                      className={errors.email ? "border-destructive" : ""}
+                    />
+                    {errors.email && (
+                      <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" /> {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.phoneLabel")}
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        inputMode="tel"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder={t("contact.phonePlaceholder")}
+                        className={`pl-10 ${errors.phone ? "border-destructive" : ""}`}
+                      />
+                    </div>
+                    {errors.phone && (
+                      <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" /> {errors.phone}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                      {t("contact.messageLabel")}
+                    </label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder={t("contact.messagePlaceholder")}
+                      rows={5}
+                      className={errors.message ? "border-destructive" : ""}
+                    />
+                    {errors.message && (
+                      <p className="text-destructive text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" /> {errors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    variant="gradient"
+                    size="lg"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                        />
+                        {t("contact.sending")}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        {t("contact.send")}
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

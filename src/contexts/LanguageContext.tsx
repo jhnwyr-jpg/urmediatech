@@ -145,6 +145,7 @@ const translations = {
     "contact.successDesc": "আমরা যত দ্রুত সম্ভব আপনার সাথে যোগাযোগ করব।",
     "contact.errorTitle": "ত্রুটি",
     "contact.errorDesc": "মেসেজ পাঠাতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "contact.bookMeetingPrompt": "মেসেজ পাঠানো হয়েছে! এখন একটি মিটিং বুক করুন 👇",
     
     // Pricing
     "pricing.label": "আমাদের সার্ভিস",
@@ -379,6 +380,7 @@ const translations = {
     "contact.successDesc": "We'll get back to you as soon as possible.",
     "contact.errorTitle": "Error",
     "contact.errorDesc": "Failed to send message. Please try again.",
+    "contact.bookMeetingPrompt": "Message sent! Now book a meeting 👇",
     
     // Pricing
     "pricing.label": "Our Services",

@@ -27,29 +27,24 @@ const Notifications = () => {
     setIsSending(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-push-notification', {
-        body: {
-          title: title.trim(),
-          message: message.trim(),
-          url: url.trim() || undefined,
-          imageUrl: imageUrl.trim() || undefined,
-        },
+      const { error } = await supabase.from('broadcast_notifications').insert({
+        title: title.trim(),
+        message: message.trim(),
+        url: url.trim() || null,
+        image_url: imageUrl.trim() || null,
+        is_active: true,
       });
 
       if (error) throw error;
 
-      if (data?.success) {
-        toast.success(`Notification পাঠানো হয়েছে! (${data.recipients || 0} জনকে)`);
-        setLastSent({ title: title.trim(), recipients: data.recipients || 0 });
-        
-        // Clear form
-        setTitle("");
-        setMessage("");
-        setUrl("");
-        setImageUrl("");
-      } else {
-        throw new Error(data?.error || 'Failed to send notification');
-      }
+      toast.success("Notification পাঠানো হয়েছে!");
+      setLastSent({ title: title.trim(), recipients: 0 });
+      
+      // Clear form
+      setTitle("");
+      setMessage("");
+      setUrl("");
+      setImageUrl("");
     } catch (error: any) {
       logError('Error sending notification:', error);
       toast.error(error.message || "Notification পাঠাতে সমস্যা হয়েছে");

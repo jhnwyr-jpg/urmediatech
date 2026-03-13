@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
+import PromoSection from "@/components/sections/PromoSection";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import PortfolioSection from "@/components/sections/PortfolioSection";
@@ -32,6 +33,7 @@ const Index = () => {
       <DynamicScripts />
       <Navbar />
       <HeroSection />
+      <PromoSection />
       <FeaturesSection />
       <ShowcaseSection />
       <PortfolioSection />

@@ -32,7 +32,7 @@ const ChatPage = () => {
     localStorage.getItem(SUPPORT_CONV_KEY)
   );
   const [adminTyping, setAdminTyping] = useState(false);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const savedVisitor = useMemo(() => {
     try {

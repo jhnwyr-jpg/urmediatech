@@ -43,7 +43,7 @@ const AdminChats = () => {
   const [reply, setReply] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [visitorTyping, setVisitorTyping] = useState(false);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [meetingDate, setMeetingDate] = useState("");

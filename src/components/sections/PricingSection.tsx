@@ -110,6 +110,7 @@ const PricingSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const { t, language } = useLanguage();
   const [plans, setPlans] = useState<PlanData[]>([]);
+  const [activeTab, setActiveTab] = useState<"landing" | "website">("landing");
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -164,7 +165,7 @@ const PricingSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-20"
+          className="text-center max-w-2xl mx-auto mb-10"
         >
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -181,12 +182,151 @@ const PricingSection = () => {
           <p className="text-muted-foreground text-lg leading-relaxed">{t("pricing.subtitle")}</p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
-          {plans.map((plan, index) => (
-            <PricingCard key={plan.id} plan={plan} index={index} isInView={isInView} onOrder={scrollToContact} language={language} cardDelay={index * 0.35} />
-          ))}
-        </div>
+        {/* Tab Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ delay: 0.3 }}
+          className="flex justify-center mb-12"
+        >
+          <div className="inline-flex rounded-xl bg-secondary border border-border/50 p-1.5">
+            <button
+              onClick={() => setActiveTab("landing")}
+              className={`relative px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                activeTab === "landing"
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {activeTab === "landing" && (
+                <motion.div
+                  layoutId="pricing-tab"
+                  className="absolute inset-0 rounded-lg gradient-bg"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">
+                {language === "bn" ? "ল্যান্ডিং পেজ" : "Landing Page"}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab("website")}
+              className={`relative px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                activeTab === "website"
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {activeTab === "website" && (
+                <motion.div
+                  layoutId="pricing-tab"
+                  className="absolute inset-0 rounded-lg gradient-bg"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">
+                {language === "bn" ? "ওয়েবসাইট" : "Website"}
+              </span>
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Content */}
+        {activeTab === "landing" ? (
+          <motion.div
+            key="landing"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
+              {plans.map((plan, index) => (
+                <PricingCard key={plan.id} plan={plan} index={index} isInView={isInView} onOrder={scrollToContact} language={language} cardDelay={index * 0.35} />
+              ))}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="website"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="max-w-3xl mx-auto"
+          >
+            <div
+              className="relative rounded-3xl overflow-hidden p-10 md:p-14 text-center border border-border/50"
+              style={{
+                background: "linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(255,255,255,0.95) 50%, rgba(139,92,246,0.05) 100%)",
+                boxShadow: "0 20px 60px -15px rgba(139,92,246,0.15), 0 4px 25px -5px rgba(0,0,0,0.06)",
+              }}
+            >
+              <motion.div
+                className="absolute inset-0 rounded-3xl pointer-events-none opacity-40"
+                style={{ background: "linear-gradient(105deg, transparent 40%, rgba(139,92,246,0.15) 50%, transparent 60%)", backgroundSize: "200% 100%" }}
+                animate={{ backgroundPosition: ["-100% 0%", "200% 0%"] }}
+                transition={{ duration: 3, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+              />
+
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.1 }}
+                className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6"
+                style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--gradient-end)))", boxShadow: "0 8px 25px -5px hsl(var(--primary) / 0.4)" }}
+              >
+                <Globe className="w-10 h-10 text-primary-foreground" />
+              </motion.div>
+
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                {language === "bn" 
+                  ? "যেকোনো ওয়েবসাইট শুরু মাত্র" 
+                  : "Any Website Starting From"}
+              </h3>
+              <div className="flex items-baseline justify-center gap-1 mb-4">
+                <span className="text-5xl md:text-6xl font-extrabold gradient-text">
+                  {language === "bn" ? "৳৪,০০০" : "৳4,000"}
+                </span>
+              </div>
+              <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-lg mx-auto mb-8">
+                {language === "bn"
+                  ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। দাম নির্ভর করবে আপনার চাহিদা ও ফিচারের উপর।"
+                  : "Fully coded, responsive website — built with React & Next.js. Price depends on your requirements and features."}
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-3 mb-10">
+                {(language === "bn"
+                  ? ["ফুল কোডেড", "কাস্টম ডিজাইন", "অ্যাডমিন প্যানেল", "SEO অপ্টিমাইজড", "মোবাইল রেসপন্সিভ"]
+                  : ["Fully Coded", "Custom Design", "Admin Panel", "SEO Optimized", "Mobile Responsive"]
+                ).map((tag, i) => (
+                  <motion.span
+                    key={tag}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 + i * 0.08 }}
+                    className="flex items-center gap-1.5 text-sm bg-primary/10 text-primary font-medium rounded-lg px-3 py-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    {tag}
+                  </motion.span>
+                ))}
+              </div>
+
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="gradient"
+                  size="xl"
+                  className="shadow-lg shadow-primary/25 group/btn font-semibold"
+                  onClick={scrollToContact}
+                >
+                  {language === "bn" ? "কনসাল্টেশন নিন" : "Get Consultation"}
+                  <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Bottom note */}
         <motion.div

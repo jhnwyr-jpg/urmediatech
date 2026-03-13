@@ -33,6 +33,7 @@ const Index = () => {
       <DynamicScripts />
       <Navbar />
       <HeroSection />
+      <PromoSection />
       <FeaturesSection />
       <ShowcaseSection />
       <PortfolioSection />

@@ -216,7 +216,7 @@ const AIAgentSection = () => {
                   transition={{ delay: 1.2 }}
                   className="flex items-center gap-2 mt-4"
                 >
-                  <Activity className="w-3 h-3 text-green-500" />
+                  <Activity className="w-3 h-3 text-primary" />
                   <span className="text-[10px] text-muted-foreground">
                     {language === "bn" ? "AI Agent সক্রিয় আছে" : "AI Agent is active"}
                   </span>

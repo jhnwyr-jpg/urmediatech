@@ -4,6 +4,7 @@ import { Check, Crown, Zap, Globe, Server, Code, Headphones, Palette, Shield, Ar
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const iconMap: Record<string, any> = { Zap, Crown, Globe, Server, Code, Headphones, Palette, Shield, Sparkles, Check, ArrowRight };
 

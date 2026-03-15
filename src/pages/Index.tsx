@@ -41,7 +41,6 @@ const Index = () => {
       <AIAgentSection />
       <PortfolioSection />
       <PricingSection />
-      <IntegrationsSection />
       <TestimonialsSection />
       <AboutSection />
       <ContactSection />

@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import logoStripe from "@/assets/logo-stripe.png";
+import logoSupabase from "@/assets/logo-supabase.png";
 
 const integrations = [
-  { name: "Google", logo: "https://www.google.com/favicon.ico", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png" },
-  { name: "Microsoft", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/120px-Microsoft_logo.svg.png" },
-  { name: "Slack", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/120px-Slack_icon_2019.svg.png" },
-  { name: "Stripe", logo: "", logoUrl: "https://images.stripeassets.com/fzn2n1nzq965/HTTOloNPhisV9P4hlMPNA/cacf1bb88b9fc492dfad34378d844280/Stripe_logo_-_slate_sm.png" },
-  { name: "Supabase", logo: "", logoUrl: "https://cf-assets.www.cloudflare.com/slt3lc6tev37/5vMYBRzMvkZS94KOljbUc5/e5db8e2832b9e6588e77bd04fce498b2/supabase_logo.png" },
-  { name: "Firebase", logo: "", logoUrl: "https://www.gstatic.com/devrel-devsite/prod/v0e0f589edd85502a40d78d7d0825db8ea5ef3b99058d2a35571f64ad722ca9c7/firebase/images/touchicon-180.png" },
+  { name: "Google", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png" },
+  { name: "Microsoft", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/120px-Microsoft_logo.svg.png" },
+  { name: "Slack", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/120px-Slack_icon_2019.svg.png" },
+  { name: "Stripe", logoUrl: logoStripe },
+  { name: "Supabase", logoUrl: logoSupabase },
+  { name: "Firebase", logoUrl: "/images/logo-firebase.svg" },
   { name: "Vercel", logo: "", logoUrl: "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png" },
   { name: "Notion", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/120px-Notion-logo.svg.png" },
   { name: "HubSpot", logo: "", logoUrl: "https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png" },

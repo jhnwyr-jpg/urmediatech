@@ -35,6 +35,7 @@ import AdminPricing from "./pages/admin/Pricing";
 import AdminClientNotifications from "./pages/admin/ClientNotifications";
 import AdminClientFeatures from "./pages/admin/ClientFeatures";
 import AdminTickets from "./pages/admin/Tickets";
+import AdminContent from "./pages/admin/Content";
 
 const queryClient = new QueryClient();
 

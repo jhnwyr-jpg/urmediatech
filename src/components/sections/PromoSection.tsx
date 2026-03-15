@@ -136,56 +136,60 @@ const PromoSection = () => {
           <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-0 right-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
           <motion.div animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 5, repeat: Infinity }} className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
 
-          <div className="relative z-10 px-5 py-6">
+          <div className="relative z-10 px-4 py-5">
             {/* Website */}
-            <div className="mb-5">
-              <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">{badge}</span>
-              <h3 className="text-xl font-bold text-primary-foreground mb-1">
-                {websiteTitle}
-                <span className="block text-3xl mt-1">{websitePrice}</span>
-              </h3>
-              <p className="text-primary-foreground/80 text-sm mt-2">{websiteDesc}</p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {websiteHighlights.map((text, i) => {
-                  const Icon = iconList[i % iconList.length];
-                  return (
-                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
-                    </div>
-                  );
-                })}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <span className="inline-block px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1.5 backdrop-blur-sm">{badge}</span>
+                <h3 className="text-base font-bold text-primary-foreground leading-tight">
+                  {websiteTitle}
+                </h3>
               </div>
+              <span className="text-2xl font-extrabold text-primary-foreground ml-3 shrink-0">{websitePrice}</span>
+            </div>
+            <p className="text-primary-foreground/75 text-xs leading-relaxed">{websiteDesc}</p>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {websiteHighlights.map((text, i) => {
+                const Icon = iconList[i % iconList.length];
+                return (
+                  <div key={i} className="flex items-center gap-1 text-primary-foreground/90 text-[10px] bg-primary-foreground/10 backdrop-blur-sm rounded-md px-2 py-1">
+                    <Icon className="w-3 h-3" /><span>{text}</span>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-primary-foreground/20 my-5" />
+            <div className="h-px bg-primary-foreground/20 my-3.5" />
 
             {/* Landing Page */}
-            <div className="mb-5">
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
-                <Layout className="w-3 h-3" />
-                {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
-              </span>
-              <h3 className="text-xl font-bold text-primary-foreground mb-1">
-                {landingTitle}
-                <span className="block text-3xl mt-1">{landingPrice}</span>
-              </h3>
-              <p className="text-primary-foreground/80 text-sm mt-2">{landingDesc}</p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {landingHighlights.map((text, i) => {
-                  const icons = [Layout, Rocket, Globe];
-                  const Icon = icons[i % icons.length];
-                  return (
-                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
-                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
-                    </div>
-                  );
-                })}
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1.5 backdrop-blur-sm">
+                  <Layout className="w-2.5 h-2.5" />
+                  {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
+                </span>
+                <h3 className="text-base font-bold text-primary-foreground leading-tight">
+                  {landingTitle}
+                </h3>
               </div>
+              <span className="text-2xl font-extrabold text-primary-foreground ml-3 shrink-0">{landingPrice}</span>
+            </div>
+            <p className="text-primary-foreground/75 text-xs leading-relaxed">{landingDesc}</p>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {landingHighlights.map((text, i) => {
+                const icons = [Layout, Rocket, Globe];
+                const Icon = icons[i % icons.length];
+                return (
+                  <div key={i} className="flex items-center gap-1 text-primary-foreground/90 text-[10px] bg-primary-foreground/10 backdrop-blur-sm rounded-md px-2 py-1">
+                    <Icon className="w-3 h-3" /><span>{text}</span>
+                  </div>
+                );
+              })}
             </div>
 
-            <a href="#contact">
-              <Button size="lg" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold">
+            <a href="#contact" className="block mt-4">
+              <Button size="default" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold text-sm">
                 {ctaText}<ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>

@@ -35,12 +35,12 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <PromoSection />
+      <IntegrationsSection />
       <FeaturesSection />
       <ShowcaseSection />
       <AIAgentSection />
       <PortfolioSection />
       <PricingSection />
-      <IntegrationsSection />
       <TestimonialsSection />
       <AboutSection />
       <ContactSection />

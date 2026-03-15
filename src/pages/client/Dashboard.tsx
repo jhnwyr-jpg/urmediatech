@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +15,12 @@ import {
   Plus,
   Send,
   Loader2,
+  Camera,
+  Lock,
+  Eye,
+  EyeOff,
+  Save,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -73,6 +80,7 @@ interface Profile {
   email: string | null;
   phone: string | null;
   address: string | null;
+  avatar_url: string | null;
 }
 
 const ClientDashboard = () => {
@@ -86,6 +94,22 @@ const ClientDashboard = () => {
   const [ticketMessage, setTicketMessage] = useState("");
   const [ticketPriority, setTicketPriority] = useState("medium");
   const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
+
+  // Profile edit states
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editAddress, setEditAddress] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  // Password change states
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   const navigate = useNavigate();
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -93,7 +117,7 @@ const ClientDashboard = () => {
   const t = {
     bn: {
       dashboard: "ড্যাশবোর্ড",
-      myServices: "আমার সার্ভিসসমূহ",
+      myServices: "আমার সার্ভিস",
       invoices: "ইনভয়েস",
       tickets: "টিকেট",
       settings: "সেটিংস",
@@ -124,7 +148,7 @@ const ClientDashboard = () => {
       email: "ইমেইল",
       phone: "ফোন",
       address: "ঠিকানা",
-      updateProfile: "আপডেট করুন",
+      updateProfile: "প্রোফাইল আপডেট করুন",
       invoiceHistory: "ইনভয়েস হিস্ট্রি",
       date: "তারিখ",
       amount: "পরিমাণ",
@@ -143,6 +167,19 @@ const ClientDashboard = () => {
       inProgress: "প্রসেসিং",
       adminReply: "অ্যাডমিন রিপ্লাই",
       supportTickets: "সাপোর্ট টিকেট",
+      changePassword: "পাসওয়ার্ড পরিবর্তন",
+      newPassword: "নতুন পাসওয়ার্ড",
+      confirmNewPassword: "পাসওয়ার্ড নিশ্চিত করুন",
+      changePasswordBtn: "পাসওয়ার্ড পরিবর্তন করুন",
+      passwordMismatch: "পাসওয়ার্ড মিলছে না",
+      passwordTooShort: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে",
+      passwordChanged: "পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে",
+      profileUpdated: "প্রোফাইল আপডেট হয়েছে",
+      avatarUpdated: "প্রোফাইল ছবি আপডেট হয়েছে",
+      uploadPhoto: "ছবি আপলোড করুন",
+      saving: "সেভ হচ্ছে...",
+      emailReadonly: "ইমেইল পরিবর্তন করা যায় না",
+      securitySection: "নিরাপত্তা",
     },
     en: {
       dashboard: "Dashboard",
@@ -196,6 +233,19 @@ const ClientDashboard = () => {
       inProgress: "In Progress",
       adminReply: "Admin Reply",
       supportTickets: "Support Tickets",
+      changePassword: "Change Password",
+      newPassword: "New Password",
+      confirmNewPassword: "Confirm Password",
+      changePasswordBtn: "Change Password",
+      passwordMismatch: "Passwords do not match",
+      passwordTooShort: "Password must be at least 6 characters",
+      passwordChanged: "Password changed successfully",
+      profileUpdated: "Profile updated successfully",
+      avatarUpdated: "Profile photo updated",
+      uploadPhoto: "Upload Photo",
+      saving: "Saving...",
+      emailReadonly: "Email cannot be changed",
+      securitySection: "Security",
     },
   };
 
@@ -204,6 +254,14 @@ const ClientDashboard = () => {
   useEffect(() => {
     checkAuthAndFetchData();
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      setEditName(profile.full_name || "");
+      setEditPhone(profile.phone || "");
+      setEditAddress(profile.address || "");
+    }
+  }, [profile]);
 
   const checkAuthAndFetchData = async () => {
     try {
@@ -216,16 +274,14 @@ const ClientDashboard = () => {
         return;
       }
 
-      // Fetch profile
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("full_name, email, phone, address")
+        .select("full_name, email, phone, address, avatar_url")
         .eq("user_id", session.user.id)
         .single();
 
       setProfile(profileData);
 
-      // Fetch services
       const { data: servicesData, error } = await supabase
         .from("client_services")
         .select("*")
@@ -235,7 +291,6 @@ const ClientDashboard = () => {
       if (error) throw error;
       setServices(servicesData || []);
 
-      // Fetch tickets
       const { data: ticketsData } = await supabase
         .from("support_tickets")
         .select("*")
@@ -247,6 +302,110 @@ const ClientDashboard = () => {
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: editName.trim() || null,
+          phone: editPhone.trim() || null,
+          address: editAddress.trim() || null,
+        })
+        .eq("user_id", session.user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, full_name: editName.trim(), phone: editPhone.trim(), address: editAddress.trim() } : prev);
+      toast({ title: texts.profileUpdated });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({ title: "Error updating profile", variant: "destructive" });
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: "Image must be less than 2MB", variant: "destructive" });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const ext = file.name.split(".").pop() || "jpg";
+      const filePath = `${session.user.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const avatarUrlWithCache = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: avatarUrlWithCache })
+        .eq("user_id", session.user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile(prev => prev ? { ...prev, avatar_url: avatarUrlWithCache } : prev);
+      toast({ title: texts.avatarUpdated });
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast({ title: "Error uploading photo", variant: "destructive" });
+    } finally {
+      setIsUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({ title: texts.passwordTooShort, variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: texts.passwordMismatch, variant: "destructive" });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+
+      toast({ title: texts.passwordChanged });
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.error("Error changing password:", error);
+      toast({ title: error.message || "Error changing password", variant: "destructive" });
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -330,6 +489,11 @@ const ClientDashboard = () => {
     return <Badge className={className}>{label}</Badge>;
   };
 
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return "U";
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  };
+
   const totalSpent = services.reduce((acc, s) => acc + s.paid_amount, 0);
   const activeCount = services.filter((s) => s.status === "active").length;
   const pendingPayments = services.reduce((acc, s) => acc + (s.price - s.paid_amount), 0);
@@ -342,82 +506,84 @@ const ClientDashboard = () => {
     );
   }
 
+  const sidebarItems = [
+    { key: "services", icon: Package, label: texts.myServices, badge: 0 },
+    { key: "invoices", icon: Receipt, label: texts.invoices, badge: 0 },
+    { key: "tickets", icon: Ticket, label: texts.tickets, badge: tickets.filter(t => t.status === "open").length },
+    { key: "settings", icon: Settings, label: texts.settings, badge: 0 },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border p-6 hidden lg:block">
-        <Link to="/" className="flex items-center gap-2 mb-10">
-          <img src={logo} alt="UR Media" className="w-8 h-8" />
-          <span className="font-bold text-lg text-foreground">
-            UR <span className="text-primary">Media</span>
-          </span>
-        </Link>
+      <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border hidden lg:flex lg:flex-col">
+        <div className="p-6">
+          <Link to="/" className="flex items-center gap-2 mb-8">
+            <img src={logo} alt="UR Media" className="w-8 h-8" />
+            <span className="font-bold text-lg text-foreground">
+              UR <span className="text-primary">Media</span>
+            </span>
+          </Link>
 
-        <nav className="space-y-2">
-          <button
-            onClick={() => setActiveTab("services")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "services"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            <Package size={20} />
-            {texts.myServices}
-          </button>
-          <button
-            onClick={() => setActiveTab("invoices")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "invoices"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            <Receipt size={20} />
-            {texts.invoices}
-          </button>
-          <button
-            onClick={() => setActiveTab("tickets")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "tickets"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            <Ticket size={20} />
-            {texts.tickets}
-            {tickets.filter(t => t.status === "open").length > 0 && (
-              <span className="ml-auto bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {tickets.filter(t => t.status === "open").length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("settings")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-              activeTab === "settings"
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted"
-            }`}
-          >
-            <Settings size={20} />
-            {texts.settings}
-          </button>
+          {/* Sidebar Avatar */}
+          <div className="flex items-center gap-3 mb-8 p-3 rounded-xl bg-muted/50">
+            <Avatar className="h-10 w-10 border-2 border-primary/30">
+              <AvatarImage src={profile?.avatar_url || undefined} />
+              <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                {getInitials(profile?.full_name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate">
+                {profile?.full_name || "Client"}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {profile?.email}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <nav className="flex-1 px-4 space-y-1">
+          {sidebarItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
+                activeTab === item.key
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <item.icon size={18} />
+              {item.label}
+              {item.badge > 0 && (
+                <span className={`ml-auto text-xs rounded-full w-5 h-5 flex items-center justify-center ${
+                  activeTab === item.key
+                    ? "bg-primary-foreground/20 text-primary-foreground"
+                    : "bg-primary text-primary-foreground"
+                }`}>
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6 space-y-2">
+        <div className="p-4 space-y-2 border-t border-border">
           <Link to="/">
-            <Button variant="outline" className="w-full justify-start gap-2">
-              <Home size={18} />
+            <Button variant="outline" className="w-full justify-start gap-2" size="sm">
+              <Home size={16} />
               {texts.backToHome}
             </Button>
           </Link>
           <Button
             variant="ghost"
             className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+            size="sm"
             onClick={handleLogout}
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
             {texts.logout}
           </Button>
         </div>
@@ -441,50 +607,26 @@ const ClientDashboard = () => {
         </div>
       </header>
 
-      {/* Mobile Tabs */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 px-2 py-2">
+      {/* Mobile Bottom Tabs */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-t border-border z-50 px-2 py-2">
         <div className="flex justify-around">
-          <button
-            onClick={() => setActiveTab("services")}
-            className={`flex flex-col items-center gap-1 px-3 py-2 ${
-              activeTab === "services" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <Package size={20} />
-            <span className="text-[10px]">{texts.myServices}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("invoices")}
-            className={`flex flex-col items-center gap-1 px-3 py-2 ${
-              activeTab === "invoices" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <Receipt size={20} />
-            <span className="text-[10px]">{texts.invoices}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("tickets")}
-            className={`flex flex-col items-center gap-1 px-3 py-2 relative ${
-              activeTab === "tickets" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <Ticket size={20} />
-            <span className="text-[10px]">{texts.tickets}</span>
-            {tickets.filter(t => t.status === "open").length > 0 && (
-              <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-                {tickets.filter(t => t.status === "open").length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("settings")}
-            className={`flex flex-col items-center gap-1 px-3 py-2 ${
-              activeTab === "settings" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            <Settings size={20} />
-            <span className="text-[10px]">{texts.settings}</span>
-          </button>
+          {sidebarItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              className={`flex flex-col items-center gap-1 px-3 py-2 relative transition-colors ${
+                activeTab === item.key ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              <item.icon size={20} />
+              <span className="text-[10px]">{item.label}</span>
+              {item.badge > 0 && (
+                <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -496,72 +638,56 @@ const ClientDashboard = () => {
           transition={{ duration: 0.5 }}
         >
           {/* Welcome Header */}
-          <div className="mb-8">
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-              {texts.welcome}, {profile?.full_name || profile?.email?.split("@")[0] || "Client"}
-            </h1>
-            <p className="text-muted-foreground mt-1">{texts.dashboard}</p>
+          <div className="mb-8 flex items-center gap-4">
+            <Avatar className="h-14 w-14 border-2 border-primary/30 shadow-lg hidden sm:flex">
+              <AvatarImage src={profile?.avatar_url || undefined} />
+              <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
+                {getInitials(profile?.full_name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+                {texts.welcome}, {profile?.full_name || profile?.email?.split("@")[0] || "Client"} 👋
+              </h1>
+              <p className="text-muted-foreground mt-0.5">{texts.dashboard}</p>
+            </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card>
-              <CardContent className="p-4 lg:p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 lg:p-3 rounded-xl bg-primary/10">
-                    <Package className="text-primary" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">{texts.totalServices}</p>
-                    <p className="text-xl lg:text-2xl font-bold">{services.length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 lg:p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 lg:p-3 rounded-xl bg-green-500/10">
-                    <DollarSign className="text-green-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">{texts.totalSpent}</p>
-                    <p className="text-xl lg:text-2xl font-bold">৳{totalSpent.toLocaleString()}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 lg:p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 lg:p-3 rounded-xl bg-blue-500/10">
-                    <CheckCircle className="text-blue-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">{texts.activeServices}</p>
-                    <p className="text-xl lg:text-2xl font-bold">{activeCount}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 lg:p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 lg:p-3 rounded-xl bg-yellow-500/10">
-                    <AlertCircle className="text-yellow-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs lg:text-sm text-muted-foreground">{texts.pendingPayments}</p>
-                    <p className="text-xl lg:text-2xl font-bold">৳{pendingPayments.toLocaleString()}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {[
+              { icon: Package, label: texts.totalServices, value: services.length, color: "text-primary", bg: "bg-primary/10" },
+              { icon: DollarSign, label: texts.totalSpent, value: `৳${totalSpent.toLocaleString()}`, color: "text-green-500", bg: "bg-green-500/10" },
+              { icon: CheckCircle, label: texts.activeServices, value: activeCount, color: "text-blue-500", bg: "bg-blue-500/10" },
+              { icon: AlertCircle, label: texts.pendingPayments, value: `৳${pendingPayments.toLocaleString()}`, color: "text-yellow-500", bg: "bg-yellow-500/10" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="hover:shadow-md transition-shadow duration-300 overflow-hidden relative group">
+                  <div className={`absolute inset-0 ${stat.bg} opacity-0 group-hover:opacity-30 transition-opacity duration-300`} />
+                  <CardContent className="p-4 lg:p-6 relative">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 lg:p-3 rounded-xl ${stat.bg}`}>
+                        <stat.icon className={stat.color} size={20} />
+                      </div>
+                      <div>
+                        <p className="text-xs lg:text-sm text-muted-foreground">{stat.label}</p>
+                        <p className="text-xl lg:text-2xl font-bold">{stat.value}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
 
-          {/* Tab Content */}
+          {/* Services Tab */}
           {activeTab === "services" && (
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle>{texts.myServices}</CardTitle>
               </CardHeader>
@@ -576,49 +702,78 @@ const ClientDashboard = () => {
                     </Link>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.serviceName}</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.status}</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.price}</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.paid}</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.due}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {services.map((service) => (
-                          <tr key={service.id} className="border-b border-border/50">
-                            <td className="py-4 px-4">
-                              <div>
+                  <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.serviceName}</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.status}</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.price}</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.paid}</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">{texts.due}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {services.map((service) => (
+                            <tr key={service.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                              <td className="py-4 px-4">
                                 <p className="font-medium">{service.service_name}</p>
                                 {service.service_description && (
                                   <p className="text-sm text-muted-foreground">{service.service_description}</p>
                                 )}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex gap-2">
-                                {getStatusBadge(service.status)}
-                                {getPaymentBadge(service.payment_status)}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 font-medium">৳{service.price.toLocaleString()}</td>
-                            <td className="py-4 px-4 text-green-500">৳{service.paid_amount.toLocaleString()}</td>
-                            <td className="py-4 px-4 text-yellow-500">৳{(service.price - service.paid_amount).toLocaleString()}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="flex gap-2">
+                                  {getStatusBadge(service.status)}
+                                  {getPaymentBadge(service.payment_status)}
+                                </div>
+                              </td>
+                              <td className="py-4 px-4 font-medium">৳{service.price.toLocaleString()}</td>
+                              <td className="py-4 px-4 text-green-500">৳{service.paid_amount.toLocaleString()}</td>
+                              <td className="py-4 px-4 text-yellow-500">৳{(service.price - service.paid_amount).toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                      {services.map((service) => (
+                        <div key={service.id} className="p-4 rounded-xl bg-muted/30 border border-border/50 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="font-semibold text-foreground">{service.service_name}</p>
+                              {service.service_description && (
+                                <p className="text-xs text-muted-foreground mt-0.5">{service.service_description}</p>
+                              )}
+                            </div>
+                            <div className="flex gap-1.5">
+                              {getStatusBadge(service.status)}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">{texts.price}: <span className="font-medium text-foreground">৳{service.price.toLocaleString()}</span></span>
+                            {getPaymentBadge(service.payment_status)}
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-green-500">{texts.paid}: ৳{service.paid_amount.toLocaleString()}</span>
+                            <span className="text-yellow-500">{texts.due}: ৳{(service.price - service.paid_amount).toLocaleString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </CardContent>
             </Card>
           )}
 
+          {/* Invoices Tab */}
           {activeTab === "invoices" && (
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle>{texts.invoiceHistory}</CardTitle>
               </CardHeader>
@@ -629,14 +784,14 @@ const ClientDashboard = () => {
                     <p className="text-muted-foreground">{texts.noServicesDesc}</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {services.map((service) => (
                       <div
                         key={service.id}
-                        className="flex items-center justify-between p-4 bg-muted/30 rounded-xl"
+                        className="flex items-center justify-between p-4 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="p-2 rounded-lg bg-primary/10">
+                          <div className="p-2.5 rounded-xl bg-primary/10">
                             <Receipt className="text-primary" size={20} />
                           </div>
                           <div>
@@ -658,8 +813,9 @@ const ClientDashboard = () => {
             </Card>
           )}
 
+          {/* Tickets Tab */}
           {activeTab === "tickets" && (
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>{texts.supportTickets}</CardTitle>
                 <Button className="gap-2" onClick={() => setIsTicketDialogOpen(true)}>
@@ -682,7 +838,7 @@ const ClientDashboard = () => {
                     {tickets.map((ticket) => (
                       <div
                         key={ticket.id}
-                        className="p-4 bg-muted/30 rounded-xl space-y-3"
+                        className="p-4 bg-muted/30 rounded-xl space-y-3 hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-start justify-between">
                           <div>
@@ -711,32 +867,182 @@ const ClientDashboard = () => {
             </Card>
           )}
 
+          {/* Settings Tab */}
           {activeTab === "settings" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{texts.profileSettings}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-w-md">
-                  <div>
-                    <label className="text-sm text-muted-foreground">{texts.name}</label>
-                    <p className="font-medium">{profile?.full_name || "-"}</p>
+            <div className="space-y-6 max-w-2xl">
+              {/* Profile Edit Card */}
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User size={20} />
+                    {texts.profileSettings}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Avatar Upload */}
+                  <div className="flex flex-col items-center gap-4 pb-6 border-b border-border">
+                    <div className="relative group">
+                      <Avatar className="h-24 w-24 border-4 border-primary/20 shadow-lg">
+                        <AvatarImage src={profile?.avatar_url || undefined} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
+                          {getInitials(profile?.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <button
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        {isUploadingAvatar ? (
+                          <Loader2 className="w-6 h-6 text-white animate-spin" />
+                        ) : (
+                          <Camera className="w-6 h-6 text-white" />
+                        )}
+                      </button>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                      />
+                    </div>
+                    <button
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="text-sm text-primary hover:underline"
+                      disabled={isUploadingAvatar}
+                    >
+                      {isUploadingAvatar ? texts.saving : texts.uploadPhoto}
+                    </button>
                   </div>
-                  <div>
-                    <label className="text-sm text-muted-foreground">{texts.email}</label>
-                    <p className="font-medium">{profile?.email || "-"}</p>
+
+                  {/* Profile Fields */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>{texts.name}</Label>
+                      <Input
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        placeholder={language === "bn" ? "আপনার নাম" : "Your name"}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{texts.email}</Label>
+                      <Input
+                        value={profile?.email || ""}
+                        disabled
+                        className="opacity-60"
+                      />
+                      <p className="text-xs text-muted-foreground">{texts.emailReadonly}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{texts.phone}</Label>
+                      <Input
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                        placeholder={language === "bn" ? "ফোন নম্বর" : "Phone number"}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{texts.address}</Label>
+                      <Textarea
+                        value={editAddress}
+                        onChange={(e) => setEditAddress(e.target.value)}
+                        placeholder={language === "bn" ? "আপনার ঠিকানা" : "Your address"}
+                        rows={2}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm text-muted-foreground">{texts.phone}</label>
-                    <p className="font-medium">{profile?.phone || "-"}</p>
+
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={isSavingProfile}
+                    className="w-full gap-2"
+                  >
+                    {isSavingProfile ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {texts.saving}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        {texts.updateProfile}
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Password Change Card */}
+              <Card className="shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock size={20} />
+                    {texts.changePassword}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>{texts.newPassword}</Label>
+                    <div className="relative">
+                      <Input
+                        type={showNewPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm text-muted-foreground">{texts.address}</label>
-                    <p className="font-medium">{profile?.address || "-"}</p>
+                  <div className="space-y-2">
+                    <Label>{texts.confirmNewPassword}</Label>
+                    <div className="relative">
+                      <Input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                    {confirmPassword && newPassword !== confirmPassword && (
+                      <p className="text-xs text-destructive">{texts.passwordMismatch}</p>
+                    )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <Button
+                    onClick={handleChangePassword}
+                    disabled={isChangingPassword || !newPassword || !confirmPassword}
+                    variant="outline"
+                    className="w-full gap-2"
+                  >
+                    {isChangingPassword ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {texts.saving}
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4" />
+                        {texts.changePasswordBtn}
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </motion.div>
       </main>

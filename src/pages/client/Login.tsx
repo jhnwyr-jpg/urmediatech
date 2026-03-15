@@ -17,9 +17,32 @@ const ClientLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { language } = useLanguage();
+
+  // Check if user is already logged in as a client
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        
+        // If not admin, redirect to client dashboard
+        if (data && !data.is_admin) {
+          navigate("/client/dashboard");
+          return;
+        }
+      }
+      setIsCheckingSession(false);
+    };
+    checkExistingSession();
+  }, [navigate]);
 
   const t = {
     bn: {

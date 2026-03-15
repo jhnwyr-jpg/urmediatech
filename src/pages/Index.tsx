@@ -43,6 +43,7 @@ const Index = () => {
       <PortfolioSection />
       <PricingSection />
       <TestimonialsSection />
+      <GlobalReachSection />
       <AboutSection />
       <ContactSection />
       <CTASection />

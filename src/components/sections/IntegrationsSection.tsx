@@ -10,14 +10,14 @@ const integrations = [
   { name: "Stripe", logoUrl: logoStripe },
   { name: "Supabase", logoUrl: logoSupabase },
   { name: "Firebase", logoUrl: "/images/logo-firebase.svg" },
-  { name: "Vercel", logo: "", logoUrl: "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png" },
-  { name: "Notion", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/120px-Notion-logo.svg.png" },
-  { name: "HubSpot", logo: "", logoUrl: "https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png" },
-  { name: "Figma", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Figma-logo.svg/120px-Figma-logo.svg.png" },
-  { name: "Salesforce", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/120px-Salesforce.com_logo.svg.png" },
-  { name: "GitHub", logo: "", logoUrl: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" },
-  { name: "React", logo: "", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/120px-React-icon.svg.png" },
-  { name: "Next.js", logo: "", logoUrl: "https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_dark_background.png" },
+  { name: "Vercel", logoUrl: "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png" },
+  { name: "Notion", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/120px-Notion-logo.svg.png" },
+  { name: "HubSpot", logoUrl: "https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png" },
+  { name: "Figma", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Figma-logo.svg/120px-Figma-logo.svg.png" },
+  { name: "Salesforce", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/120px-Salesforce.com_logo.svg.png" },
+  { name: "GitHub", logoUrl: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" },
+  { name: "React", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/120px-React-icon.svg.png" },
+  { name: "Next.js", logoUrl: "https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_dark_background.png" },
 ];
 
 // Double the array for seamless loop

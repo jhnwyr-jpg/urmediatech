@@ -138,57 +138,40 @@ const PromoSection = () => {
 
           <div className="relative z-10 px-4 py-5">
             {/* Website */}
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-1">
               <div className="flex-1">
-                <span className="inline-block px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1.5 backdrop-blur-sm">{badge}</span>
-                <h3 className="text-base font-bold text-primary-foreground leading-tight">
+                <span className="inline-block px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1 backdrop-blur-sm">{badge}</span>
+                <h3 className="text-sm font-bold text-primary-foreground leading-tight">
                   {websiteTitle}
                 </h3>
               </div>
               <span className="text-2xl font-extrabold text-primary-foreground ml-3 shrink-0">{websitePrice}</span>
             </div>
-            <p className="text-primary-foreground/75 text-xs leading-relaxed">{websiteDesc}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {websiteHighlights.map((text, i) => {
-                const Icon = iconList[i % iconList.length];
-                return (
-                  <div key={i} className="flex items-center gap-1 text-primary-foreground/90 text-[10px] bg-primary-foreground/10 backdrop-blur-sm rounded-md px-2 py-1">
-                    <Icon className="w-3 h-3" /><span>{text}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-primary-foreground/60 text-[10px]">
+              {language === "bn" ? "* চূড়ান্ত মূল্য চাহিদার উপর নির্ভর করবে" : "* Final price depends on requirements"}
+            </p>
 
             {/* Divider */}
-            <div className="h-px bg-primary-foreground/20 my-3.5" />
+            <div className="h-px bg-primary-foreground/20 my-3" />
 
             {/* Landing Page */}
-            <div className="flex items-start justify-between mb-2">
+            <div className="flex items-start justify-between mb-1">
               <div className="flex-1">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1.5 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-primary-foreground text-[10px] font-semibold mb-1 backdrop-blur-sm">
                   <Layout className="w-2.5 h-2.5" />
                   {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
                 </span>
-                <h3 className="text-base font-bold text-primary-foreground leading-tight">
+                <h3 className="text-sm font-bold text-primary-foreground leading-tight">
                   {landingTitle}
                 </h3>
               </div>
               <span className="text-2xl font-extrabold text-primary-foreground ml-3 shrink-0">{landingPrice}</span>
             </div>
-            <p className="text-primary-foreground/75 text-xs leading-relaxed">{landingDesc}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {landingHighlights.map((text, i) => {
-                const icons = [Layout, Rocket, Globe];
-                const Icon = icons[i % icons.length];
-                return (
-                  <div key={i} className="flex items-center gap-1 text-primary-foreground/90 text-[10px] bg-primary-foreground/10 backdrop-blur-sm rounded-md px-2 py-1">
-                    <Icon className="w-3 h-3" /><span>{text}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-primary-foreground/60 text-[10px]">
+              {language === "bn" ? "* চূড়ান্ত মূল্য চাহিদার উপর নির্ভর করবে" : "* Final price depends on requirements"}
+            </p>
 
-            <a href="#contact" className="block mt-4">
+            <a href="#contact" className="block mt-3">
               <Button size="default" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold text-sm">
                 {ctaText}<ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
               </Button>

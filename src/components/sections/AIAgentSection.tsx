@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { Bot, Zap, BarChart3, User, Activity } from "lucide-react";
+import { Zap, BarChart3, User, Activity } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const AIAgentSection = () => {
@@ -11,18 +11,18 @@ const AIAgentSection = () => {
   // Multiple messages that cycle
   const messages = language === "bn"
     ? [
-        "আমি আপনার ওয়েবসাইটের জন্য সাহায্য করতে পারি...",
-        "আপনার অর্ডারটি কনফার্ম হয়েছে ✅",
-        "আজকের ভিজিটর সংখ্যা ৩৫০+ 📊",
-        "নতুন লিড পেয়েছেন: রাহুল থেকে 🔔",
-        "আপনার সাইটের স্পিড ৯৮/১০০ ⚡",
+        "আমি মেইন হলটি সন্ধ্যা ৭টায় পেয়েছি। আমাদের Tier 2 প্যাকেজ ৳৭৯/জন, ককটেল সহ",
+        "আপনার অর্ডারটি কনফার্ম হয়েছে। ডেলিভারি ৩ দিনের মধ্যে হবে ✅",
+        "আজকের ভিজিটর সংখ্যা ৩৫০+, গতকালের চেয়ে ১২% বেশি 📊",
+        "নতুন লিড পেয়েছেন রাহুল থেকে। তিনি ই-কমার্স ওয়েবসাইট চান 🔔",
+        "আপনার সাইটের স্পিড স্কোর ৯৮/১০০, পারফরম্যান্স চমৎকার ⚡",
       ]
     : [
-        "I can help optimize your website...",
-        "Your order has been confirmed ✅",
-        "Today's visitor count: 350+ 📊",
-        "New lead received: from Rahul 🔔",
-        "Your site speed score: 98/100 ⚡",
+        "I have the Main Hall available at 7pm. We have a Tier 2 package at $79pp including cocktails",
+        "Your order has been confirmed. Delivery will be within 3 business days ✅",
+        "Today's visitor count: 350+, that's 12% more than yesterday 📊",
+        "New lead received from Rahul. He's looking for an e-commerce website 🔔",
+        "Your site speed score: 98/100, performance is excellent ⚡",
       ];
 
   const [displayText, setDisplayText] = useState("");
@@ -32,7 +32,7 @@ const AIAgentSection = () => {
   useEffect(() => {
     if (!isInView) return;
     let i = 0;
-    let currentMsg = messages[msgIndex];
+    const currentMsg = messages[msgIndex];
     setDisplayText("");
 
     const typeInterval = setInterval(() => {
@@ -42,12 +42,11 @@ const AIAgentSection = () => {
         setLatency(Math.floor(Math.random() * 15) + 18);
       } else {
         clearInterval(typeInterval);
-        // Wait then move to next message
         setTimeout(() => {
           setMsgIndex((prev) => (prev + 1) % messages.length);
-        }, 2000);
+        }, 2500);
       }
-    }, 60);
+    }, 45);
 
     return () => clearInterval(typeInterval);
   }, [isInView, msgIndex, language]);
@@ -55,17 +54,17 @@ const AIAgentSection = () => {
   // Audio wave animation
   const AudioWave = () => (
     <div className="flex items-end gap-[3px] h-8">
-      {[0.6, 1, 0.7, 1, 0.5].map((scale, i) => (
+      {[0.5, 0.9, 0.6, 1, 0.4].map((scale, i) => (
         <motion.div
           key={i}
           className="w-[3px] rounded-full bg-primary"
           animate={isInView ? {
-            height: ["8px", `${scale * 28}px`, "8px"],
+            height: ["6px", `${scale * 32}px`, "6px"],
           } : {}}
           transition={{
-            duration: 0.8,
+            duration: 0.7,
             repeat: Infinity,
-            delay: i * 0.12,
+            delay: i * 0.1,
             ease: "easeInOut",
           }}
         />
@@ -74,121 +73,110 @@ const AIAgentSection = () => {
   );
 
   return (
-    <section ref={ref} className="py-20 md:py-32 bg-background overflow-hidden">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+    <section ref={ref} className="py-24 md:py-36 bg-background overflow-hidden relative">
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+        backgroundSize: '60px 60px',
+      }} />
+
+      <div className="container mx-auto px-6 md:px-12 lg:px-16 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="pt-4 lg:pt-12"
           >
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 mb-6"
+              className="inline-flex items-center gap-2.5 mb-8"
             >
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-semibold tracking-[0.2em] uppercase text-primary">
-                {language === "bn" ? "এআই পারফরম্যান্স" : "AI Performance"}
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              <span className="text-[11px] font-semibold tracking-[0.25em] uppercase text-primary">
+                {language === "bn" ? "পারফরম্যান্স বেঞ্চমার্ক" : "Performance Benchmarks"}
               </span>
             </motion.div>
 
-            {/* Heading */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] mb-6 text-foreground">
+            {/* Large Heading - matching reference sizing */}
+            <h2 className="text-[2.5rem] md:text-[3.5rem] lg:text-[4.2rem] font-bold leading-[1.05] mb-10 text-foreground tracking-[-0.02em]">
               {language === "bn" ? (
                 <>
-                  আপনার ওয়েবসাইটে{" "}
-                  <span className="text-primary">AI Agent</span>{" "}
-                  যুক্ত করুন
+                  পারফরম্যান্সের
+                  <br />
+                  <span className="text-primary">নতুন স্ট্যান্ডার্ড।</span>
                 </>
               ) : (
                 <>
-                  Add{" "}
-                  <span className="text-primary">AI Agent</span>{" "}
-                  to Your Website
+                  The New Standard
+                  <br />
+                  <span className="text-primary">of Performance.</span>
                 </>
               )}
             </h2>
 
-            {/* Subtitle */}
-            <p className="text-sm font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
-              {language === "bn" ? "কেন AI Agent দরকার" : "Why AI Agent Matters"}
+            {/* Subtitle label */}
+            <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-muted-foreground mb-4">
+              {language === "bn" ? "কেন আমাদের AI Agent" : "Why Our AI Wins"}
             </p>
 
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
+            {/* Description - matching reference paragraph style */}
+            <p className="text-base text-muted-foreground leading-[1.8] max-w-md">
               {language === "bn"
-                ? "সাধারণ চ্যাটবট নয়, আমরা স্মার্ট AI Agent তৈরি করি যা আপনার ব্যবসার প্রয়োজন বুঝে কাস্টমারদের সাথে কথা বলে। ২৪/৭ সাপোর্ট, লিড জেনারেশন, এবং কাস্টমার এক্সপেরিয়েন্স — সব এক জায়গায়।"
-                : "Not just chatbots — we build smart AI Agents that understand your business and talk to customers naturally. 24/7 support, lead generation, and customer experience — all in one place."}
+                ? "সাধারণ এজেন্সি সময় বিক্রি করে। সফটওয়্যার কোম্পানি টুলস বিক্রি করে। আমরা ফলাফল বিক্রি করি। দেখুন কেন শীর্ষ ১% ব্যবসা আমাদের AI Agent ব্যবহার করছে।"
+                : "Traditional agencies sell hours. Software companies sell tools. We sell outcomes. See why the top 1% of businesses are switching to our AI Agent ecosystem."}
             </p>
-
-            {/* Stats Row */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex gap-8 mt-8"
-            >
-              {[
-                { value: "24/7", label: language === "bn" ? "সাপোর্ট" : "Support" },
-                { value: "3x", label: language === "bn" ? "বেশি লিড" : "More Leads" },
-                { value: "<1s", label: language === "bn" ? "রেসপন্স" : "Response" },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
           </motion.div>
 
           {/* Right - Live Interaction Card */}
           <motion.div
-            initial={{ opacity: 0, x: 40, y: 20 }}
-            animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.9, delay: 0.25, ease: "easeOut" }}
             className="flex justify-center lg:justify-end"
           >
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-[420px]">
               {/* Card */}
               <motion.div
-                className="bg-card rounded-2xl shadow-xl border border-border p-6 relative"
-                animate={isInView ? { y: [0, -6, 0] } : {}}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="bg-card rounded-2xl shadow-2xl shadow-foreground/5 border border-border/60 p-7 relative"
+                animate={isInView ? { y: [0, -8, 0] } : {}}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-                    <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
+                    <span className="text-[10px] font-semibold tracking-[0.18em] uppercase text-muted-foreground">
                       {language === "bn" ? "লাইভ ইন্টারঅ্যাকশন" : "Live Interaction"}
                     </span>
                   </div>
                   <motion.span
-                    className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
+                    className="text-[10px] font-mono text-muted-foreground bg-muted px-2.5 py-1 rounded-full"
                     key={latency}
-                    initial={{ scale: 1.1 }}
+                    initial={{ scale: 1.05 }}
                     animate={{ scale: 1 }}
                   >
                     Latency: {latency}ms
                   </motion.span>
                 </div>
 
-                {/* Icons Row */}
-                <div className="flex items-center justify-center gap-8 mb-6">
+                {/* Icons Row - wider spacing like reference */}
+                <div className="flex items-center justify-between px-8 mb-8">
                   {/* Client Icon */}
                   <motion.div
-                    className="flex flex-col items-center gap-1.5"
+                    className="flex flex-col items-center gap-2"
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ delay: 0.5, type: "spring" }}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                    <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center">
                       <User className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
                       {language === "bn" ? "ক্লায়েন্ট" : "Client"}
                     </span>
                   </motion.div>
@@ -198,65 +186,37 @@ const AIAgentSection = () => {
 
                   {/* AI Agent Icon */}
                   <motion.div
-                    className="flex flex-col items-center gap-1.5"
+                    className="flex flex-col items-center gap-2"
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ delay: 0.7, type: "spring" }}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+                    <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
                       <Zap className="w-5 h-5 text-primary-foreground" />
                     </div>
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-primary">
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-primary">
                       AI Agent
                     </span>
                   </motion.div>
                 </div>
 
-                {/* Chat Bubble */}
+                {/* Chat Bubble - larger, centered text like reference */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.9 }}
-                  className="bg-muted/50 rounded-xl p-4 border border-border"
+                  className="bg-muted/40 rounded-xl p-5 border border-border/50"
                 >
-                  <p className="text-sm text-foreground font-medium min-h-[2.5rem]">
+                  <p className="text-[15px] text-foreground font-medium leading-relaxed text-center min-h-[3.5rem]">
                     "{displayText}
                     <motion.span
-                      className="inline-block w-0.5 h-4 bg-primary ml-0.5 align-middle"
+                      className="inline-block w-[2px] h-5 bg-primary ml-0.5 align-middle rounded-full"
                       animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity }}
+                      transition={{ duration: 0.53, repeat: Infinity }}
                     />
                     "
                   </p>
                 </motion.div>
-
-                {/* Activity Indicator */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ delay: 1.2 }}
-                  className="flex items-center gap-2 mt-4"
-                >
-                  <Activity className="w-3 h-3 text-primary" />
-                  <span className="text-[10px] text-muted-foreground">
-                    {language === "bn" ? "AI Agent সক্রিয় আছে" : "AI Agent is active"}
-                  </span>
-                </motion.div>
-              </motion.div>
-
-              {/* Floating badges */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 1.4 }}
-                className="relative -mt-2 ml-4"
-              >
-                <div className="inline-flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5 shadow-md">
-                  <BarChart3 className="w-3 h-3 text-primary" />
-                  <span className="text-[10px] font-medium text-foreground">
-                    {language === "bn" ? "৯৮% সন্তুষ্টি" : "98% Satisfaction"}
-                  </span>
-                </div>
               </motion.div>
             </div>
           </motion.div>

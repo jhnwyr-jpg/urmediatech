@@ -64,6 +64,9 @@ const AdminLogin = () => {
 
     setIsLoading(true);
     try {
+      // Clear any existing session (e.g. client session) to prevent conflicts
+      await supabase.auth.signOut();
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email: formData.email,
@@ -102,6 +105,8 @@ const AdminLogin = () => {
     setIsGoogleLoading(true);
     setErrors({});
     try {
+      // Clear any existing session to prevent conflicts
+      await supabase.auth.signOut();
       const { error } = await signInWithGoogle();
       if (error) {
         setErrors({ general: error.message });

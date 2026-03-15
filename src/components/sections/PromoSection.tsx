@@ -21,8 +21,8 @@ const PromoSection = () => {
   const websiteTitle = language === "bn" ? "ওয়েবসাইট শুরু মাত্র" : "Website Starting From";
   const websitePrice = language === "bn" ? "৳৪,০০০" : "৳4,000";
   const websiteDesc = language === "bn"
-    ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। টেমপ্লেট না, কাস্টম ডিজাইন!"
-    : "Fully coded, responsive website — built with React & Next.js. No templates, custom design!";
+    ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। আপনার চাহিদা মতো দাম নির্ধারণ হবে, শুরু এই দাম থেকে!"
+    : "Fully coded, responsive website — built with React & Next.js. Price varies based on your requirements, starting from this price!";
   const websiteHighlights = language === "bn"
     ? ["ফুল কোডেড ওয়েবসাইট", "ফ্রি ডোমেইন + হোস্টিং", "৭ দিনে ডেলিভারি"]
     : ["Fully Coded Website", "Free Domain + Hosting", "7 Days Delivery"];

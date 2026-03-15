@@ -106,6 +106,9 @@ const ClientLogin = () => {
     setIsLoading(true);
 
     try {
+      // Sign out existing session to prevent conflicts
+      await supabase.auth.signOut();
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email,

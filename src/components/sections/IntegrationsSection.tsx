@@ -27,8 +27,8 @@ const IntegrationsSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="py-16 md:py-20 bg-accent/30 overflow-hidden">
-      <div className="container mx-auto px-6 mb-10">
+    <section className="pt-8 pb-4 md:pt-10 md:pb-6 bg-accent/30 overflow-hidden">
+      <div className="container mx-auto px-6 mb-6">
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}

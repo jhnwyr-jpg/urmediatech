@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight, Code, Globe, Rocket } from "lucide-react";
+import { ArrowRight, Code, Globe, Rocket, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteContent } from "@/hooks/useSiteContent";
@@ -17,113 +17,152 @@ const PromoSection = () => {
     language === "bn" ? "promo_badge_bn" : "promo_badge_en",
     language === "bn" ? "🔥 লিমিটেড অফার" : "🔥 Limited Offer"
   );
-  const title = get(
-    language === "bn" ? "promo_title_bn" : "promo_title_en",
-    language === "bn" ? "ওয়েবসাইট শুরু মাত্র" : "Websites Starting From"
-  );
-  const price = get(
-    language === "bn" ? "promo_price_bn" : "promo_price_en",
-    language === "bn" ? "৳৪,০০০" : "৳4,000"
-  );
-  const description = get(
-    language === "bn" ? "promo_description_bn" : "promo_description_en",
-    language === "bn"
-      ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। টেমপ্লেট না, কাস্টম ডিজাইন!"
-      : "Fully coded, responsive website — built with React & Next.js. No templates, custom design!"
-  );
-  const highlightsRaw = get(
-    language === "bn" ? "promo_highlights_bn" : "promo_highlights_en",
-    language === "bn"
-      ? "ফুল কোডেড ওয়েবসাইট,ফ্রি ডোমেইন + হোস্টিং,৭ দিনে ডেলিভারি"
-      : "Fully Coded Website,Free Domain + Hosting,7 Days Delivery"
-  );
+
+  const websiteTitle = language === "bn" ? "ওয়েবসাইট শুরু মাত্র" : "Website Starting From";
+  const websitePrice = language === "bn" ? "৳৪,০০০" : "৳4,000";
+  const websiteDesc = language === "bn"
+    ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। টেমপ্লেট না, কাস্টম ডিজাইন!"
+    : "Fully coded, responsive website — built with React & Next.js. No templates, custom design!";
+  const websiteHighlights = language === "bn"
+    ? ["ফুল কোডেড ওয়েবসাইট", "ফ্রি ডোমেইন + হোস্টিং", "৭ দিনে ডেলিভারি"]
+    : ["Fully Coded Website", "Free Domain + Hosting", "7 Days Delivery"];
+
+  const landingTitle = language === "bn" ? "ল্যান্ডিং পেজ শুরু মাত্র" : "Landing Page Starting From";
+  const landingPrice = language === "bn" ? "৳১,৯০০" : "৳1,900";
+  const landingDesc = language === "bn"
+    ? "প্রফেশনাল ল্যান্ডিং পেজ — দ্রুত ডেলিভারি, মোবাইল রেসপন্সিভ, কনভার্সন অপ্টিমাইজড!"
+    : "Professional landing page — fast delivery, mobile responsive, conversion optimized!";
+  const landingHighlights = language === "bn"
+    ? ["রেসপন্সিভ ডিজাইন", "দ্রুত ডেলিভারি", "কনভার্সন ফোকাসড"]
+    : ["Responsive Design", "Fast Delivery", "Conversion Focused"];
+
   const ctaText = get(
     language === "bn" ? "promo_cta_bn" : "promo_cta_en",
     language === "bn" ? "এখনই অর্ডার করুন" : "Order Now"
   );
 
-  const highlights = highlightsRaw.split(",").map((text, i) => ({
-    icon: iconList[i % iconList.length],
-    text: text.trim(),
-  }));
-
   return (
     <section ref={ref} className="py-6 relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.5 }}
-          className="relative rounded-2xl overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(270,70%,60%)] to-[hsl(var(--gradient-end))]" />
-          
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Website Promo */}
           <motion.div
-            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground rounded-full blur-3xl opacity-10"
-          />
-          <motion.div
-            animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
-            transition={{ duration: 5, repeat: Infinity }}
-            className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10"
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+            className="relative rounded-2xl overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(270,70%,60%)] to-[hsl(var(--gradient-end))]" />
 
-          <div className="relative z-10 px-6 py-8 md:px-12 md:py-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
-            <div className="flex-1 text-center md:text-left">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                transition={{ delay: 0.2 }}
-              >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="absolute top-0 right-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10"
+            />
+
+            <div className="relative z-10 px-6 py-8 md:px-8 md:py-8 flex flex-col justify-between h-full">
+              <div>
                 <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
                   {badge}
                 </span>
-                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-foreground mb-2">
-                  {title}
-                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{price}</span>
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
+                  {websiteTitle}
+                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{websitePrice}</span>
                 </h3>
-                <p className="text-primary-foreground/80 text-sm md:text-base max-w-md">
-                  {description}
+                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">
+                  {websiteDesc}
                 </p>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ delay: 0.4 }}
-                className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start"
-              >
-                {highlights.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-1.5 text-primary-foreground/90 text-xs md:text-sm bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5"
+              <div className="flex flex-wrap gap-2 mt-4">
+                {websiteHighlights.map((text, i) => {
+                  const Icon = iconList[i % iconList.length];
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5">
+                <a href="#contact">
+                  <Button
+                    size="lg"
+                    className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
                   >
-                    <item.icon className="w-3.5 h-3.5" />
-                    <span>{item.text}</span>
-                  </div>
-                ))}
-              </motion.div>
+                    {ctaText}
+                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </a>
+              </div>
             </div>
+          </motion.div>
+
+          {/* Landing Page Promo */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="relative rounded-2xl overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(200,80%,50%)] via-[hsl(220,70%,55%)] to-[hsl(250,60%,55%)]" />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-              transition={{ delay: 0.3 }}
-              className="flex-shrink-0"
-            >
-              <a href="#contact">
-                <Button
-                  size="xl"
-                  className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
-                >
-                  {ctaText}
-                  <ArrowRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </a>
-            </motion.div>
-          </div>
-        </motion.div>
+              animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
+              transition={{ duration: 5, repeat: Infinity }}
+              className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10"
+            />
+
+            <div className="relative z-10 px-6 py-8 md:px-8 md:py-8 flex flex-col justify-between h-full">
+              <div>
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
+                  <Layout className="w-3 h-3" />
+                  {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
+                </span>
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
+                  {landingTitle}
+                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{landingPrice}</span>
+                </h3>
+                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">
+                  {landingDesc}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                {landingHighlights.map((text, i) => {
+                  const icons = [Layout, Rocket, Globe];
+                  const Icon = icons[i % icons.length];
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5">
+                <a href="#contact">
+                  <Button
+                    size="lg"
+                    className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
+                  >
+                    {ctaText}
+                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

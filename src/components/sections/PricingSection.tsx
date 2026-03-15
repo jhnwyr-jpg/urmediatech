@@ -282,26 +282,35 @@ const PricingSection = () => {
               </motion.div>
 
               <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                {language === "bn" 
-                  ? "যেকোনো ওয়েবসাইট শুরু মাত্র" 
-                  : "Any Website Starting From"}
+                {get(
+                  language === "bn" ? "website_title_bn" : "website_title_en",
+                  language === "bn" ? "যেকোনো ওয়েবসাইট শুরু মাত্র" : "Any Website Starting From"
+                )}
               </h3>
               <div className="flex items-baseline justify-center gap-1 mb-4">
                 <span className="text-5xl md:text-6xl font-extrabold gradient-text">
-                  {language === "bn" ? "৳৪,০০০" : "৳4,000"}
+                  {get(
+                    language === "bn" ? "website_price_bn" : "website_price_en",
+                    language === "bn" ? "৳৪,০০০" : "৳4,000"
+                  )}
                 </span>
               </div>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-lg mx-auto mb-8">
-                {language === "bn"
-                  ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। দাম নির্ভর করবে আপনার চাহিদা ও ফিচারের উপর।"
-                  : "Fully coded, responsive website — built with React & Next.js. Price depends on your requirements and features."}
+                {get(
+                  language === "bn" ? "website_description_bn" : "website_description_en",
+                  language === "bn"
+                    ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। দাম নির্ভর করবে আপনার চাহিদা ও ফিচারের উপর।"
+                    : "Fully coded, responsive website — built with React & Next.js. Price depends on your requirements and features."
+                )}
               </p>
 
               <div className="flex flex-wrap justify-center gap-3 mb-10">
-                {(language === "bn"
-                  ? ["ফুল কোডেড", "কাস্টম ডিজাইন", "অ্যাডমিন প্যানেল", "SEO অপ্টিমাইজড", "মোবাইল রেসপন্সিভ"]
-                  : ["Fully Coded", "Custom Design", "Admin Panel", "SEO Optimized", "Mobile Responsive"]
-                ).map((tag, i) => (
+                {get(
+                  language === "bn" ? "website_features_bn" : "website_features_en",
+                  language === "bn"
+                    ? "ফুল কোডেড,কাস্টম ডিজাইন,অ্যাডমিন প্যানেল,SEO অপ্টিমাইজড,মোবাইল রেসপন্সিভ"
+                    : "Fully Coded,Custom Design,Admin Panel,SEO Optimized,Mobile Responsive"
+                ).split(",").map((tag, i) => (
                   <motion.span
                     key={tag}
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -310,7 +319,7 @@ const PricingSection = () => {
                     className="flex items-center gap-1.5 text-sm bg-primary/10 text-primary font-medium rounded-lg px-3 py-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
-                    {tag}
+                    {tag.trim()}
                   </motion.span>
                 ))}
               </div>
@@ -322,7 +331,10 @@ const PricingSection = () => {
                   className="shadow-lg shadow-primary/25 group/btn font-semibold"
                   onClick={scrollToContact}
                 >
-                  {language === "bn" ? "কনসাল্টেশন নিন" : "Get Consultation"}
+                  {get(
+                    language === "bn" ? "website_cta_bn" : "website_cta_en",
+                    language === "bn" ? "কনসাল্টেশন নিন" : "Get Consultation"
+                  )}
                   <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover/btn:translate-x-1" />
                 </Button>
               </motion.div>

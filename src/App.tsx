@@ -76,6 +76,7 @@ const App = () => (
               <Route path="/admin/client-notifications" element={<AdminClientNotifications />} />
               <Route path="/admin/client-features" element={<AdminClientFeatures />} />
               <Route path="/admin/tickets" element={<AdminTickets />} />
+              <Route path="/admin/content" element={<AdminContent />} />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />

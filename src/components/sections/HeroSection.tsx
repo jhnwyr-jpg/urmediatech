@@ -112,7 +112,7 @@ const HeroSection = () => {
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={`geo-${i}`}
-          className="absolute pointer-events-none will-change-transform"
+          className="absolute pointer-events-none will-change-transform hidden md:block"
           style={{
             left: `${15 + i * 15}%`,
             top: `${20 + (i % 3) * 25}%`,

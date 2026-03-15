@@ -42,7 +42,7 @@ const PromoSection = () => {
   );
 
   return (
-    <section ref={ref} className="pt-2 pb-4 md:pt-3 md:pb-4 relative overflow-hidden">
+    <section ref={ref} className="pt-6 pb-4 md:pt-8 md:pb-4 relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4">
           {/* Website Promo */}

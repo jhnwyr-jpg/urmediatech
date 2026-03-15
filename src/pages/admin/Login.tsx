@@ -105,6 +105,8 @@ const AdminLogin = () => {
     setIsGoogleLoading(true);
     setErrors({});
     try {
+      // Clear any existing session to prevent conflicts
+      await supabase.auth.signOut();
       const { error } = await signInWithGoogle();
       if (error) {
         setErrors({ general: error.message });

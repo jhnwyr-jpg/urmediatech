@@ -26,7 +26,7 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-bg pt-20"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-bg pt-20 pb-12 md:pb-16"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >

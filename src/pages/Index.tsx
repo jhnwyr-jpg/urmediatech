@@ -6,6 +6,7 @@ import ShowcaseSection from "@/components/sections/ShowcaseSection";
 import PortfolioSection from "@/components/sections/PortfolioSection";
 import AIAgentSection from "@/components/sections/AIAgentSection";
 import IntegrationsSection from "@/components/sections/IntegrationsSection";
+import GlobalReachSection from "@/components/sections/GlobalReachSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import AboutSection from "@/components/sections/AboutSection";
 import ContactSection from "@/components/sections/ContactSection";
@@ -42,6 +43,7 @@ const Index = () => {
       <PortfolioSection />
       <PricingSection />
       <TestimonialsSection />
+      <GlobalReachSection />
       <AboutSection />
       <ContactSection />
       <CTASection />

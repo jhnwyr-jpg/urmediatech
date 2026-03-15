@@ -1,14 +1,13 @@
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logoStripe from "@/assets/logo-stripe.png";
-import logoSupabase from "@/assets/logo-supabase.png";
 
 const integrations = [
   { name: "Google", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png" },
   { name: "Microsoft", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/120px-Microsoft_logo.svg.png" },
   { name: "Slack", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/120px-Slack_icon_2019.svg.png" },
   { name: "Stripe", logoUrl: logoStripe },
-  { name: "Supabase", logoUrl: logoSupabase },
+  { name: "Supabase", logoUrl: "https://supabase.com/_next/image?url=https%3A%2F%2Fobuldanrptloktxcffvn.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fimages%2Flogo%2Fsupabase-logo-icon.png&w=128&q=75" },
   { name: "Firebase", logoUrl: "/images/logo-firebase.svg" },
   { name: "Vercel", logoUrl: "https://assets.vercel.com/image/upload/front/favicon/vercel/180x180.png" },
   { name: "Notion", logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/120px-Notion-logo.svg.png" },

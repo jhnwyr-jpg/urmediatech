@@ -22,6 +22,7 @@ import {
   UserCheck,
   CreditCard,
   Ticket,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +44,7 @@ const navItems = [
   { icon: Shield, label: "Client Features", path: "/admin/client-features" },
   { icon: UserCheck, label: "Subscribers", path: "/admin/subscribers" },
   { icon: CreditCard, label: "Pricing", path: "/admin/pricing" },
+  { icon: FileText, label: "Content Manager", path: "/admin/content" },
   { icon: TicketCheck, label: "Support Tickets", path: "/admin/tickets" },
   { icon: Ticket, label: "Coupons", path: "/admin/coupons" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },

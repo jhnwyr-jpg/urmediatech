@@ -43,7 +43,6 @@ const Index = () => {
       <AboutSection />
       <ContactSection />
       <CTASection />
-      <CTASection />
       <Footer />
       <AIChatBot />
       <SupportChatWidget />

@@ -44,8 +44,8 @@ const PromoSection = () => {
   return (
     <section ref={ref} className="pt-6 pb-4 md:pt-8 md:pb-4 relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4">
-          {/* Website Promo */}
+        {/* Desktop: two separate cards */}
+        <div className="hidden md:grid md:grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -53,57 +53,36 @@ const PromoSection = () => {
             className="relative rounded-2xl overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(270,70%,60%)] to-[hsl(var(--gradient-end))]" />
-
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-              transition={{ duration: 4, repeat: Infinity }}
-              className="absolute top-0 right-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10"
-            />
-
-            <div className="relative z-10 px-6 py-8 md:px-8 md:py-8 flex flex-col justify-between h-full">
+            <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-0 right-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
+            <div className="relative z-10 px-8 py-8 flex flex-col justify-between h-full">
               <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
-                  {badge}
-                </span>
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
+                <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">{badge}</span>
+                <h3 className="text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
                   {websiteTitle}
-                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{websitePrice}</span>
+                  <span className="block text-4xl lg:text-5xl mt-1">{websitePrice}</span>
                 </h3>
-                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">
-                  {websiteDesc}
-                </p>
+                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">{websiteDesc}</p>
               </div>
-
               <div className="flex flex-wrap gap-2 mt-4">
                 {websiteHighlights.map((text, i) => {
                   const Icon = iconList[i % iconList.length];
                   return (
-                    <div
-                      key={i}
-                      className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5"
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{text}</span>
+                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
                     </div>
                   );
                 })}
               </div>
-
               <div className="mt-5">
                 <a href="#contact">
-                  <Button
-                    size="lg"
-                    className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
-                  >
-                    {ctaText}
-                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                  <Button size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold">
+                    {ctaText}<ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
               </div>
             </div>
           </motion.div>
 
-          {/* Landing Page Promo */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -111,58 +90,107 @@ const PromoSection = () => {
             className="relative rounded-2xl overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(200,80%,50%)] via-[hsl(220,70%,55%)] to-[hsl(250,60%,55%)]" />
-
-            <motion.div
-              animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
-              transition={{ duration: 5, repeat: Infinity }}
-              className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10"
-            />
-
-            <div className="relative z-10 px-6 py-8 md:px-8 md:py-8 flex flex-col justify-between h-full">
+            <motion.div animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 5, repeat: Infinity }} className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
+            <div className="relative z-10 px-8 py-8 flex flex-col justify-between h-full">
               <div>
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
                   <Layout className="w-3 h-3" />
                   {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
                 </span>
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
+                <h3 className="text-2xl lg:text-3xl font-bold text-primary-foreground mb-1">
                   {landingTitle}
-                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{landingPrice}</span>
+                  <span className="block text-4xl lg:text-5xl mt-1">{landingPrice}</span>
                 </h3>
-                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">
-                  {landingDesc}
-                </p>
+                <p className="text-primary-foreground/80 text-sm max-w-sm mt-2">{landingDesc}</p>
               </div>
-
               <div className="flex flex-wrap gap-2 mt-4">
                 {landingHighlights.map((text, i) => {
                   const icons = [Layout, Rocket, Globe];
                   const Icon = icons[i % icons.length];
                   return (
-                    <div
-                      key={i}
-                      className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5"
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{text}</span>
+                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
                     </div>
                   );
                 })}
               </div>
-
               <div className="mt-5">
                 <a href="#contact">
-                  <Button
-                    size="lg"
-                    className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
-                  >
-                    {ctaText}
-                    <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                  <Button size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold">
+                    {ctaText}<ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
               </div>
             </div>
           </motion.div>
         </div>
+
+        {/* Mobile: single combined card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+          className="md:hidden relative rounded-2xl overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary))] via-[hsl(260,70%,55%)] to-[hsl(220,70%,50%)]" />
+          <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-0 right-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
+          <motion.div animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }} transition={{ duration: 5, repeat: Infinity }} className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground rounded-full blur-3xl opacity-10" />
+
+          <div className="relative z-10 px-5 py-6">
+            {/* Website */}
+            <div className="mb-5">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">{badge}</span>
+              <h3 className="text-xl font-bold text-primary-foreground mb-1">
+                {websiteTitle}
+                <span className="block text-3xl mt-1">{websitePrice}</span>
+              </h3>
+              <p className="text-primary-foreground/80 text-sm mt-2">{websiteDesc}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {websiteHighlights.map((text, i) => {
+                  const Icon = iconList[i % iconList.length];
+                  return (
+                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-primary-foreground/20 my-5" />
+
+            {/* Landing Page */}
+            <div className="mb-5">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
+                <Layout className="w-3 h-3" />
+                {language === "bn" ? "⚡ জনপ্রিয়" : "⚡ Popular"}
+              </span>
+              <h3 className="text-xl font-bold text-primary-foreground mb-1">
+                {landingTitle}
+                <span className="block text-3xl mt-1">{landingPrice}</span>
+              </h3>
+              <p className="text-primary-foreground/80 text-sm mt-2">{landingDesc}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {landingHighlights.map((text, i) => {
+                  const icons = [Layout, Rocket, Globe];
+                  const Icon = icons[i % icons.length];
+                  return (
+                    <div key={i} className="flex items-center gap-1.5 text-primary-foreground/90 text-xs bg-primary-foreground/10 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                      <Icon className="w-3.5 h-3.5" /><span>{text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <a href="#contact">
+              <Button size="lg" className="w-full bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold">
+                {ctaText}<ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -45,6 +45,23 @@ const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
+  const ensureAdminAccess = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return false;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) return false;
+    return data?.is_admin === true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -75,24 +92,43 @@ const AdminLogin = () => {
             emailRedirectTo: window.location.origin,
           },
         });
+
         if (error) {
           setErrors({ general: error.message });
         } else {
           setErrors({ general: "" });
           setIsSignUp(false);
-          // Auto sign in after signup
+
           const { error: signInError } = await signIn(formData.email, formData.password);
-          if (!signInError) {
-            navigate("/admin");
+          if (signInError) {
+            setErrors({ general: signInError.message });
+            return;
           }
+
+          const hasAdminAccess = await ensureAdminAccess();
+          if (!hasAdminAccess) {
+            await supabase.auth.signOut();
+            setErrors({ general: "This account is not authorized for admin access." });
+            return;
+          }
+
+          navigate("/admin");
         }
       } else {
         const { error } = await signIn(formData.email, formData.password);
         if (error) {
-          setErrors({ general: "Invalid email or password" });
-        } else {
-          navigate("/admin");
+          setErrors({ general: error.message || "Invalid email or password" });
+          return;
         }
+
+        const hasAdminAccess = await ensureAdminAccess();
+        if (!hasAdminAccess) {
+          await supabase.auth.signOut();
+          setErrors({ general: "This account is not authorized for admin access." });
+          return;
+        }
+
+        navigate("/admin");
       }
     } catch {
       setErrors({ general: "An error occurred. Please try again." });

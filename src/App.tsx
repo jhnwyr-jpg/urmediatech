@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import OneSignalProvider from "@/components/OneSignalProvider";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Public Pages
 import Index from "./pages/Index";
@@ -56,27 +57,27 @@ const App = () => (
               
               {/* Client Routes */}
               <Route path="/client/login" element={<ClientLogin />} />
-              <Route path="/client/dashboard" element={<ClientDashboard />} />
+              <Route path="/client/dashboard" element={<ProtectedRoute><ClientDashboard /></ProtectedRoute>} />
               
-              {/* Admin Routes */}
+              {/* Admin Routes - All protected with requireAdmin */}
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/contacts" element={<AdminContacts />} />
-              <Route path="/admin/chats" element={<AdminChats />} />
-              <Route path="/admin/meetings" element={<AdminMeetings />} />
-              <Route path="/admin/reports" element={<AdminReports />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/settings" element={<AdminSettings />} />
-              <Route path="/admin/projects" element={<AdminProjects />} />
-              <Route path="/admin/notifications" element={<AdminNotifications />} />
-              <Route path="/admin/client-services" element={<AdminClientServices />} />
-              <Route path="/admin/coupons" element={<AdminCoupons />} />
-              <Route path="/admin/subscribers" element={<AdminSubscribers />} />
-              <Route path="/admin/pricing" element={<AdminPricing />} />
-              <Route path="/admin/client-notifications" element={<AdminClientNotifications />} />
-              <Route path="/admin/client-features" element={<AdminClientFeatures />} />
-              <Route path="/admin/tickets" element={<AdminTickets />} />
-              <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/contacts" element={<ProtectedRoute requireAdmin><AdminContacts /></ProtectedRoute>} />
+              <Route path="/admin/chats" element={<ProtectedRoute requireAdmin><AdminChats /></ProtectedRoute>} />
+              <Route path="/admin/meetings" element={<ProtectedRoute requireAdmin><AdminMeetings /></ProtectedRoute>} />
+              <Route path="/admin/reports" element={<ProtectedRoute requireAdmin><AdminReports /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminUsers /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute>} />
+              <Route path="/admin/projects" element={<ProtectedRoute requireAdmin><AdminProjects /></ProtectedRoute>} />
+              <Route path="/admin/notifications" element={<ProtectedRoute requireAdmin><AdminNotifications /></ProtectedRoute>} />
+              <Route path="/admin/client-services" element={<ProtectedRoute requireAdmin><AdminClientServices /></ProtectedRoute>} />
+              <Route path="/admin/coupons" element={<ProtectedRoute requireAdmin><AdminCoupons /></ProtectedRoute>} />
+              <Route path="/admin/subscribers" element={<ProtectedRoute requireAdmin><AdminSubscribers /></ProtectedRoute>} />
+              <Route path="/admin/pricing" element={<ProtectedRoute requireAdmin><AdminPricing /></ProtectedRoute>} />
+              <Route path="/admin/client-notifications" element={<ProtectedRoute requireAdmin><AdminClientNotifications /></ProtectedRoute>} />
+              <Route path="/admin/client-features" element={<ProtectedRoute requireAdmin><AdminClientFeatures /></ProtectedRoute>} />
+              <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><AdminTickets /></ProtectedRoute>} />
+              <Route path="/admin/content" element={<ProtectedRoute requireAdmin><AdminContent /></ProtectedRoute>} />
               
               {/* 404 */}
               <Route path="*" element={<NotFound />} />

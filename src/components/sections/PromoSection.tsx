@@ -3,17 +3,49 @@ import { useRef } from "react";
 import { ArrowRight, Code, Globe, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSiteContent } from "@/hooks/useSiteContent";
+
+const iconList = [Code, Globe, Rocket];
 
 const PromoSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
+  const { get } = useSiteContent();
 
-  const highlights = [
-    { icon: Code, text: language === "bn" ? "ফুল কোডেড ওয়েবসাইট" : "Fully Coded Website" },
-    { icon: Globe, text: language === "bn" ? "ফ্রি ডোমেইন + হোস্টিং" : "Free Domain + Hosting" },
-    { icon: Rocket, text: language === "bn" ? "৭ দিনে ডেলিভারি" : "7 Days Delivery" },
-  ];
+  const badge = get(
+    language === "bn" ? "promo_badge_bn" : "promo_badge_en",
+    language === "bn" ? "🔥 লিমিটেড অফার" : "🔥 Limited Offer"
+  );
+  const title = get(
+    language === "bn" ? "promo_title_bn" : "promo_title_en",
+    language === "bn" ? "ওয়েবসাইট শুরু মাত্র" : "Websites Starting From"
+  );
+  const price = get(
+    language === "bn" ? "promo_price_bn" : "promo_price_en",
+    language === "bn" ? "৳৪,০০০" : "৳4,000"
+  );
+  const description = get(
+    language === "bn" ? "promo_description_bn" : "promo_description_en",
+    language === "bn"
+      ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। টেমপ্লেট না, কাস্টম ডিজাইন!"
+      : "Fully coded, responsive website — built with React & Next.js. No templates, custom design!"
+  );
+  const highlightsRaw = get(
+    language === "bn" ? "promo_highlights_bn" : "promo_highlights_en",
+    language === "bn"
+      ? "ফুল কোডেড ওয়েবসাইট,ফ্রি ডোমেইন + হোস্টিং,৭ দিনে ডেলিভারি"
+      : "Fully Coded Website,Free Domain + Hosting,7 Days Delivery"
+  );
+  const ctaText = get(
+    language === "bn" ? "promo_cta_bn" : "promo_cta_en",
+    language === "bn" ? "এখনই অর্ডার করুন" : "Order Now"
+  );
+
+  const highlights = highlightsRaw.split(",").map((text, i) => ({
+    icon: iconList[i % iconList.length],
+    text: text.trim(),
+  }));
 
   return (
     <section ref={ref} className="py-6 relative overflow-hidden">
@@ -24,10 +56,8 @@ const PromoSection = () => {
           transition={{ duration: 0.5 }}
           className="relative rounded-2xl overflow-hidden"
         >
-          {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(270,70%,60%)] to-[hsl(var(--gradient-end))]" />
           
-          {/* Decorative elements */}
           <motion.div
             animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
             transition={{ duration: 4, repeat: Infinity }}
@@ -40,7 +70,6 @@ const PromoSection = () => {
           />
 
           <div className="relative z-10 px-6 py-8 md:px-12 md:py-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
-            {/* Left - Main content */}
             <div className="flex-1 text-center md:text-left">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -48,22 +77,17 @@ const PromoSection = () => {
                 transition={{ delay: 0.2 }}
               >
                 <span className="inline-block px-3 py-1 rounded-full bg-primary-foreground/20 text-primary-foreground text-xs font-semibold mb-3 backdrop-blur-sm">
-                  {language === "bn" ? "🔥 লিমিটেড অফার" : "🔥 Limited Offer"}
+                  {badge}
                 </span>
                 <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary-foreground mb-2">
-                  {language === "bn" ? "ওয়েবসাইট শুরু মাত্র" : "Websites Starting From"}
-                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">
-                    {language === "bn" ? "৳৪,০০০" : "৳4,000"}
-                  </span>
+                  {title}
+                  <span className="block text-3xl md:text-4xl lg:text-5xl mt-1">{price}</span>
                 </h3>
                 <p className="text-primary-foreground/80 text-sm md:text-base max-w-md">
-                  {language === "bn" 
-                    ? "ফুল কোডেড, রেসপন্সিভ ওয়েবসাইট — React, Next.js দিয়ে তৈরি। টেমপ্লেট না, কাস্টম ডিজাইন!" 
-                    : "Fully coded, responsive website — built with React & Next.js. No templates, custom design!"}
+                  {description}
                 </p>
               </motion.div>
 
-              {/* Feature highlights */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
@@ -82,7 +106,6 @@ const PromoSection = () => {
               </motion.div>
             </div>
 
-            {/* Right - CTA */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
@@ -94,7 +117,7 @@ const PromoSection = () => {
                   size="xl"
                   className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg group font-bold"
                 >
-                  {language === "bn" ? "এখনই অর্ডার করুন" : "Order Now"}
+                  {ctaText}
                   <ArrowRight className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" />
                 </Button>
               </a>

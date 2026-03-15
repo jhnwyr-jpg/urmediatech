@@ -12,7 +12,7 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -26,10 +26,11 @@ const Footer = () => {
   };
 
   const footerLinks = {
-    company: [
+    navigation: [
       { name: t("footer.about"), sectionId: "about" },
       { name: t("nav.services"), sectionId: "services" },
       { name: t("footer.projects"), sectionId: "portfolio" },
+      { name: t("nav.pricing"), sectionId: "pricing" },
       { name: t("nav.contact"), sectionId: "contact" },
     ],
     services: [
@@ -38,104 +39,168 @@ const Footer = () => {
       { name: "Business Website", sectionId: "pricing" },
       { name: "Web Application", sectionId: "pricing" },
     ],
+    social: [
+      { name: "Facebook", href: "#" },
+      { name: "Twitter/X", href: "#" },
+      { name: "Instagram", href: "#" },
+      { name: "LinkedIn", href: "#" },
+    ],
   };
 
   return (
-    <footer className="bg-foreground text-primary-foreground pt-16 pb-8 relative">
-      {/* Gradient accent line */}
-      <div className="absolute top-0 left-0 right-0 h-1 gradient-bg" />
-      
-      <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4" onClick={scrollToTop}>
-              <img 
-                src={logo} 
-                alt="UR Media - Professional Video Editing Agency Logo" 
-                className="w-10 h-10 invert"
-                width={40}
-                height={40}
+    <footer className="relative overflow-hidden">
+      {/* Gradient top band */}
+      <div className="h-16 bg-gradient-to-b from-primary/10 to-primary/5" />
+
+      {/* Main footer content */}
+      <div className="relative bg-gradient-to-b from-primary/5 to-primary/15 pt-12 pb-8">
+        {/* Giant watermark text */}
+        <div className="absolute inset-0 flex items-end justify-center overflow-hidden pointer-events-none select-none">
+          <span
+            className="text-[18vw] font-black tracking-[0.05em] leading-none text-primary/[0.07] translate-y-[20%]"
+            aria-hidden="true"
+          >
+            URMEDIA
+          </span>
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          {/* 5-column grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 mb-16">
+            {/* Info & Address */}
+            <div className="col-span-2 md:col-span-1">
+              <h4 className="flex items-center gap-2 font-semibold text-sm tracking-[0.15em] uppercase text-foreground mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                {language === "bn" ? "তথ্য ও ঠিকানা" : "Info & Address"}
+              </h4>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>Dhaka, Bangladesh</p>
+                <p>
+                  <a href="tel:+8801234567890" className="hover:text-foreground transition-colors">
+                    +880 1234-567890
+                  </a>
+                </p>
+                <p>
+                  <a href="mailto:info@urmedia.tech" className="hover:text-foreground transition-colors">
+                    info@urmedia.tech
+                  </a>
+                </p>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div>
+              <h4 className="flex items-center gap-2 font-semibold text-sm tracking-[0.15em] uppercase text-foreground mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                {language === "bn" ? "সোশ্যাল লিংক" : "Social Links"}
+              </h4>
+              <ul className="space-y-3 text-sm">
+                {footerLinks.social.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Navigation */}
+            <div>
+              <h4 className="flex items-center gap-2 font-semibold text-sm tracking-[0.15em] uppercase text-foreground mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                {language === "bn" ? "নেভিগেশন" : "Navigation"}
+              </h4>
+              <ul className="space-y-3 text-sm">
+                {footerLinks.navigation.map((link) => (
+                  <li key={link.name}>
+                    <button
+                      onClick={() => scrollToSection(link.sectionId)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Services */}
+            <div>
+              <h4 className="flex items-center gap-2 font-semibold text-sm tracking-[0.15em] uppercase text-foreground mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                {language === "bn" ? "সেবাসমূহ" : "Services"}
+              </h4>
+              <ul className="space-y-3 text-sm">
+                {footerLinks.services.map((link) => (
+                  <li key={link.name}>
+                    <button
+                      onClick={() => scrollToSection(link.sectionId)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Legal / Brand */}
+            <div>
+              <h4 className="flex items-center gap-2 font-semibold text-sm tracking-[0.15em] uppercase text-foreground mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                {language === "bn" ? "আইনি" : "Legal"}
+              </h4>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    {language === "bn" ? "প্রাইভেসি পলিসি" : "Privacy Policy"}
+                  </button>
+                </li>
+                <li>
+                  <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    {language === "bn" ? "সেবার শর্তাবলী" : "Terms of Service"}
+                  </button>
+                </li>
+              </ul>
+              <p className="text-xs text-muted-foreground/60 mt-6">
+                {t("footer.copyright")}
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom bar with back-to-top */}
+          <div className="border-t border-border pt-6 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2" onClick={scrollToTop}>
+              <img
+                src={logo}
+                alt="UR Media Logo"
+                className="w-8 h-8"
+                width={32}
+                height={32}
                 loading="lazy"
                 decoding="async"
               />
-              <span className="font-bold text-xl">
-                UR <span className="gradient-text">Media</span>
+              <span className="font-bold text-sm text-foreground whitespace-nowrap">
+                UR <span className="text-primary">Media</span>
               </span>
             </Link>
-            <p className="text-primary-foreground/70 max-w-sm mb-6">
-              {t("footer.desc")}
-            </p>
-            {/* Social Links */}
-            <div className="flex items-center gap-4">
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  aria-label={social.label}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-xl bg-primary-foreground/10 flex items-center justify-center hover:gradient-bg transition-all duration-300"
-                >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
-              ))}
-            </div>
-          </div>
 
-          {/* Company Links */}
-          <div>
-            <h4 className="font-semibold text-lg mb-4">{t("footer.company")}</h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <button
-                    onClick={() => scrollToSection(link.sectionId)}
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
-                  >
-                    {link.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <motion.button
+              onClick={scrollToTop}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
+            >
+              <span>{t("footer.backToTop")}</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <ArrowUp className="w-4 h-4 text-primary" />
+              </div>
+            </motion.button>
           </div>
-
-          {/* Services Links */}
-          <div>
-            <h4 className="font-semibold text-lg mb-4">{t("footer.services")}</h4>
-            <ul className="space-y-3">
-              {footerLinks.services.map((link) => (
-                <li key={link.name}>
-                  <button
-                    onClick={() => scrollToSection(link.sectionId)}
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
-                  >
-                    {link.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom bar */}
-        <div className="border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-foreground/50 text-sm">
-            {t("footer.copyright")}
-          </p>
-          
-          {/* Back to top */}
-          <motion.button
-            onClick={scrollToTop}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-300"
-          >
-            <span className="text-sm">{t("footer.backToTop")}</span>
-            <div className="w-8 h-8 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
-              <ArrowUp className="w-4 h-4" />
-            </div>
-          </motion.button>
         </div>
       </div>
     </footer>

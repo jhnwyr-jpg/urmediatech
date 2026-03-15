@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail, AlertCircle, UserPlus, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,7 +38,6 @@ const GoogleIcon = () => (
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { signIn, signInWithGoogle } = useAuth();
-  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -66,7 +65,6 @@ const AdminLogin = () => {
     e.preventDefault();
     setErrors({});
 
-    // Validate
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: typeof errors = {};
@@ -81,55 +79,22 @@ const AdminLogin = () => {
 
     setIsLoading(true);
     try {
-      // Clear any existing session (e.g. client session) to prevent conflicts
       await supabase.auth.signOut();
 
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            emailRedirectTo: window.location.origin,
-          },
-        });
-
-        if (error) {
-          setErrors({ general: error.message });
-        } else {
-          setErrors({ general: "" });
-          setIsSignUp(false);
-
-          const { error: signInError } = await signIn(formData.email, formData.password);
-          if (signInError) {
-            setErrors({ general: signInError.message });
-            return;
-          }
-
-          const hasAdminAccess = await ensureAdminAccess();
-          if (!hasAdminAccess) {
-            await supabase.auth.signOut();
-            setErrors({ general: "This account is not authorized for admin access." });
-            return;
-          }
-
-          navigate("/admin");
-        }
-      } else {
-        const { error } = await signIn(formData.email, formData.password);
-        if (error) {
-          setErrors({ general: error.message || "Invalid email or password" });
-          return;
-        }
-
-        const hasAdminAccess = await ensureAdminAccess();
-        if (!hasAdminAccess) {
-          await supabase.auth.signOut();
-          setErrors({ general: "This account is not authorized for admin access." });
-          return;
-        }
-
-        navigate("/admin");
+      const { error } = await signIn(formData.email, formData.password);
+      if (error) {
+        setErrors({ general: "Invalid email or password" });
+        return;
       }
+
+      const hasAdminAccess = await ensureAdminAccess();
+      if (!hasAdminAccess) {
+        await supabase.auth.signOut();
+        setErrors({ general: "This account is not authorized for admin access." });
+        return;
+      }
+
+      navigate("/admin");
     } catch {
       setErrors({ general: "An error occurred. Please try again." });
     } finally {
@@ -141,7 +106,6 @@ const AdminLogin = () => {
     setIsGoogleLoading(true);
     setErrors({});
     try {
-      // Clear any existing session to prevent conflicts
       await supabase.auth.signOut();
       const { error } = await signInWithGoogle();
       if (error) {
@@ -156,7 +120,6 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Background decorations */}
       <div className="absolute top-20 left-20 w-72 h-72 gradient-bg opacity-10 blur-[100px] rounded-full" />
       <div className="absolute bottom-20 right-20 w-72 h-72 gradient-bg opacity-10 blur-[100px] rounded-full" />
 
@@ -171,17 +134,13 @@ const AdminLogin = () => {
             <div className="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
-              {isSignUp ? "Create Account" : "Admin Login"}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              {isSignUp ? "Sign up to create your account" : "Sign in to access the admin panel"}
-            </p>
+            <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
+            <p className="text-muted-foreground mt-2">Sign in to access the admin panel</p>
           </div>
 
           {errors.general && (
             <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-destructive" />
+              <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
               <p className="text-sm text-destructive">{errors.general}</p>
             </div>
           )}
@@ -274,33 +233,16 @@ const AdminLogin = () => {
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
                 />
-              ) : isSignUp ? (
-                <>
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </>
               ) : (
                 "Sign In"
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center space-y-3">
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setErrors({});
-              }}
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
-            </button>
-            <div>
-              <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                ← Back to website
-              </a>
-            </div>
+          <div className="mt-6 text-center">
+            <a href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              ← Back to website
+            </a>
           </div>
         </div>
       </motion.div>

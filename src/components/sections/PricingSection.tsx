@@ -112,6 +112,7 @@ const PricingSection = () => {
   const { t, language } = useLanguage();
   const [plans, setPlans] = useState<PlanData[]>([]);
   const [activeTab, setActiveTab] = useState<"landing" | "website">("landing");
+  const { get } = useSiteContent();
 
   useEffect(() => {
     const fetchPlans = async () => {

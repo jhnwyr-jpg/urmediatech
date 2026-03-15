@@ -153,6 +153,9 @@ const ClientLogin = () => {
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     try {
+      // Sign out existing session to prevent conflicts
+      await supabase.auth.signOut();
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

@@ -8,28 +8,49 @@ const AIAgentSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const { language } = useLanguage();
 
-  // Typing animation state
+  // Multiple messages that cycle
+  const messages = language === "bn"
+    ? [
+        "আমি আপনার ওয়েবসাইটের জন্য সাহায্য করতে পারি...",
+        "আপনার অর্ডারটি কনফার্ম হয়েছে ✅",
+        "আজকের ভিজিটর সংখ্যা ৩৫০+ 📊",
+        "নতুন লিড পেয়েছেন: রাহুল থেকে 🔔",
+        "আপনার সাইটের স্পিড ৯৮/১০০ ⚡",
+      ]
+    : [
+        "I can help optimize your website...",
+        "Your order has been confirmed ✅",
+        "Today's visitor count: 350+ 📊",
+        "New lead received: from Rahul 🔔",
+        "Your site speed score: 98/100 ⚡",
+      ];
+
   const [displayText, setDisplayText] = useState("");
   const [latency, setLatency] = useState(24);
-  const fullText = language === "bn"
-    ? "আমি আপনার ওয়েবসাইটের জন্য সাহায্য করতে পারি..."
-    : "I can help optimize your website...";
+  const [msgIndex, setMsgIndex] = useState(0);
 
   useEffect(() => {
     if (!isInView) return;
     let i = 0;
+    let currentMsg = messages[msgIndex];
     setDisplayText("");
-    const interval = setInterval(() => {
-      if (i < fullText.length) {
-        setDisplayText(fullText.slice(0, i + 1));
+
+    const typeInterval = setInterval(() => {
+      if (i < currentMsg.length) {
+        setDisplayText(currentMsg.slice(0, i + 1));
         i++;
         setLatency(Math.floor(Math.random() * 15) + 18);
       } else {
-        clearInterval(interval);
+        clearInterval(typeInterval);
+        // Wait then move to next message
+        setTimeout(() => {
+          setMsgIndex((prev) => (prev + 1) % messages.length);
+        }, 2000);
       }
     }, 60);
-    return () => clearInterval(interval);
-  }, [isInView, fullText]);
+
+    return () => clearInterval(typeInterval);
+  }, [isInView, msgIndex, language]);
 
   // Audio wave animation
   const AudioWave = () => (

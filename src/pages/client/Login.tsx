@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
@@ -17,9 +17,32 @@ const ClientLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { language } = useLanguage();
+
+  // Check if user is already logged in as a client
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        
+        // If not admin, redirect to client dashboard
+        if (data && !data.is_admin) {
+          navigate("/client/dashboard");
+          return;
+        }
+      }
+      setIsCheckingSession(false);
+    };
+    checkExistingSession();
+  }, [navigate]);
 
   const t = {
     bn: {
@@ -83,6 +106,9 @@ const ClientLogin = () => {
     setIsLoading(true);
 
     try {
+      // Sign out existing session to prevent conflicts
+      await supabase.auth.signOut();
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email,
@@ -127,6 +153,9 @@ const ClientLogin = () => {
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     try {
+      // Sign out existing session to prevent conflicts
+      await supabase.auth.signOut();
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -144,6 +173,14 @@ const ClientLogin = () => {
       setIsGoogleLoading(false);
     }
   };
+
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

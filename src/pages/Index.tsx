@@ -48,6 +48,7 @@ const Index = () => {
       <CTASection />
       <Footer />
       <AIChatBot />
+      <ElevenLabsAgent />
       <SupportChatWidget />
     </main>
   );

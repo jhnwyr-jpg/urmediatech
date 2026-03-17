@@ -16,6 +16,7 @@ import AIChatBot from "@/components/ui/AIChatBot";
 import SupportChatWidget from "@/components/ui/SupportChatWidget";
 import TrackingPixels from "@/components/TrackingPixels";
 import DynamicScripts from "@/components/DynamicScripts";
+import ElevenLabsAgent from "@/components/ui/ElevenLabsAgent";
 import SEOHead from "@/components/seo/SEOHead";
 import { organizationSchema, websiteSchema, professionalServiceSchema } from "@/lib/jsonLd";
 
